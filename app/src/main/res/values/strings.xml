@@ -16,6 +16,10 @@
     <string name="action_save">Save</string>
     <string name="action_back">Back</string>
     <string name="action_add">Add</string>
-
+    <string name="title_budget_amount">Budget Amount</string>
+    <string name="budget_save">Save</string>
+    <string name="budget_later">Later</string>
+    <string name="dialog_budget_setup_msg">Keeping a monthly budget helps in long run. Enter your monthly budget below.</string>
+    <string name="dialog_budget_setup_hint">Your budget !</string>
 
 </resources>

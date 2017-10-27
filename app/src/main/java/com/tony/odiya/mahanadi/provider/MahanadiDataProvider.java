@@ -24,8 +24,13 @@ public class MahanadiDataProvider extends ContentProvider{
     // Indicates that type of incoming query
     public static final int EXPENSE_LIST = 1;
     public static final int EXPENSE_ROW = 2;
+
     public static final int CATEGORY_LIST = 3;
     public static final int CATEGORY_ROW = 4;
+
+    public static final int BUDGET_LIST = 5;
+    public static final int BUDGET_ROW = 6;
+
     public static final int INVALID_URI = -1;
 
     private static final String COMMA_SEP = ",";
@@ -42,6 +47,7 @@ public class MahanadiDataProvider extends ContentProvider{
                     MahanadiContract.Category.COL_CREATED_ON +" "+INTEGER_TYPE+")";
     public static final String SQL_DROP_CATEGORY =
             DROP_TABLE+ MahanadiContract.Category.TABLE_NAME;
+    //Expense table
     public static final String SQL_CREATE_EXPENSE =
             CREATE_TABLE + MahanadiContract.Expense.TABLE_NAME + "(" +
                     MahanadiContract.Expense._ID + " "+PRIMARY_KEY_TYPE+ COMMA_SEP+
@@ -52,6 +58,16 @@ public class MahanadiDataProvider extends ContentProvider{
                     MahanadiContract.Expense.COL_CREATED_ON +" "+INTEGER_TYPE+")";
     public static final String SQL_DROP_EXPENSE =
             DROP_TABLE + MahanadiContract.Expense.TABLE_NAME;
+    //Budget table
+    public static final String SQL_CREATE_BUDGET =
+            CREATE_TABLE + MahanadiContract.Budget.TABLE_NAME + "(" +
+                    MahanadiContract.Budget._ID + " "+PRIMARY_KEY_TYPE+ COMMA_SEP+
+                    MahanadiContract.Budget.COL_TYPE +" "+TEXT_TYPE+ COMMA_SEP+
+                    MahanadiContract.Budget.COL_AMOUNT +" "+TEXT_TYPE+ COMMA_SEP+
+                    MahanadiContract.Budget.COL_CREATED_ON +" "+INTEGER_TYPE+ COMMA_SEP+
+                    MahanadiContract.Budget.COL_END_DATE +" "+INTEGER_TYPE+")";
+    public static final String SQL_DROP_BUDGET =
+            DROP_TABLE + MahanadiContract.Budget.TABLE_NAME;
 
     // Defines a helper object that matches content URIs to table-specific parameters
     private static final UriMatcher sUriMatcher;
@@ -93,6 +109,15 @@ public class MahanadiDataProvider extends ContentProvider{
                 MahanadiContract.AUTHORITY,
                 MahanadiContract.Expense.TABLE_NAME+"/#",
                 EXPENSE_ROW);
+        // Sets up BUDGET_LIST as code to represent URI for multiple rows of ExpenseData table.
+        sUriMatcher.addURI(
+                MahanadiContract.AUTHORITY,
+                MahanadiContract.Budget.TABLE_NAME,
+                BUDGET_LIST);
+        sUriMatcher.addURI(
+                MahanadiContract.AUTHORITY,
+                MahanadiContract.Budget.TABLE_NAME+"/#",
+                BUDGET_ROW);
         // Specifies a custom MIME type for a multiple rows of Category table.
         sMimeTypes.put(
                 CATEGORY_LIST,
@@ -107,6 +132,13 @@ public class MahanadiDataProvider extends ContentProvider{
         sMimeTypes.put(
                 EXPENSE_ROW,
                 MahanadiContract.Expense.MIME_TYPE_SINGLE_ROW);
+        // Specifies a custom MIME type for a multiple rows of ExpenseData table.
+        sMimeTypes.put(
+                BUDGET_LIST,
+                MahanadiContract.Budget.MIME_TYPE_ROWS);
+        sMimeTypes.put(
+                BUDGET_ROW,
+                MahanadiContract.Budget.MIME_TYPE_SINGLE_ROW);
     }
     // Closes the SQLite database helper class, to avoid memory leaks
     public void close() {
@@ -125,6 +157,7 @@ public class MahanadiDataProvider extends ContentProvider{
             // If the table doesn't exist, don't throw an error
             db.execSQL(SQL_DROP_CATEGORY);
             db.execSQL(SQL_DROP_EXPENSE);
+            db.execSQL(SQL_DROP_BUDGET);
 
         }
         @Override
@@ -132,6 +165,7 @@ public class MahanadiDataProvider extends ContentProvider{
             // Creates the tables in the backing database for this provider
             db.execSQL(SQL_CREATE_CATEGORY);
             db.execSQL(SQL_CREATE_EXPENSE);
+            db.execSQL(SQL_CREATE_BUDGET);
         }
         /**
          * Handles upgrading the database from a previous version. Drops the old tables and creates
@@ -204,9 +238,10 @@ public class MahanadiDataProvider extends ContentProvider{
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(LOG_TAG, "Inside Mahanadi Data Provider query");
+        Log.d(LOG_TAG, "Inside Mahanadi Data Provider query : "+ uri.toString() );
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = null;
+        Log.d("Uri Matcher case : ",Integer.toString(sUriMatcher.match(uri) ));
         switch (sUriMatcher.match(uri)) {
             case EXPENSE_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
@@ -231,6 +266,19 @@ public class MahanadiDataProvider extends ContentProvider{
                         null,                                       //having clause
                         sortOrder                                   //order by clause
                 );
+                break;
+            case BUDGET_LIST:
+                if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
+                cursor = db.query(
+                        MahanadiContract.Budget.TABLE_NAME,    //Table name
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        null,                                       //group by clause
+                        null,                                       //having clause
+                        sortOrder                                   //order by clause
+                );
+                break;
             default:
                 throw new IllegalArgumentException("Query -- Invalid URI:" + uri);
         }
@@ -264,6 +312,15 @@ public class MahanadiDataProvider extends ContentProvider{
                         null,
                         values
                 );
+            case BUDGET_ROW:
+                localSQLiteDatabase = mHelper.getWritableDatabase();
+                // Inserts the row into the table and returns the new row's _id value
+                id = localSQLiteDatabase.insertOrThrow(
+                        MahanadiContract.Budget.TABLE_NAME,
+                        null,
+                        values
+                );
+
             default:
                 throw new IllegalArgumentException("Insert -- Invalid URI:" + uri);
         }

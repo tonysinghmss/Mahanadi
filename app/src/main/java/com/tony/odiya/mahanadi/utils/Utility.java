@@ -129,4 +129,13 @@ public class Utility {
             drawable.setAlpha(255);// aplha value
         }
     }
+    public static Long getMonthEndInMilliSeconds(){
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE,59);
+        cal.set(Calendar.SECOND,59);
+        cal.set(Calendar.MILLISECOND,1000);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return cal.getTimeInMillis();
+    }
 }

@@ -23,7 +23,9 @@ public final class Constants {
     public static final String CUSTOM = "CUSTOM";
 
     public static final String SAVE_EXPENSE_CODE = "1";
+    public static final String SAVE_BUDGET_CODE = "2";
     public static final int REQUEST_EXPENSE_CODE =1;
 
+    public static final String BUDGET_TYPE_MONTHLY ="MONTHLY_BUDGET";
 
 }

@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -238,10 +239,10 @@ public class MahanadiDataProvider extends ContentProvider{
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(LOG_TAG, "Inside Mahanadi Data Provider query : "+ uri.toString() );
+        //Log.d(LOG_TAG, "Inside Mahanadi Data Provider query : "+ uri.toString() );
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = null;
-        Log.d("Uri Matcher case : ",Integer.toString(sUriMatcher.match(uri) ));
+        //Log.d(LOG_TAG,"Uri Matcher case : "+Integer.toString(sUriMatcher.match(uri) ));
         switch (sUriMatcher.match(uri)) {
             case EXPENSE_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
@@ -279,6 +280,17 @@ public class MahanadiDataProvider extends ContentProvider{
                         sortOrder                                   //order by clause
                 );
                 break;
+            case BUDGET_ROW:
+                cursor = db.query(
+                        MahanadiContract.Budget.TABLE_NAME,    //Table name
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        null,                                       //group by clause
+                        null,                                       //having clause
+                        null                                   //order by clause
+                );
+                break;
             default:
                 throw new IllegalArgumentException("Query -- Invalid URI:" + uri);
         }
@@ -293,34 +305,35 @@ public class MahanadiDataProvider extends ContentProvider{
         // Creates a writeable database or gets one from cache
         SQLiteDatabase localSQLiteDatabase = mHelper.getWritableDatabase();
         long id = -1;
+        Log.d(LOG_TAG, "Insert Uri matched with case : "+sUriMatcher.match(uri));
         switch (sUriMatcher.match(uri)){
             case EXPENSE_ROW:
-                localSQLiteDatabase = mHelper.getWritableDatabase();
+                // localSQLiteDatabase = mHelper.getWritableDatabase();
                 // Inserts a single row into the table and returns the new row's _id value
                  id = localSQLiteDatabase.insertOrThrow(
                         MahanadiContract.Expense.TABLE_NAME,
                         MahanadiContract.Expense.COL_REMARK,//null column hack
                         values
                 );
-
                 break;
             case CATEGORY_ROW:
-                localSQLiteDatabase = mHelper.getWritableDatabase();
+                // localSQLiteDatabase = mHelper.getWritableDatabase();
                 // Inserts the row into the table and returns the new row's _id value
                 id = localSQLiteDatabase.insertOrThrow(
                         MahanadiContract.Category.TABLE_NAME,
                         null,
                         values
                 );
+                break;
             case BUDGET_ROW:
-                localSQLiteDatabase = mHelper.getWritableDatabase();
+                // localSQLiteDatabase = mHelper.getWritableDatabase();
                 // Inserts the row into the table and returns the new row's _id value
                 id = localSQLiteDatabase.insertOrThrow(
                         MahanadiContract.Budget.TABLE_NAME,
                         null,
                         values
                 );
-
+                break;
             default:
                 throw new IllegalArgumentException("Insert -- Invalid URI:" + uri);
         }
@@ -333,13 +346,14 @@ public class MahanadiDataProvider extends ContentProvider{
     }
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Log.d(LOG_TAG, "Inside StatsDataprovider delete");
+        Log.d(LOG_TAG, "Inside MahanadiDataprovider delete");
         int deleteCount = 0;
         // Creates a writeable database or gets one from cache
         SQLiteDatabase localSQLiteDatabase = mHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)){
             case EXPENSE_ROW:
                 deleteCount = localSQLiteDatabase.delete(MahanadiContract.Expense.TABLE_NAME, selection, selectionArgs);
+                //TODO: Add back the amount deleted to bugdet before deleting.
                 break;
             /*case CATEGORY_ROW:
                 break;*/
@@ -354,11 +368,20 @@ public class MahanadiDataProvider extends ContentProvider{
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        /*switch (sUriMatcher.match(uri)){
+        Log.d(LOG_TAG, "Inside MahanadiDataprovider update");
+        // Creates a writeable database or gets one from cache
+        SQLiteDatabase localSQLiteDatabase = mHelper.getWritableDatabase();
+        int updateCount = -1;
+        switch (sUriMatcher.match(uri)){
+            case BUDGET_ROW:
+                updateCount = localSQLiteDatabase.update(MahanadiContract.Budget.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Update: Invalid URI: " + uri);
-        }*/
-        return -1;
+        }
+        return updateCount;
     }
-
 }

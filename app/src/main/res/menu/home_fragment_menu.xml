@@ -3,5 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     >
-
+    <item
+        android:id="@+id/action_alert"
+        android:checkable="false"
+        android:enabled="true"
+        android:icon="@drawable/ic_error_black_24dp"
+        android:title="@string/action_setup"
+        app:showAsAction="ifRoom" />
 </menu>

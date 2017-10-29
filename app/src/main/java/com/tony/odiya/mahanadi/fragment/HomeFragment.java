@@ -10,11 +10,16 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,11 +30,13 @@ import com.tony.odiya.mahanadi.activity.AddExpenseActivity;
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.dialog.BudgetSetupDialogFragment;
+import com.tony.odiya.mahanadi.dialoglistener.DialogListener;
 import com.tony.odiya.mahanadi.utils.Utility;
 
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
+import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_SETUP_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
 import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
@@ -40,24 +47,26 @@ import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_CODE;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener{
+public class HomeFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener, DialogListener{
     private static final String LOG_TAG = HomeFragment.class.getSimpleName();
     private static final String ARG_TREND = "trend";
     //private static final String ARG_PARAM2 = "param2";
-    private static final int HOME_EXPENSE_LOADER_ID = 1;
-    private static final int HOME_TOTAL_LOADER_ID = 2;
-    private static final int HOME_BUDGET_LOADER_ID = 3;
+    private static final int TREND_EXPENSE_LOADER_ID = 1;
+    private static final int TOTAL_EXPENSE_LOADER_ID = 2;
+    private static final int HOME_BUDGET_EXISTS_ID = 3;
+    private static final int HOME_BUDGET_LOADER_ID = 4;
+
     // Budget for each month
-    private static Boolean isBudgetSet = Boolean.FALSE;
-    private static Double monthlyBudget = 0.0;
+    private static Boolean budgetIsSet = Boolean.FALSE;
+    private static final int BUDGET_ALERT_ITEM_ID =1;
 
     private String mTrend;
     //private String mParam2;
     private OnHomeTrendInteractionListener mListener;
     private Spinner homeLayoutTrendSpinner;
     private Toolbar homeToolbar;
+    private TextView budgetLeftForMonth;
     private View mHomeView;
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -90,11 +99,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,51 +108,18 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             mTrend = getArguments().getString(ARG_TREND);
             // mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        /*// Set the filter arguments for query here
-        Bundle args = Utility.getDateRange(mTrend);
-        // Load data into cursor asynchronously.
-        getLoaderManager().initLoader(HOME_EXPENSE_LOADER_ID, args, this);
-        getLoaderManager().initLoader(HOME_TOTAL_LOADER_ID, null, this);*/
-        /*if(!isBudgetSet) {
-            if (mTrend.equals(MONTHLY)) {
-                getLoaderManager().initLoader(HOME_BUDGET_LOADER_ID, args, this);
-            } else {
-                args = Utility.getDateRange(MONTHLY);
-                getLoaderManager().initLoader(HOME_BUDGET_LOADER_ID, args, this);
-            }
-        }*/
 
     }
-    @Override
-    public void onResume(){
-        super.onResume();
-        Log.d(LOG_TAG,"Inside onResume");
-        // Set the filter arguments for query here
-        Bundle args = Utility.getDateRange(mTrend);
-        // Load data into cursor asynchronously.
-        getLoaderManager().initLoader(HOME_EXPENSE_LOADER_ID, args, this);
-        getLoaderManager().initLoader(HOME_TOTAL_LOADER_ID, null, this);
-        if(!mTrend.equals(MONTHLY)){
-            args = Utility.getDateRange(MONTHLY);
-        }
-        getLoaderManager().initLoader(HOME_BUDGET_LOADER_ID, args, this);
-        // Reason for invoking dialog from onResume
-        // https://stackoverflow.com/questions/5019686/what-methods-are-invoked-in-the-activity-lifecycle-in-the-following-cases
-        if(!isBudgetSet){
-            //Show a dialog to set budget.
-            // This dialog should set the budget.
-            BudgetSetupDialogFragment budgetSetupDailog = new BudgetSetupDialogFragment();
-            budgetSetupDailog.show(getChildFragmentManager(),"BudgetSetupDialog");
-            //Bundle args = Utility.getDateRange(MONTHLY);
-            //getLoaderManager().initLoader(HOME_BUDGET_LOADER_ID, args, this);
-            isBudgetSet = true;
-        }
-    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mHomeView = inflater.inflate(R.layout.layout_home, container, false);
         homeToolbar = (Toolbar)mHomeView.findViewById(R.id.home_toolbar);
+        budgetLeftForMonth = (TextView)mHomeView.findViewById(R.id.budget_left_amount);
+        if(!budgetIsSet){
+            budgetLeftForMonth.setText("Not Set");
+        }
         homeLayoutTrendSpinner = (Spinner)mHomeView.findViewById(R.id.home_trend_spinner);
         homeLayoutTrendSpinner.setOnItemSelectedListener(this);
         Utility.setTrendValuesInSpinner(homeLayoutTrendSpinner, getActivity().getApplicationContext());
@@ -163,7 +135,88 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
         ((AppCompatActivity)getActivity()).setSupportActionBar(homeToolbar);
+        setHasOptionsMenu(true);
         return mHomeView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Bundle args = Utility.getDateRange(MONTHLY);
+        getLoaderManager().initLoader(HOME_BUDGET_EXISTS_ID, args, this);
+        getLoaderManager().initLoader(HOME_BUDGET_LOADER_ID, args, this);
+        args = Utility.getDateRange(mTrend);
+        getLoaderManager().initLoader(TREND_EXPENSE_LOADER_ID, args, this);
+        getLoaderManager().initLoader(TOTAL_EXPENSE_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        //Log.d(LOG_TAG,"Inside onStart");
+        // Set the filter arguments for query here
+       /* Bundle args = Utility.getDateRange(mTrend);
+        // Load data into cursor asynchronously.
+        getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID, args, this);
+        getLoaderManager().restartLoader(TOTAL_EXPENSE_LOADER_ID, null, this);
+        args = Utility.getDateRange(MONTHLY);
+        getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, args, this);*/
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d(LOG_TAG,"Inside onResume");
+        // Set the filter arguments for query here
+        Bundle args = Utility.getDateRange(mTrend);
+        // Load data into cursor asynchronously.
+        getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID, args, this);
+        getLoaderManager().restartLoader(TOTAL_EXPENSE_LOADER_ID, null, this);
+        if(budgetIsSet) {
+            Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
+            getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, args, this);
+        }
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        Log.d(LOG_TAG," Drawing Options Menu");
+        super.onCreateOptionsMenu(menu,inflater);
+        inflater.inflate(R.menu.home_fragment_menu,menu);
+        MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
+        if(!budgetIsSet) {
+            int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
+            Utility.colorMenuItem(alertMenuItem, color);
+        }
+        else if(budgetIsSet && alertMenuItem!=null){
+            Log.d(LOG_TAG,"Remove alert icon from Toolbar");
+            menu.removeItem(R.id.action_alert);
+        }
+    }
+
+   /* @Override
+    public void onPrepareOptionsMenu(Menu menu){
+
+    }*/
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_alert:
+                BudgetSetupDialogFragment budgetSetupDailog = new BudgetSetupDialogFragment();
+                budgetSetupDailog.show(getChildFragmentManager(),"BudgetSetupDialog");
+                budgetSetupDailog.setTargetFragment(this, REQUEST_BUDGET_SETUP_CODE);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -173,8 +226,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             // Data has been saved into database.
             // Reload the total data for given  trend time as well as total.
             Bundle dateRangeArgs = Utility.getDateRange(mTrend);
-            getLoaderManager().restartLoader(HOME_EXPENSE_LOADER_ID,dateRangeArgs,this);
-            getLoaderManager().restartLoader(HOME_TOTAL_LOADER_ID,null,this);
+            getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID,dateRangeArgs,this);
+            getLoaderManager().restartLoader(TOTAL_EXPENSE_LOADER_ID,null,this);
+            Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
+            getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
         }
     }
 
@@ -194,19 +249,19 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         switch (mTrend){
             case YEARLY:
                 args = Utility.getDateRange(YEARLY);
-                getLoaderManager().restartLoader(HOME_EXPENSE_LOADER_ID,args,this);
+                getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID,args,this);
                 break;
             case MONTHLY:
                 args = Utility.getDateRange(MONTHLY);
-                getLoaderManager().restartLoader(HOME_EXPENSE_LOADER_ID,args,this);
+                getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID,args,this);
                 break;
             case WEEKLY:
                 args = Utility.getDateRange(WEEKLY);
-                getLoaderManager().restartLoader(HOME_EXPENSE_LOADER_ID,args,this);
+                getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID,args,this);
                 break;
             case DAILY:
                 args = Utility.getDateRange(DAILY);
-                getLoaderManager().restartLoader(HOME_EXPENSE_LOADER_ID,args,this);
+                getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID,args,this);
                 break;
         }
     }
@@ -215,68 +270,117 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
 
     /* START LoaderManager callback logic */
-    String[] EXPENSE_LIST_PROJECTION = {
-            "SUM("+MahanadiContract.Expense.COL_AMOUNT+")"+" AS TOTAL "
+    String[] TREND_EXPENSE_LIST_PROJECTION = {
+            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS TREND "
+            //,"(SELECT SUM("+MahanadiContract.Expense.COL_AMOUNT+")"+ " FROM "+MahanadiContract.Expense.TABLE_NAME+") AS TOTAL"
+    };
+    String[] TOTAL_EXPENSE_LIST_PROJECTION = {
+            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS TOTAL "
+            //,"(SELECT SUM("+MahanadiContract.Expense.COL_AMOUNT+")"+ " FROM "+MahanadiContract.Expense.TABLE_NAME+") AS TOTAL"
     };
     String[] BUDGET_LIST_PROJECTION = {
-            MahanadiContract.Budget.COL_AMOUNT +" AS TOTAL "
+            MahanadiContract.Budget.COL_AMOUNT +" AS BUDGET "
     };
+    String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        Log.d(LOG_TAG, "Inside onCreateLoader");
+        Loader<Cursor> cursorLoader;
         switch (loaderId) {
-            case HOME_EXPENSE_LOADER_ID:
-                String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
-                String [] filterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
-                return new CursorLoader(getActivity(),
+            case TREND_EXPENSE_LOADER_ID:
+                Log.d(LOG_TAG, "Cursorloader for trend expense");
+                String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN "+ args.getString(START_TIME)+" AND "+args.getString(END_TIME);
+                Log.d(LOG_TAG,"Arguments are :"+args.getString(START_TIME)+" and "+args.getString(END_TIME));
+                //String [] filterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
+                cursorLoader = new CursorLoader(getActivity(),
                         MahanadiContract.Expense.CONTENT_URI,
-                        EXPENSE_LIST_PROJECTION,               // List of columns to fetch
+                        TREND_EXPENSE_LIST_PROJECTION,               // List of columns to fetch
                         filterClause,                       // Filter clauses
-                        filterArgs,                         // Filter args
+                        null,                         // Filter args
                         null);                              // Sort order
-            case HOME_TOTAL_LOADER_ID:
-                return new CursorLoader(getActivity(),
+                break;
+            case TOTAL_EXPENSE_LOADER_ID:
+                //Log.d(LOG_TAG, "Cursorloader for total expense");
+                cursorLoader = new CursorLoader(getActivity(),
                         MahanadiContract.Expense.CONTENT_URI,
-                        EXPENSE_LIST_PROJECTION,               // List of columns to fetch
+                        TOTAL_EXPENSE_LIST_PROJECTION,               // List of columns to fetch
                         null,                       // Filter clauses
                         null,                         // Filter args
                         null);                              // Sort order
+                break;
+            case HOME_BUDGET_EXISTS_ID:
+                //Log.d(LOG_TAG, "Cursorloader to check budget exists or not");
+                String budgetExistsFilterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?  AND "
+                        +MONTHLY_BUDGET_FILTER;
+                String [] budgetExistsFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
+                cursorLoader = new CursorLoader(getActivity(),
+                        MahanadiContract.Budget.CONTENT_URI,
+                        BUDGET_LIST_PROJECTION,               // List of columns to fetch
+                        budgetExistsFilterClause,                       // Filter clauses
+                        budgetExistsFilterArgs,                         // Filter args
+                        null);                                   // Sort order
+                break;
             case HOME_BUDGET_LOADER_ID:
+                //Log.d(LOG_TAG, "Cursorloader for budget");
                 String budgetFilterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?  AND "
-                        +MahanadiContract.Budget.COL_END_DATE +" >= CURRENT_TIMESTAMP";
+                        +MONTHLY_BUDGET_FILTER;
                 String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
-                return new CursorLoader(getActivity(),
+                cursorLoader = new CursorLoader(getActivity(),
                         MahanadiContract.Budget.CONTENT_URI,
                         BUDGET_LIST_PROJECTION,               // List of columns to fetch
                         budgetFilterClause,                       // Filter clauses
                         budgetFilterArgs,                         // Filter args
-                        null);                              // Sort order
+                        null);                                   // Sort order
+                break;
+
 
             default:
                 return null;
         }
+        return cursorLoader;
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor dataCursor) {
-        Log.d(LOG_TAG, "Inside onLoadFinished");
+
         int loaderId = loader.getId();
+        //Log.d(LOG_TAG, "Inside onLoadFinished for "+loaderId);
         Double totalAmount = 0.0;
-        while (dataCursor.moveToNext()) {
-            totalAmount = dataCursor.getDouble(dataCursor.getColumnIndex("TOTAL"));
-        }
+        Double trendAmount = 0.0;
+        int cnt = -1;
+
         switch (loaderId){
-            case HOME_TOTAL_LOADER_ID:
+            case TREND_EXPENSE_LOADER_ID:
+                Log.d(LOG_TAG, "Inside onLoadFinished for "+TREND_EXPENSE_LOADER_ID);
+                while (dataCursor.moveToNext()) {
+                    trendAmount = dataCursor.getDouble(dataCursor.getColumnIndex("TREND"));
+                }
+                TextView expenseAmountTextView = (TextView)mHomeView.findViewById(R.id.expense_amount);
+                expenseAmountTextView.setText(trendAmount.toString());
+                Log.d(LOG_TAG, "Trend expense loaded is "+trendAmount.toString());
+                break;
+            case TOTAL_EXPENSE_LOADER_ID:
+                while (dataCursor.moveToNext()) {
+                    totalAmount = dataCursor.getDouble(dataCursor.getColumnIndex("TOTAL"));
+                }
                 TextView grandTotalAmountTextView = (TextView)mHomeView.findViewById(R.id.grand_total_amount);
                 grandTotalAmountTextView.setText(totalAmount.toString());
+                Log.d(LOG_TAG, "Total expense loaded is "+totalAmount.toString());
                 break;
-            case HOME_EXPENSE_LOADER_ID:
-                TextView expenseAmountTextView = (TextView)mHomeView.findViewById(R.id.expense_amount);
-                expenseAmountTextView.setText(totalAmount.toString());
+            case HOME_BUDGET_EXISTS_ID:
+                cnt = dataCursor.getCount();
+                //Log.d(LOG_TAG, "Budget row count is "+cnt);
+                if(cnt>0){
+                    budgetIsSet = Boolean.TRUE;
+                    getActivity().invalidateOptionsMenu();
+                }
                 break;
             case HOME_BUDGET_LOADER_ID:
                 //here total alias will refer to total budget for a given month.
-                monthlyBudget = totalAmount;
+                while (dataCursor.moveToNext()) {
+                    totalAmount = dataCursor.getDouble(dataCursor.getColumnIndex("BUDGET"));
+                }
+                budgetLeftForMonth.setText(totalAmount.toString());
+                //Log.d(LOG_TAG,"Budget loaded is :"+ totalAmount.toString());
                 break;
         }
     }
@@ -284,4 +388,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoaderReset(Loader<Cursor> loader){}
 
+
+    public void onDialogInteraction(Bundle args){
+        budgetIsSet = Boolean.TRUE;
+        getActivity().invalidateOptionsMenu();
+        Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
+        getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
+    }
 }

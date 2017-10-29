@@ -21,5 +21,7 @@
     <string name="budget_later">Later</string>
     <string name="dialog_budget_setup_msg">Keeping a monthly budget helps in long run. Enter your monthly budget below.</string>
     <string name="dialog_budget_setup_hint">Your budget !</string>
+    <string name="budget_left_monthly">Budget left for month</string>
+    <string name="action_setup">Setup</string>
 
 </resources>

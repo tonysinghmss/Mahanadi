@@ -7,11 +7,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,20 +25,28 @@ import android.widget.Toast;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
+import com.tony.odiya.mahanadi.utils.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.tony.odiya.mahanadi.common.Constants.CLOTHES;
+import static com.tony.odiya.mahanadi.common.Constants.CURRENT_BUDGET_PROJECTION;
 import static com.tony.odiya.mahanadi.common.Constants.CUSTOM;
 import static com.tony.odiya.mahanadi.common.Constants.ELECTRONICS;
+import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.FOOD;
 import static com.tony.odiya.mahanadi.common.Constants.GROCERY;
 import static com.tony.odiya.mahanadi.common.Constants.HOME;
+import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
+import static com.tony.odiya.mahanadi.common.Constants.QUERY_BUDGET_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.SAVE_EXPENSE_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
 
 
 public class AddExpenseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private static final String LOG_TAG = AddExpenseActivity.class.getSimpleName();
     private Toolbar addExpenseToolbar;
     private Spinner mCategorySpinner;
     private String mCategory;
@@ -60,8 +70,18 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.add_expense_menu,menu);
+        MenuItem saveOption = menu.findItem(R.id.action_save);
+        Utility.colorMenuItem(saveOption,"white");
         return true;
     }
+
+    /*@Override
+    public boolean onPrepareOptionsMenu(Menu menu){
+        //This code changes the menu item icon color
+        Utility.colorMenuItem(menu, "white", 0); // menu , color, menu item index
+        return true;
+    }*/
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
 
@@ -89,6 +109,9 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
                     expenseDetails.put(MahanadiContract.Expense.COL_CREATED_ON,System.currentTimeMillis());
                     Uri insertUri = getContentResolver().insert(Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,SAVE_EXPENSE_CODE),expenseDetails);
                     Long rowId = ContentUris.parseId(insertUri);
+
+                    // Update budget table
+                    int rowsUpdatedCount = updateBudgetRow();
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
                     finish();
@@ -131,4 +154,47 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
     }
     @Override
     public void onNothingSelected(AdapterView<?> parent){}
+
+    private int updateBudgetRow(){
+        String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
+        String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
+        Bundle args = Utility.getDateRange(MONTHLY);
+        String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
+        Cursor cursor = getContentResolver().query(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI,QUERY_BUDGET_CODE)
+                            ,CURRENT_BUDGET_PROJECTION
+                            ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)
+                            ,budgetFilterArgs
+                            ,null);
+        int updateCount = -1;
+        Log.d(LOG_TAG, "Row count of cursor for budget updation is "+cursor.getCount());
+        if(cursor.getCount()>0) {
+            //If budget has been set for the current month only then update budget.
+            ContentValues budgetDetails = new ContentValues();
+            Double budgetAmount = 0.0;
+            //Long budgetRowId = -1l;
+            // cursor.moveToFirst();
+            while (cursor.moveToNext()) {
+                //budgetRowId = cursor.getLong(cursor.getColumnIndex(MahanadiContract.Budget._ID));
+                budgetAmount = cursor.getDouble(cursor.getColumnIndex("BUDGET"));
+            }
+            Log.d(LOG_TAG,"Budget amount before updation : "+budgetAmount.toString());
+            if((budgetAmount - mAmount)>=0){
+                //
+                budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(budgetAmount-mAmount));
+                Log.d(LOG_TAG,"Budget amount after updation : "+Double.toString(budgetAmount-mAmount));
+            }
+            else{
+                //Expense exceeds left out budget amount.
+                budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(0.0));
+                Log.d(LOG_TAG,"Budget amount (Expense exceeds budget amount) after updation : "+0);
+            }
+            updateCount = getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI, UPDATE_BUDGET_CODE)
+                            ,budgetDetails
+                            ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)
+                            ,budgetFilterArgs);
+            Log.d(LOG_TAG, "Budget update count : "+ updateCount);
+        }
+        return updateCount;
+    }
+
 }

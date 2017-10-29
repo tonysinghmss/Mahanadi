@@ -118,17 +118,33 @@ public class Utility {
         return args;
     }
 
-    public static void colorMenuItem(Menu menu, String color, int menuItemIndex) {
-        MenuItem menuItem = menu.getItem(menuItemIndex);
+    public static void colorMenuItem(MenuItem menuItem, String color) {
         Drawable drawable = menuItem.getIcon();
         if(drawable != null){
-            // If we don't mutate the drawable, then all drawable's with this id will have a color
-            // filter applied to it.
-            drawable.mutate();
-            drawable.setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
-            drawable.setAlpha(255);// aplha value
+            colorDrawable(drawable,Color.parseColor(color));
+
         }
     }
+
+    public static void colorMenuItem(MenuItem menuItem, int color) {
+        Drawable drawable = menuItem.getIcon();
+        if(drawable != null){
+            colorDrawable(drawable,color);
+        }
+    }
+
+    /*
+     *   @param color This is value of color.
+     */
+    public static Drawable colorDrawable(Drawable drawable, int color){
+        // If we don't mutate the drawable, then all drawable's with this id will have a color
+        // filter applied to it.
+        drawable.mutate();
+        drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+        //drawable.setAlpha(255);// aplha value
+        return drawable;
+    }
+
     public static Long getMonthEndInMilliSeconds(){
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 23);

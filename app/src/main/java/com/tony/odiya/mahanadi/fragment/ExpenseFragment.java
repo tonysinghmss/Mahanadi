@@ -69,7 +69,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     private Spinner expenseTrendSpinner;
     private Toolbar expenseToolbar;
 
-    private static final int EXPENSE_LOADER_ID = 3;
+    private static final int EXPENSE_LOADER_ID = 21;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -136,12 +136,14 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public void onCreateOptionsMenu(Menu menu,MenuInflater inflater){
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.expense_menu,menu);
+        MenuItem addOption = menu.findItem(R.id.action_add);
+        Utility.colorMenuItem(addOption,"white");
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu){
         //This code changes the menu item icon color
-        Utility.colorMenuItem(menu, "white", 0); // menu , color, menu item index
+//        Utility.colorMenuItem(menu, "white", 0); // menu , color, menu item index
     }
 
 
@@ -152,10 +154,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             case R.id.action_add:
                 Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
                 startActivityForResult(intent,REQUEST_EXPENSE_CODE);
-            default:
-                return super.onOptionsItemSelected(item);
+                break;
         }
-
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

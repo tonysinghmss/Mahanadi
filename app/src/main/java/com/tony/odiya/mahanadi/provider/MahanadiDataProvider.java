@@ -256,6 +256,17 @@ public class MahanadiDataProvider extends ContentProvider{
                         sortOrder                                   //order by clause
                 );
                 break;
+            case EXPENSE_ROW:
+                cursor = db.query(
+                        MahanadiContract.Expense.TABLE_NAME,    //Table name
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        null,                                       //group by clause
+                        null,                                       //having clause
+                        sortOrder                                   //order by clause
+                );
+                break;
             case CATEGORY_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
                 cursor = db.query(

@@ -28,6 +28,9 @@ public final class Constants {
     public static final String SAVE_BUDGET_CODE = "2";
     public static final String QUERY_BUDGET_CODE = "3";
     public static final String UPDATE_BUDGET_CODE = "4";
+    public static final String TREND_EXPENSE_CODE = "5";
+    public static final String TOTAL_EXPENSE_CODE = "6";
+
     public static final String SAVE_BUDGET_ROW_KEY = "SavedBudgetRowId";
     public static final String SAVE_BUDGET_AMOUNT_KEY = "MonthlyBudget";
     public static final int REQUEST_EXPENSE_CODE =1;

@@ -5,6 +5,7 @@
     <string name="title_expense">Expense</string>
     <string name="title_analysis">Summary</string>
     <string name="title_activity_add_expense">Add Expense</string>
+    <string name="title_delete_expense">Delete Expense</string>
     <string name="grand_total_message">Grand total</string>
     <string name="grand_total_amount">10000</string>
     <string name="expense_amount">1000</string>
@@ -19,7 +20,10 @@
     <string name="title_budget_amount">Budget Amount</string>
     <string name="budget_save">Save</string>
     <string name="budget_later">Later</string>
+    <string name="ok">Okay</string>
+    <string name="cancel">Cancel</string>
     <string name="dialog_budget_setup_msg">Keeping a monthly budget helps in long run. Enter your monthly budget below.</string>
+    <string name="dialog_expense_delete_message">Deleting your past expense cannot be reverted. Are you sure?</string>
     <string name="dialog_budget_setup_hint">Your budget !</string>
     <string name="budget_left_monthly">Budget left for month</string>
     <string name="action_setup">Setup</string>

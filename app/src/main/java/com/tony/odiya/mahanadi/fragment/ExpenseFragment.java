@@ -8,13 +8,10 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -27,10 +24,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.activity.AddExpenseActivity;
+import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.model.ExpenseData;
 import com.tony.odiya.mahanadi.utils.Utility;
@@ -39,7 +36,6 @@ import com.tony.odiya.mahanadi.utils.Utility;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.design.R.attr.alpha;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
@@ -55,7 +51,7 @@ import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_CODE;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener {
+public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener, ActionMode.Callback {
     private static final String LOG_TAG = ExpenseFragment.class.getSimpleName();
     //private static final String ARG_COLUMN_COUNT = "column_count";
     private static final String ARG_TREND = "trend";
@@ -66,11 +62,14 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     private OnListFragmentInteractionListener mListener;
     private List<ExpenseData> mExpenseList = new ArrayList<>();
     private MyExpenseRecyclerViewAdapter myExpenseRecyclerViewAdapter;
+    private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener  expenseItemLongClickListener;
     private Spinner expenseTrendSpinner;
     private Toolbar expenseToolbar;
 
+
     private static final int EXPENSE_LOADER_ID = 21;
 
+    private ActionMode mActionMode;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -86,6 +85,17 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         args.putString(ARG_TREND, trend);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnListFragmentInteractionListener) {
+            mListener = (OnListFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnListFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -126,7 +136,8 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }*/
-            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener);
+            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener, expenseItemLongClickListener);
+            //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener);
             recyclerView.setAdapter(myExpenseRecyclerViewAdapter);
         }
         return view;
@@ -171,16 +182,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
+
 
     @Override
     public void onDetach() {
@@ -297,4 +299,88 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onNothingSelected(AdapterView<?> parent){}
 
+   /* @Override
+    public void onItemLongClicked(int position){
+        DeleteExpenseDialogFragment deleteExpenseDialog = new DeleteExpenseDialogFragment();
+        deleteExpenseDialog.show(getChildFragmentManager(),"DeleteExpenseDialog");
+        // deleteExpenseDialog.setTargetFragment(this, REQUEST_DELETE_EXPENSE_CODE);
+        //return true;
+    }*/
+/*
+    public void onDialogInteraction(Bundle args){
+        int requestCode = (int) args.get("REQUEST_CODE");
+        int status = (int) args.get("STATUS");
+        if(requestCode == REQUEST_DELETE_EXPENSE_CODE && status == RESPONSE_OK){
+
+        }
+    }*/
+
+
+    public void onItemClicked(int position){
+        if(mActionMode != null){
+            toggleSelection(position);
+        }
+    }
+
+    public boolean onItemLongClicked(int position){
+        // Start ActionMode
+        if (mActionMode != null) {
+            return false;
+        }
+        // Start the CAB using the ActionMode.Callback defined above
+        mActionMode = ((AppCompatActivity)getActivity()).startSupportActionMode(this);
+        myExpenseRecyclerViewAdapter.toggleSelection(position);
+        return true;
+    }
+
+    private void toggleSelection(int position){
+        myExpenseRecyclerViewAdapter.toggleSelection(position);
+        int count = myExpenseRecyclerViewAdapter.getSelectedItemCount();
+        if(count == 0){
+            mActionMode.finish();
+        }
+        else {
+            mActionMode.setTitle(String.valueOf(count));
+            mActionMode.invalidate();
+        }
+
+    }
+
+    /**
+     *  ActionMode callbacks
+     */
+    // Called when the action mode is created; startActionMode() was called
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        // Inflate a menu resource providing context menu items
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.expense_action_mode_menu, menu);
+        return true;
+    }
+
+    // Called each time the action mode is shown. Always called after onCreateActionMode, but
+    // may be called multiple times if the mode is invalidated.
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false; // Return false if nothing is done
+    }
+    // Called when the user selects a contextual menu item
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                //remove Selected Items
+                myExpenseRecyclerViewAdapter.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
+                mode.finish(); // Action picked, so close the CAB
+                return true;
+            default:
+                return false;
+        }
+    }
+    // Called when the user exits the action mode
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        myExpenseRecyclerViewAdapter.clearSelection();
+        mActionMode = null;
+    }
 }

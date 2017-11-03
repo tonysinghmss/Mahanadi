@@ -33,8 +33,11 @@ public final class Constants {
 
     public static final String SAVE_BUDGET_ROW_KEY = "SavedBudgetRowId";
     public static final String SAVE_BUDGET_AMOUNT_KEY = "MonthlyBudget";
-    public static final int REQUEST_EXPENSE_CODE =1;
-    public static final int REQUEST_BUDGET_SETUP_CODE =2;
+    public static final int REQUEST_EXPENSE_CODE = 1;
+    public static final int REQUEST_BUDGET_SETUP_CODE = 2;
+    public static final int REQUEST_DELETE_EXPENSE_CODE = 3;
+    public static final int RESPONSE_OK = -1;
+
 
     public static final String BUDGET_TYPE_MONTHLY ="MONTHLY_BUDGET";
 

@@ -43,9 +43,9 @@ public class BudgetSetupDialogFragment extends DialogFragment {
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         final View view = inflater.inflate(R.layout.dialog_budget_setup, null);
-        TextView budgetMessageView = (TextView)view.findViewById(R.id.dialog_budget_setup_message);
+        /*TextView budgetMessageView = (TextView)view.findViewById(R.id.dialog_budget_setup_message);
 
-        budgetMessageView.setText(getString(R.string.dialog_budget_setup_msg));
+        budgetMessageView.setText(getString(R.string.dialog_budget_setup_msg));*/
         builder.setView(view)
                 .setTitle(R.string.title_budget_amount)
                 //.setMessage(R.string.dialog_budget_setup)

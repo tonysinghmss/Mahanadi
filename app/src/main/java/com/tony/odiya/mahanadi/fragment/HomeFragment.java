@@ -8,12 +8,12 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,9 +34,11 @@ import com.tony.odiya.mahanadi.dialog.BudgetSetupDialogFragment;
 import com.tony.odiya.mahanadi.dialoglistener.DialogListener;
 import com.tony.odiya.mahanadi.utils.Utility;
 
+import static com.tony.odiya.mahanadi.common.Constants.BUDGET_LEFT;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
+import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_EDIT_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_SETUP_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.TOTAL_EXPENSE_CODE;
@@ -70,7 +72,8 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
     private View mHomeView;
-    private Double totalAmount = 0.0;
+    private Double totalExpenseAmount = 0.0;
+    private Double totalBudgetAmount = 0.0;
     private Double trendAmount = 0.0;
     public HomeFragment() {
         // Required empty public constructor
@@ -187,12 +190,14 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.home_fragment_menu,menu);
         MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
+        MenuItem editBudgetItem = menu.findItem(R.id.action_edit_budget);
+        Utility.colorMenuItem(editBudgetItem,"white");
         if(!budgetIsSet) {
-            int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
-            Utility.colorMenuItem(alertMenuItem, color);
+            //int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
+            Utility.colorMenuItem(alertMenuItem, "white");
         }
         else if(budgetIsSet && alertMenuItem!=null){
-            Log.d(LOG_TAG,"Remove alert icon from Toolbar");
+            Log.d(LOG_TAG,"Remove budget alert icon from Toolbar");
             menu.removeItem(R.id.action_alert);
         }
     }
@@ -210,6 +215,16 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 budgetSetupDailog.show(getChildFragmentManager(),"BudgetSetupDialog");
                 budgetSetupDailog.setTargetFragment(this, REQUEST_BUDGET_SETUP_CODE);
                 break;
+            case R.id.action_edit_budget:
+                //TODO: Pass existing budget in bundle.
+                BudgetSetupDialogFragment budgetEditDailog = new BudgetSetupDialogFragment();
+                Bundle args = new Bundle();
+                args.putDouble(BUDGET_LEFT,totalBudgetAmount);
+                budgetEditDailog.setArguments(args);
+                budgetEditDailog.show(getChildFragmentManager(),"BudgetEditDialog");
+                budgetEditDailog.setTargetFragment(this, REQUEST_BUDGET_EDIT_CODE);
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -332,7 +347,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
         int loaderId = loader.getId();
         //Log.d(LOG_TAG, "Inside onLoadFinished for "+loaderId);
-        /*Double totalAmount = 0.0;
+        /*Double totalBudgetAmount = 0.0;
         Double trendAmount = 0.0;*/
         int cnt = -1;
 
@@ -348,11 +363,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 break;
             case TOTAL_EXPENSE_LOADER_ID:
                 while (dataCursor.moveToNext()) {
-                    totalAmount = dataCursor.getDouble(dataCursor.getColumnIndex("TOTAL"));
+                    totalExpenseAmount = dataCursor.getDouble(dataCursor.getColumnIndex("TOTAL"));
                 }
                 TextView grandTotalAmountTextView = (TextView)mHomeView.findViewById(R.id.grand_total_amount);
-                grandTotalAmountTextView.setText(totalAmount.toString());
-                Log.d(LOG_TAG, "Total expense loaded is "+totalAmount.toString());
+                grandTotalAmountTextView.setText(totalExpenseAmount.toString());
+                Log.d(LOG_TAG, "Total expense loaded is "+totalExpenseAmount.toString());
                 break;
             case HOME_BUDGET_LOADER_ID:
                 cnt = dataCursor.getCount();
@@ -363,15 +378,14 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 }
                 //here total alias will refer to total budget for a given month.
                 while (dataCursor.moveToNext()) {
-                    totalAmount = dataCursor.getDouble(dataCursor.getColumnIndex("BUDGET"));
+                    totalBudgetAmount = dataCursor.getDouble(dataCursor.getColumnIndex("BUDGET"));
                 }
-                if(totalAmount>0.0) {
-                    budgetLeftForMonth.setText(totalAmount.toString());
+                budgetLeftForMonth.setText(totalBudgetAmount.toString());
+                // If expense exceeds current month budget show 0.0
+                if(totalBudgetAmount <0.0) {
+                    budgetLeftForMonth.setTextColor(Color.RED);
                 }
-                else {
-                    budgetLeftForMonth.setText("0.0");
-                }
-                //Log.d(LOG_TAG,"Budget loaded is :"+ totalAmount.toString());
+                //Log.d(LOG_TAG,"Budget loaded is :"+ totalBudgetAmount.toString());
                 break;
         }
     }

@@ -1,5 +1,7 @@
 package com.tony.odiya.mahanadi.adapter;
 
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +29,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
     private OnRecyclerItemClickedListener mItemLongClickedListener;
     private final List<String> mExpenseDataIdList = new ArrayList<>(0);
     private Double totalExpenseAmount = 0.0;
+    public static int selectedItem = 0;
 
     public interface OnRecyclerItemClickedListener {
         void onItemClicked(int position);
@@ -55,7 +58,28 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
         holder.mItemView.setText(mValues.get(position).item);
         holder.mAmountView.setText(mValues.get(position).amount);
         holder.mRemarkView.setText(mValues.get(position).remark);
-        holder.mSelectedOverlay.setVisibility(isSelected(position)?View.VISIBLE:View.INVISIBLE);
+        CardView v= (CardView)holder.mView.findViewById(R.id.expense_card_view);
+        if(isSelected(position)){
+            v.setCardBackgroundColor(Color.parseColor("#ff0099cc"));
+            //holder.mView.setBackgroundColor(Color.parseColor("#ff0099cc"));
+            holder.mCategoryView.setTextColor(Color.WHITE);
+            holder.mItemView.setTextColor(Color.WHITE);
+            holder.mAmountView.setTextColor(Color.WHITE);
+            holder.mRemarkView.setTextColor(Color.WHITE);
+        }
+        else {
+            v.setCardBackgroundColor(Color.WHITE);
+            /*View v= holder.mView.findViewById(R.id.expense_card_view);
+            v.setBackgroundColor(Color.TRANSPARENT);*/
+            //holder.mView.setBackgroundColor(Color.TRANSPARENT);
+            holder.mCategoryView.setTextColor(Color.BLACK);
+            holder.mItemView.setTextColor(Color.BLACK);
+            holder.mAmountView.setTextColor(Color.BLACK);
+            holder.mRemarkView.setTextColor(Color.BLACK);
+        }
+        //holder.mSelectedOverlay.setVisibility(isSelected(position)?View.VISIBLE:View.INVISIBLE);
+        /*View card = holder.mView.findViewById(R.id.expense_card_view);
+        card.setSelected(isSelected(position));*/
 
        /* holder.mView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -191,4 +215,6 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
     public Double getTotalExpenseAmount(){
         return totalExpenseAmount;
     }
+
+
 }

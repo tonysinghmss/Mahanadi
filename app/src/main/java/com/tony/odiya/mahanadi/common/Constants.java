@@ -31,13 +31,16 @@ public final class Constants {
     public static final String TREND_EXPENSE_CODE = "5";
     public static final String TOTAL_EXPENSE_CODE = "6";
 
-    public static final String SAVE_BUDGET_ROW_KEY = "SavedBudgetRowId";
-    public static final String SAVE_BUDGET_AMOUNT_KEY = "MonthlyBudget";
+    public static final String SAVE_BUDGET_ROW_KEY = "SAVE_BUDGET_ROW_ID";
+    public static final String SAVE_BUDGET_AMOUNT_KEY = "SAVE_BUDGET_AMOUNT_KEY";
+    public static final String UPDATE_BUDGET_AMOUNT_COUNT = "UPDATE_BUDGET_AMOUNT_COUNT";
     public static final int REQUEST_EXPENSE_CODE = 1;
     public static final int REQUEST_BUDGET_SETUP_CODE = 2;
     public static final int REQUEST_DELETE_EXPENSE_CODE = 3;
+    public static final int REQUEST_BUDGET_EDIT_CODE = 4;
     public static final int RESPONSE_OK = -1;
 
+    public static final String BUDGET_LEFT = "BUDGET_LEFT";
 
     public static final String BUDGET_TYPE_MONTHLY ="MONTHLY_BUDGET";
 

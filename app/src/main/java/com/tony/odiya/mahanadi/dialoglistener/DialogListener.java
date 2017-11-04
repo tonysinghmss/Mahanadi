@@ -8,4 +8,5 @@ import android.os.Bundle;
 
 public interface DialogListener {
     void onDialogInteraction(Bundle args);
+
 }

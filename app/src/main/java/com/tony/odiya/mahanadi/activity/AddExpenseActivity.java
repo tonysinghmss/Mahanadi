@@ -1,15 +1,12 @@
 package com.tony.odiya.mahanadi.activity;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -70,8 +67,8 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.add_expense_menu,menu);
-        MenuItem saveOption = menu.findItem(R.id.action_save);
-        Utility.colorMenuItem(saveOption,"white");
+        /*MenuItem saveOption = menu.findItem(R.id.action_save);
+        Utility.colorMenuItem(saveOption,"white");*/
         return true;
     }
 
@@ -111,7 +108,7 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
                     Long rowId = ContentUris.parseId(insertUri);
 
                     // Update budget table
-                    int rowsUpdatedCount = updateBudgetRow();
+                    int rowsUpdatedCount = updateCurrentMonthBudgetRow();
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
                     finish();
@@ -155,7 +152,7 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onNothingSelected(AdapterView<?> parent){}
 
-    private int updateBudgetRow(){
+    private int updateCurrentMonthBudgetRow(){
         String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
         String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
         Bundle args = Utility.getDateRange(MONTHLY);
@@ -177,17 +174,18 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
                 //budgetRowId = cursor.getLong(cursor.getColumnIndex(MahanadiContract.Budget._ID));
                 budgetAmount = cursor.getDouble(cursor.getColumnIndex("BUDGET"));
             }
-            Log.d(LOG_TAG,"Budget amount before updation : "+budgetAmount.toString());
-            if((budgetAmount - mAmount)>=0){
+            budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(budgetAmount-mAmount));
+            Log.d(LOG_TAG,"Budget amount after updation : "+Double.toString(budgetAmount-mAmount));
+            /*if((budgetAmount - mAmount)>=0){
                 //
                 budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(budgetAmount-mAmount));
                 Log.d(LOG_TAG,"Budget amount after updation : "+Double.toString(budgetAmount-mAmount));
             }
             else{
-                //Expense exceeds left out budget amount.
+                //When expense exceeds left out budget amount, set budget to zero.
                 budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(0.0));
                 Log.d(LOG_TAG,"Budget amount (Expense exceeds budget amount) after updation : "+0);
-            }
+            }*/
             updateCount = getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI, UPDATE_BUDGET_CODE)
                             ,budgetDetails
                             ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)

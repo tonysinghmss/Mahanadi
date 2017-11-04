@@ -364,7 +364,9 @@ public class MahanadiDataProvider extends ContentProvider{
         switch (sUriMatcher.match(uri)){
             case EXPENSE_ROW:
                 deleteCount = localSQLiteDatabase.delete(MahanadiContract.Expense.TABLE_NAME, selection, selectionArgs);
-                //TODO: Add back the amount deleted to bugdet before deleting.
+                break;
+            case EXPENSE_LIST:
+                deleteCount = localSQLiteDatabase.delete(MahanadiContract.Expense.TABLE_NAME, selection, selectionArgs);
                 break;
             /*case CATEGORY_ROW:
                 break;*/

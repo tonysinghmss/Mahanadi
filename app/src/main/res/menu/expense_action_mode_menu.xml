@@ -6,6 +6,6 @@
         android:checkable="false"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_delete"
-        android:title="@string/action_save"
+        android:title="@string/action_delete"
         app:showAsAction="ifRoom" />
 </menu>

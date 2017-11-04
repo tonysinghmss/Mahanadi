@@ -291,7 +291,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 uri = Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,TREND_EXPENSE_CODE);
                 projection = TREND_EXPENSE_LIST_PROJECTION;
                 selection = filterClause;
-                Log.d(LOG_TAG,"After calling cursorloader for trend expense");
                 break;
             case TOTAL_EXPENSE_LOADER_ID:
                 Log.d(LOG_TAG, "Cursorloader for total expense");
@@ -366,7 +365,12 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 while (dataCursor.moveToNext()) {
                     totalAmount = dataCursor.getDouble(dataCursor.getColumnIndex("BUDGET"));
                 }
-                budgetLeftForMonth.setText(totalAmount.toString());
+                if(totalAmount>0.0) {
+                    budgetLeftForMonth.setText(totalAmount.toString());
+                }
+                else {
+                    budgetLeftForMonth.setText("0.0");
+                }
                 //Log.d(LOG_TAG,"Budget loaded is :"+ totalAmount.toString());
                 break;
         }

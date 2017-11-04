@@ -2,12 +2,15 @@ package com.tony.odiya.mahanadi.fragment;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 
+import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -36,10 +39,13 @@ import com.tony.odiya.mahanadi.utils.Utility;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tony.odiya.mahanadi.common.Constants.CURRENT_BUDGET_PROJECTION;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
+import static com.tony.odiya.mahanadi.common.Constants.QUERY_BUDGET_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
 import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
 import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_CODE;
@@ -62,7 +68,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     private OnListFragmentInteractionListener mListener;
     private List<ExpenseData> mExpenseList = new ArrayList<>();
     private MyExpenseRecyclerViewAdapter myExpenseRecyclerViewAdapter;
-    private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener  expenseItemLongClickListener;
+    // private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener  expenseItemLongClickListener;
     private Spinner expenseTrendSpinner;
     private Toolbar expenseToolbar;
 
@@ -136,7 +142,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }*/
-            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener, expenseItemLongClickListener);
+            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener, this);
             //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener);
             recyclerView.setAdapter(myExpenseRecyclerViewAdapter);
         }
@@ -315,22 +321,49 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }*/
 
-
+    /*
+        Overridden methods of RecyclerViewAdapter
+     */
     public void onItemClicked(int position){
+        Log.d(LOG_TAG, "You have clicked on "+position);
         if(mActionMode != null){
             toggleSelection(position);
         }
     }
 
     public boolean onItemLongClicked(int position){
+        Log.d(LOG_TAG, "You have long clicked on "+position);
         // Start ActionMode
         if (mActionMode != null) {
             return false;
         }
         // Start the CAB using the ActionMode.Callback defined above
         mActionMode = ((AppCompatActivity)getActivity()).startSupportActionMode(this);
+        mActionMode.setTitle(String.valueOf(1));
         myExpenseRecyclerViewAdapter.toggleSelection(position);
         return true;
+    }
+
+    public int updateCurrentMonthBudgetRow(List<String> expenseIdList){
+        // Step 1: Delete the rows from expense table.
+        int deleteCount = deleteExpenses(expenseIdList);
+        // Step 2: Update the budget row of current month.
+        String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
+        String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
+        int updateCount = 0;
+        Double existingBudgetForMonth = findCurrentBudgetAmount();
+        if(deleteCount>0){
+            Bundle args = Utility.getDateRange(MONTHLY);
+            String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
+            ContentValues budgetDetails = new ContentValues();
+            Double totalBudget = myExpenseRecyclerViewAdapter.getTotalExpenseAmount()+ existingBudgetForMonth;
+            budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(totalBudget));
+            updateCount = getActivity().getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI, UPDATE_BUDGET_CODE)
+                    ,budgetDetails
+                    ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)
+                    ,budgetFilterArgs);
+        }
+        return  updateCount;
     }
 
     private void toggleSelection(int position){
@@ -355,6 +388,8 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.expense_action_mode_menu, menu);
+        /*MenuItem deleteOption =  menu.findItem(R.id.action_delete);
+        Utility.colorMenuItem(deleteOption,"white");*/
         return true;
     }
 
@@ -369,10 +404,14 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                //remove Selected Items
+                //remove Selected Items from recyclerView adapter
                 myExpenseRecyclerViewAdapter.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
-                mode.finish(); // Action picked, so close the CAB
-                return true;
+                int updateCount = updateCurrentMonthBudgetRow(myExpenseRecyclerViewAdapter.getExpenseDataIdList());
+                if(updateCount>0) {
+                    mode.finish(); // Action picked, so close the CAB
+                    return true;
+                }
+                return false;
             default:
                 return false;
         }
@@ -382,5 +421,37 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public void onDestroyActionMode(ActionMode mode) {
         myExpenseRecyclerViewAdapter.clearSelection();
         mActionMode = null;
+    }
+
+    private int deleteExpenses(List<String> expenseIds){
+        StringBuilder where = new StringBuilder(MahanadiContract.Expense._ID + " IN (");
+        String delim = "";
+        for(String id : expenseIds){
+            where.append(delim).append(id);
+            delim = ",";
+        }
+        where.append(")");
+        int deleteCount = getActivity().getContentResolver().delete(MahanadiContract.Expense.CONTENT_URI, where.toString(), null);
+        return deleteCount;
+    }
+
+    private Double findCurrentBudgetAmount(){
+        String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
+        String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
+        Bundle args = Utility.getDateRange(MONTHLY);
+        String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
+        Cursor cursor = getActivity().getContentResolver().query(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI,QUERY_BUDGET_CODE)
+                ,CURRENT_BUDGET_PROJECTION
+                ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)
+                ,budgetFilterArgs
+                ,null);
+        Double budgetAmount = 0.0;
+        if(cursor.getCount()>0) {
+            while (cursor.moveToNext()) {
+                //budgetRowId = cursor.getLong(cursor.getColumnIndex(MahanadiContract.Budget._ID));
+                budgetAmount = cursor.getDouble(cursor.getColumnIndex("BUDGET"));
+            }
+        }
+        return budgetAmount;
     }
 }

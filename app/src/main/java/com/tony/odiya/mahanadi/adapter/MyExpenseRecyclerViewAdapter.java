@@ -11,6 +11,7 @@ import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.fragment.ExpenseFragment.OnListFragmentInteractionListener;
 import com.tony.odiya.mahanadi.model.ExpenseData;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -23,12 +24,14 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
     private static final String LOG_TAG = MyExpenseRecyclerViewAdapter.class.getSimpleName();
     private final List<ExpenseData> mValues;
     private final OnListFragmentInteractionListener mContextListener;
-
     private OnRecyclerItemClickedListener mItemLongClickedListener;
+    private final List<String> mExpenseDataIdList = new ArrayList<>(0);
+    private Double totalExpenseAmount = 0.0;
 
     public interface OnRecyclerItemClickedListener {
         void onItemClicked(int position);
         boolean onItemLongClicked(int position);
+        //int updateCurrentMonthBudgetRow(List<String> expenseIdList);
     }
 
     public MyExpenseRecyclerViewAdapter(List<ExpenseData> items, OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemLongClickedListener) {
@@ -127,6 +130,10 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
     }
 
     public void removeItem(int position) {
+        // Add the id of removed item into list. This id list will be used to update database in fragment.
+        ExpenseData expense = mValues.get(position);
+        mExpenseDataIdList.add(expense.getExpenseId());
+        totalExpenseAmount += Double.valueOf(expense.getAmount());
         mValues.remove(position);
         notifyItemRemoved(position);
     }
@@ -166,8 +173,22 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
 
     private void removeRange(int positionStart, int itemCount) {
         for (int i = 0; i < itemCount; ++i) {
+            ExpenseData expense = mValues.get(positionStart);
+            mExpenseDataIdList.add(expense.getExpenseId());
+            totalExpenseAmount += Double.valueOf(expense.getAmount());
             mValues.remove(positionStart);
         }
         notifyItemRangeRemoved(positionStart, itemCount);
+    }
+
+    /*public int updateCurrentMonthBudgetRow(){
+        return mItemLongClickedListener.updateCurrentMonthBudgetRow(mExpenseDataIdList);
+    }*/
+    public List<String> getExpenseDataIdList(){
+        return mExpenseDataIdList;
+    }
+
+    public Double getTotalExpenseAmount(){
+        return totalExpenseAmount;
     }
 }

@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:foreground="?android:attr/selectableItemBackground"
+        android:foregroundTint="@color/colorPrimary"
         android:layout_gravity="center"
         android:layout_margin="@dimen/card_margin"
         android:elevation="3dp"

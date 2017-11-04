@@ -9,6 +9,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:actionMenuTextColor">@android:color/white</item>
+        <!-- Tag to make Action mode bar show on top of toolbar instead of pushing it down. -->
+        <item name="windowActionModeOverlay">true</item>
+        <!-- Action mode background color -->
+        <item name="actionModeBackground">@color/colorPrimary</item>
+
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@android:color/white</item>
@@ -18,5 +23,4 @@
         <item name="android:colorBackground">@color/colorAccent</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
-
 </resources>

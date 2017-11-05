@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
     <item
+        android:id="@+id/action_alert"
+        android:checkable="false"
+        android:enabled="true"
+        android:icon="@drawable/ic_error_black_24dp"
+        android:title="@string/action_setup"
+        app:showAsAction="always|withText"/>
+    <item
         android:id="@+id/action_edit_budget"
         android:checkable="false"
         android:enabled="true"
@@ -11,11 +18,14 @@
         android:title="@string/action_edit"
         app:showAsAction="ifRoom|withText"
         />
+
     <item
-        android:id="@+id/action_alert"
+        android:id="@+id/action_reset"
         android:checkable="false"
         android:enabled="true"
-        android:icon="@drawable/ic_error_black_24dp"
-        android:title="@string/action_setup"
-        app:showAsAction="ifRoom|withText"/>
+        android:icon="@drawable/ic_restore_black_24dp"
+        android:title="@string/action_reset"
+        app:showAsAction="ifRoom|withText"
+        />
+
 </menu>

@@ -349,7 +349,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         int deleteCount = deleteExpenses(expenseIdList);
         // Step 2: Update the budget row of current month.
         String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
-        String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
+        String filterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?";
         int updateCount = 0;
         Double existingBudgetForMonth = findCurrentBudgetAmount();
         if(deleteCount>0){
@@ -437,7 +437,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
 
     private Double findCurrentBudgetAmount(){
         String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
-        String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
+        String filterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?";
         Bundle args = Utility.getDateRange(MONTHLY);
         String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
         Cursor cursor = getActivity().getContentResolver().query(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI,QUERY_BUDGET_CODE)

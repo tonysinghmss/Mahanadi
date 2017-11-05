@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.tony.odiya.mahanadi.R;
@@ -13,16 +14,17 @@ import com.tony.odiya.mahanadi.fragment.ExpenseFragment;
 import com.tony.odiya.mahanadi.fragment.HomeFragment;
 import com.tony.odiya.mahanadi.model.ExpenseData;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 
 public class ManagerActivity extends AppCompatActivity implements HomeFragment.OnHomeTrendInteractionListener, ExpenseFragment.OnListFragmentInteractionListener{
 
+    private static final String LOG_TAG = ManagerActivity.class.getSimpleName();
     private Fragment fragment;
     private FragmentManager fragmentManager;
     private String selectedTrend;
+    private static final String BACK_STACK_ROOT_TAG = "root_home_fragment";
+    private static final String HOME_FRAGMENT = "home_fragment";
+    private BottomNavigationView mNavigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -47,10 +49,25 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
             }
             if(fragment !=null){
                 fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.content, fragment)
-                        .addToBackStack(null)
-                        .commit();
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        // Pop every fragment from backstack including home fragment.
+                        fragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                        // Now insert home fragment on top of stack.
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.content, fragment, HOME_FRAGMENT)
+                                .addToBackStack(BACK_STACK_ROOT_TAG)
+                                .commit();
+                        break;
+                    default:
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.content, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                        break;
+
+                }
+
             }
             return selected;
         }
@@ -62,9 +79,9 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager);
         selectedTrend = MONTHLY;
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.setSelectedItemId(R.id.navigation_home);
+        mNavigation = (BottomNavigationView) findViewById(R.id.navigation);
+        mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mNavigation.setSelectedItemId(R.id.navigation_home);
 
     }
 
@@ -88,4 +105,21 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
     }
 
     public void onListFragmentInteraction(ExpenseData item){}
+
+
+    public void onBackPressed() {
+        int count = getFragmentManager().getBackStackEntryCount();
+        Log.d(LOG_TAG, "Count of backstack "+count);
+        if(count >1){
+            // We have lots of fragment on backstack to be popped.
+            // Pop till the root fragment.
+            getFragmentManager().popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            //fragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            mNavigation.setSelectedItemId(R.id.navigation_home);
+        }
+        else{
+            // Close the application when we are on home fragment.
+            supportFinishAfterTransition();
+        }
+    }
 }

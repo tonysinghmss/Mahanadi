@@ -36,9 +36,12 @@ import com.tony.odiya.mahanadi.utils.Utility;
 
 import static com.tony.odiya.mahanadi.common.Constants.BUDGET_LEFT;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
+import static com.tony.odiya.mahanadi.common.Constants.DELETE_BUDGET_COUNT;
+import static com.tony.odiya.mahanadi.common.Constants.DELETE_EXPENSE_COUNT;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_EDIT_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_RESET_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_SETUP_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.TOTAL_EXPENSE_CODE;
@@ -191,10 +194,12 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         inflater.inflate(R.menu.home_fragment_menu,menu);
         MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
         MenuItem editBudgetItem = menu.findItem(R.id.action_edit_budget);
+        MenuItem resetBudgetItem = menu.findItem(R.id.action_reset);
         Utility.colorMenuItem(editBudgetItem,"white");
+        Utility.colorMenuItem(resetBudgetItem, "#FF4081");//R.color.colorAccent
         if(!budgetIsSet) {
             //int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
-            Utility.colorMenuItem(alertMenuItem, "white");
+            Utility.colorMenuItem(alertMenuItem, Color.RED);
         }
         else if(budgetIsSet && alertMenuItem!=null){
             Log.d(LOG_TAG,"Remove budget alert icon from Toolbar");
@@ -216,7 +221,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 budgetSetupDailog.setTargetFragment(this, REQUEST_BUDGET_SETUP_CODE);
                 break;
             case R.id.action_edit_budget:
-                //TODO: Pass existing budget in bundle.
                 BudgetSetupDialogFragment budgetEditDailog = new BudgetSetupDialogFragment();
                 Bundle args = new Bundle();
                 args.putDouble(BUDGET_LEFT,totalBudgetAmount);
@@ -224,7 +228,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 budgetEditDailog.show(getChildFragmentManager(),"BudgetEditDialog");
                 budgetEditDailog.setTargetFragment(this, REQUEST_BUDGET_EDIT_CODE);
                 break;
-
+            case R.id.action_reset:
+                BudgetSetupDialogFragment resetBudgetDailog = new BudgetSetupDialogFragment();
+                resetBudgetDailog.show(getChildFragmentManager(),"BudgetResetDialog");
+                resetBudgetDailog.setTargetFragment(this, REQUEST_BUDGET_RESET_CODE);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -399,5 +407,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         getActivity().invalidateOptionsMenu();
         Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
         getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
+        if(args.containsKey(DELETE_EXPENSE_COUNT) && args.containsKey(DELETE_BUDGET_COUNT)){
+            Bundle trendArgs = Utility.getDateRange(mTrend);
+            getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID, trendArgs, this);
+            getLoaderManager().restartLoader(TOTAL_EXPENSE_LOADER_ID, trendArgs, this);
+        }
     }
 }

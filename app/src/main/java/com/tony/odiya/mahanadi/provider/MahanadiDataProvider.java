@@ -368,6 +368,12 @@ public class MahanadiDataProvider extends ContentProvider{
             case EXPENSE_LIST:
                 deleteCount = localSQLiteDatabase.delete(MahanadiContract.Expense.TABLE_NAME, selection, selectionArgs);
                 break;
+            case BUDGET_ROW:
+                deleteCount = localSQLiteDatabase.delete(MahanadiContract.Budget.TABLE_NAME, selection, selectionArgs);
+                break;
+            case BUDGET_LIST:
+                deleteCount = localSQLiteDatabase.delete(MahanadiContract.Budget.TABLE_NAME, selection, selectionArgs);
+                break;
             /*case CATEGORY_ROW:
                 break;*/
             default:

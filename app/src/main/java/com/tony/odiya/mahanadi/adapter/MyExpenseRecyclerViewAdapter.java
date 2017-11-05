@@ -103,7 +103,11 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        if(mValues!=null) {
+            return mValues.size();
+        }
+        else
+            return 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{

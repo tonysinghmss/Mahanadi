@@ -218,6 +218,10 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        // Clear action mode when fragment gets detached
+        if(mActionMode != null){
+            mActionMode.finish();
+        }
     }
 
 

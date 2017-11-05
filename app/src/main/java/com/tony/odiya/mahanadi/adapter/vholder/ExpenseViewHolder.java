@@ -20,7 +20,6 @@ public class ExpenseViewHolder extends RecyclerView.ViewHolder implements View.O
     public final TextView mItemView;
     public final TextView mAmountView;
     public final TextView mRemarkView;
-    public final View mSelectedOverlay;
     public ExpenseData mItem;
     private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener;
 
@@ -31,7 +30,6 @@ public class ExpenseViewHolder extends RecyclerView.ViewHolder implements View.O
         mItemView = (TextView) view.findViewById(R.id.item);
         mAmountView = (TextView) view.findViewById(R.id.amount);
         mRemarkView = (TextView) view.findViewById(R.id.remark);
-        mSelectedOverlay = (View) view.findViewById(R.id.selected_overlay);
         this.recyclerItemClickedListener = recyclerItemClickedListener;
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);

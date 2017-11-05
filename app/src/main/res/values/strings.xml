@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Mahanadi</string>
+
     <string name="title_home">Home</string>
     <string name="title_hello">Hello Friend!!</string>
     <string name="title_expense">Expense</string>
@@ -9,6 +10,7 @@
     <string name="grand_total_message">Grand total</string>
     <string name="grand_total_amount">10000</string>
     <string name="expense_amount">1000</string>
+
     <string name="authority">com.tony.odiya.mahanadi.provider</string>
 
     <string name="item_hint">Item bought</string>
@@ -23,6 +25,9 @@
     <string name="action_setup">Setup</string>
     <string name="action_edit">Edit</string>
     <string name="action_reset">Reset</string>
+    <string name="action_search">Search</string>
+
+    <string name="search_hint">Item or Category</string>
 
     <string name="title_budget_amount">Budget Amount</string>
     <string name="title_budget_reset">Budget Reset</string>

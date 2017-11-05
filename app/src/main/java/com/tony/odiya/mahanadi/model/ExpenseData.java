@@ -55,4 +55,30 @@ public class ExpenseData {
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ExpenseData that = (ExpenseData) o;
+        if (!expenseId.equals(that.expenseId)) return false;
+        if (!category.equals(that.category)) return false;
+        if (!item.equals(that.item)) return false;
+        if (!amount.equals(that.amount)) return false;
+        if (remark != null ? !remark.equals(that.remark) : that.remark != null) return false;
+        return createdOn.equals(that.createdOn);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = expenseId.hashCode();
+        result =  31 * result + category.hashCode();
+        result = 31 * result + item.hashCode();
+        result = 31 * result + amount.hashCode();
+        result = 31 * result + (remark != null ? remark.hashCode() : 0);
+        result = 31 * result + createdOn.hashCode();
+        return result;
+    }
 }

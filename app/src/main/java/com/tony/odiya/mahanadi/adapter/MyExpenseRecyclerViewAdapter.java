@@ -1,6 +1,7 @@
 package com.tony.odiya.mahanadi.adapter;
 
 import android.graphics.Color;
+import android.support.v7.util.SortedList;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,7 +30,8 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
     private OnRecyclerItemClickedListener mItemLongClickedListener;
     private final List<String> mExpenseDataIdList = new ArrayList<>(0);
     private Double totalExpenseAmount = 0.0;
-    public static int selectedItem = 0;
+
+    private Comparator<ExpenseData> mComparator;
 
     public interface OnRecyclerItemClickedListener {
         void onItemClicked(int position);
@@ -41,7 +43,92 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
         mValues = items;
         mContextListener = listener;
         mItemLongClickedListener = itemLongClickedListener;
+        //mComparator = ALPHABETICAL_COMPARATOR;
     }
+/*
+
+    public void setComparator(Comparator<ExpenseData>  comparator){
+        mComparator = comparator;
+    }
+
+    public static final Comparator<ExpenseData> ALPHABETICAL_COMPARATOR = new Comparator<ExpenseData>() {
+        @Override
+        public int compare(ExpenseData a, ExpenseData b) {
+            return a.getItem().compareTo(b.getItem());
+        }
+    };
+    *//*
+
+    private final SortedList<ExpenseData> mSortedList = new SortedList<>(ExpenseData.class, new SortedList.Callback<ExpenseData>() {
+        @Override
+        public int compare(ExpenseData a, ExpenseData b) {
+            return mComparator.compare(a, b);
+        }
+
+        @Override
+        public void onInserted(int position, int count) {
+            notifyItemRangeInserted(position, count);
+        }
+
+        @Override
+        public void onRemoved(int position, int count) {
+            notifyItemRangeRemoved(position, count);
+        }
+
+        @Override
+        public void onMoved(int fromPosition, int toPosition) {
+            notifyItemMoved(fromPosition, toPosition);
+        }
+
+        @Override
+        public void onChanged(int position, int count) {
+            notifyItemRangeChanged(position, count);
+        }
+
+        @Override
+        public boolean areContentsTheSame(ExpenseData oldItem, ExpenseData newItem) {
+            return oldItem.equals(newItem);
+        }
+
+        @Override
+        public boolean areItemsTheSame(ExpenseData item1, ExpenseData item2) {
+            return item1.getExpenseId().equals(item2.getExpenseId());
+        }
+    });
+
+    public void add(ExpenseData model) {
+        mSortedList.add(model);
+    }
+
+    public void remove(ExpenseData model) {
+        mSortedList.remove(model);
+    }
+
+    public void add(List<ExpenseData> models) {
+        mSortedList.addAll(models);
+    }
+
+    public void remove(List<ExpenseData> models) {
+        mSortedList.beginBatchedUpdates();
+        for (ExpenseData model : models) {
+            mSortedList.remove(model);
+        }
+        mSortedList.endBatchedUpdates();
+    }
+
+    public void replaceAll(List<ExpenseData> models) {
+        mSortedList.beginBatchedUpdates();
+        for (int i = mSortedList.size() - 1; i >= 0; i--) {
+            final ExpenseData model = mSortedList.get(i);
+            if (!models.contains(model)) {
+                mSortedList.remove(model);
+            }
+        }
+        mSortedList.addAll(models);
+        mSortedList.endBatchedUpdates();
+    }
+
+*/
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -121,8 +208,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<MyExpenseRec
         private OnRecyclerItemClickedListener recyclerItemClickedListener;
         public ViewHolder(View view, OnRecyclerItemClickedListener recyclerItemClickedListener) {
             super(view);
-            mView = view;
-            mCategoryView = (TextView) view.findViewById(R.id.category);
+            mView = view;            mCategoryView = (TextView) view.findViewById(R.id.category);
             mItemView = (TextView) view.findViewById(R.id.item);
             mAmountView = (TextView) view.findViewById(R.id.amount);
             mRemarkView = (TextView) view.findViewById(R.id.remark);

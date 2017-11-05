@@ -2,6 +2,9 @@ package com.tony.odiya.mahanadi.fragment;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -17,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,7 +61,9 @@ import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_CODE;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener, ActionMode.Callback {
+public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
+        , AdapterView.OnItemSelectedListener, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener
+        , ActionMode.Callback, SearchView.OnQueryTextListener {
     private static final String LOG_TAG = ExpenseFragment.class.getSimpleName();
     //private static final String ARG_COLUMN_COUNT = "column_count";
     private static final String ARG_TREND = "trend";
@@ -69,6 +75,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     private List<ExpenseData> mExpenseList = new ArrayList<>();
     private MyExpenseRecyclerViewAdapter myExpenseRecyclerViewAdapter;
     // private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener  expenseItemLongClickListener;
+    private RecyclerView mRecyclerView;
     private Spinner expenseTrendSpinner;
     private Toolbar expenseToolbar;
 
@@ -135,8 +142,8 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         // Set the adapter
         if (recycler instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) recycler;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            mRecyclerView = (RecyclerView) recycler;
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             /*if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -144,7 +151,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             }*/
             myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener, this);
             //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener);
-            recyclerView.setAdapter(myExpenseRecyclerViewAdapter);
+            mRecyclerView.setAdapter(myExpenseRecyclerViewAdapter);
         }
         return view;
     }
@@ -153,7 +160,19 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public void onCreateOptionsMenu(Menu menu,MenuInflater inflater){
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.expense_menu,menu);
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager)getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_search).getActionView();
+        SearchableInfo searchableInfo = searchManager.getSearchableInfo(getActivity().getComponentName());
+        searchView.setSearchableInfo(searchableInfo);
+        //Set Query text listener
+        searchView.setOnQueryTextListener(this);
+        //Change the color of menu items
         MenuItem addOption = menu.findItem(R.id.action_add);
+        MenuItem searchOption = menu.findItem(R.id.action_search);
+        Utility.colorMenuItem(searchOption,"white");
         Utility.colorMenuItem(addOption,"white");
     }
 
@@ -172,6 +191,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
                 Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
                 startActivityForResult(intent,REQUEST_EXPENSE_CODE);
                 break;
+            case R.id.action_search:
+                Log.d(LOG_TAG, " Inside search option.");
+                break;
+
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -453,5 +477,32 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             }
         }
         return budgetAmount;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        // Here is where we are going to implement the filter logic
+        final List<ExpenseData> filteredModelList = filter(mExpenseList, query);
+        //TODO: Implement search on the displaying item.
+        /*myExpenseRecyclerViewAdapter.replaceAll(filteredModelList);
+        mRecyclerView.scrollToPosition(0);*/
+        return false;
+    }
+
+    private static List<ExpenseData> filter(List<ExpenseData> models, String query) {
+        final String lowerCaseQuery = query.toLowerCase();
+        final List<ExpenseData> filteredModelList = new ArrayList<>();
+        for (ExpenseData model : models) {
+            final String text = model.getItem().toLowerCase();
+            if (text.contains(lowerCaseQuery)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
     }
 }

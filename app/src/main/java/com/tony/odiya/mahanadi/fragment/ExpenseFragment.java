@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -34,6 +33,7 @@ import android.widget.Spinner;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.activity.AddExpenseActivity;
+import com.tony.odiya.mahanadi.adapter.ExpenseDataset;
 import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.model.ExpenseData;
@@ -41,7 +41,10 @@ import com.tony.odiya.mahanadi.utils.Utility;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.tony.odiya.mahanadi.common.Constants.CURRENT_BUDGET_PROJECTION;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
@@ -72,8 +75,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     private String mTrend;
 
     private OnListFragmentInteractionListener mListener;
-    private List<ExpenseData> mExpenseList = new ArrayList<>();
+    private Set<ExpenseData> mExpenseSet = new HashSet<>(0);
     private MyExpenseRecyclerViewAdapter myExpenseRecyclerViewAdapter;
+    private ExpenseDataset mExpenseDataset;
     // private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener  expenseItemLongClickListener;
     private RecyclerView mRecyclerView;
     private Spinner expenseTrendSpinner;
@@ -144,13 +148,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             Context context = view.getContext();
             mRecyclerView = (RecyclerView) recycler;
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-            /*if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }*/
-            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener, this);
-            //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseList, mListener);
+
+            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mListener, this);
+            mExpenseDataset = new ExpenseDataset(mRecyclerView, myExpenseRecyclerViewAdapter);
+            myExpenseRecyclerViewAdapter.dataset(mExpenseDataset);
+            //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseSet, mListener);
             mRecyclerView.setAdapter(myExpenseRecyclerViewAdapter);
         }
         return view;
@@ -272,12 +274,12 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor dataCursor) {
         Log.d(LOG_TAG, "Inside onLoadFinished");
-        if (mExpenseList == null) {
-            mExpenseList = new ArrayList<>(0);
+        /*if (mExpenseSet == null) {
+            mExpenseSet = new ArrayList<>(0);
         }
         else{
-            mExpenseList.clear();
-        }
+            mExpenseSet.clear();
+        }*/
         while (dataCursor.moveToNext()) {
             ExpenseData s = new ExpenseData();
             s.setExpenseId(dataCursor.getString(dataCursor.getColumnIndex(MahanadiContract.Expense._ID)));
@@ -289,8 +291,10 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             Long milliSeconds = dataCursor.getLong(dataCursor.getColumnIndex(MahanadiContract.Expense.COL_CREATED_ON));
             String sDate = Utility.convertMillisecondsToDateString(getActivity().getApplicationContext(), milliSeconds);
             s.setCreatedOn(sDate);
-            mExpenseList.add(s);
+            mExpenseSet.add(s);
         }
+        mExpenseDataset.add(mExpenseSet);
+
         if(myExpenseRecyclerViewAdapter!=null){
             myExpenseRecyclerViewAdapter.notifyDataSetChanged();
         }
@@ -298,7 +302,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mExpenseList = null;
+        mExpenseSet = null;
     }
     /* END LoaderManager callbacklogic */
 
@@ -376,7 +380,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         // Step 1: Delete the rows from expense table.
         int deleteCount = deleteExpenses(expenseIdList);
         // Step 2: Update the budget row of current month.
-        String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
+        String monthlyBudgetFilter = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
         String filterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?";
         int updateCount = 0;
         Double existingBudgetForMonth = findCurrentBudgetAmount();
@@ -384,11 +388,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             Bundle args = Utility.getDateRange(MONTHLY);
             String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
             ContentValues budgetDetails = new ContentValues();
-            Double totalBudget = myExpenseRecyclerViewAdapter.getTotalExpenseAmount()+ existingBudgetForMonth;
+            Double totalBudget = mExpenseDataset.getTotalExpenseAmount()+ existingBudgetForMonth;
             budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(totalBudget));
             updateCount = getActivity().getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI, UPDATE_BUDGET_CODE)
                     ,budgetDetails
-                    ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)
+                    ,DatabaseUtils.concatenateWhere(filterClause,monthlyBudgetFilter)
                     ,budgetFilterArgs);
         }
         return  updateCount;
@@ -432,11 +436,14 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
-                //remove Selected Items from recyclerView adapter
-                myExpenseRecyclerViewAdapter.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
-                int updateCount = updateCurrentMonthBudgetRow(myExpenseRecyclerViewAdapter.getExpenseDataIdList());
+                //remove Selected Items from dataset
+                Log.d(LOG_TAG, "Before removal : "+myExpenseRecyclerViewAdapter.getSelectedItems().toString());
+                mExpenseDataset.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
+                // TODO: After deletion, refresh the recycler view.
+                int updateCount = updateCurrentMonthBudgetRow(mExpenseDataset.getExpenseDataIdList());
+                Log.d(LOG_TAG, "Update count : "+updateCount);
                 if(updateCount>0) {
-                    mode.finish(); // Action picked, so close the CAB
+                    mode.finish(); // Action picked, so close the Contextual ActionBar
                     return true;
                 }
                 return false;
@@ -486,27 +493,44 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public boolean onQueryTextChange(String query) {
         // Here is where we are going to implement the filter logic
-        final List<ExpenseData> filteredModelList = filter(mExpenseList, query);
-        //TODO: Implement search on the displaying item.
-        /*myExpenseRecyclerViewAdapter.replaceAll(filteredModelList);
-        mRecyclerView.scrollToPosition(0);*/
-        return false;
-    }
-
-    private static List<ExpenseData> filter(List<ExpenseData> models, String query) {
-        final String lowerCaseQuery = query.toLowerCase();
-        final List<ExpenseData> filteredModelList = new ArrayList<>();
-        for (ExpenseData model : models) {
-            final String text = model.getItem().toLowerCase();
-            if (text.contains(lowerCaseQuery)) {
-                filteredModelList.add(model);
-            }
-        }
-        return filteredModelList;
+        final Set<ExpenseData> filteredModelList = filter(mExpenseSet, query);
+        mExpenseDataset.replaceAll(filteredModelList);
+        //mRecyclerView.scrollToPosition(0);
+        return true;
     }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
         return false;
+    }
+
+    private static Set<ExpenseData> filter(Collection<ExpenseData> models, String query) {
+        final String lowerCaseQuery = query.toLowerCase();
+        final Set<ExpenseData> expenseDataHashSet = new HashSet<>(0);
+        if(query.length() == 0){
+            expenseDataHashSet.addAll(models);
+        }
+        else {
+            for (ExpenseData expense : models) {
+                final String itemText = expense.getItem().toLowerCase();
+                final String amountText = expense.getAmount().toLowerCase();
+                final String remarkText = expense.getRemark().toLowerCase();
+                final String categoryText = expense.getCategory().toLowerCase();
+
+                if (itemText.contains(lowerCaseQuery)) {
+                    expenseDataHashSet.add(expense);
+                }
+                if (amountText.contains(lowerCaseQuery)) {
+                    expenseDataHashSet.add(expense);
+                }
+                if (remarkText.contains(lowerCaseQuery)) {
+                    expenseDataHashSet.add(expense);
+                }
+                if (categoryText.contains(lowerCaseQuery)) {
+                    expenseDataHashSet.add(expense);
+                }
+            }
+        }
+        return expenseDataHashSet;
     }
 }

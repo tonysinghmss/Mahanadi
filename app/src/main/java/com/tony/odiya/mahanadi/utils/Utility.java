@@ -5,11 +5,13 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,9 +31,10 @@ import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
  */
 
 public class Utility {
+    private static final String LOG_TAG = Utility.class.getSimpleName();
     public static String convertMillisecondsToDateString(Context context, Long timeToFormat){
         String finalDateTime = "";
-        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = null;
         if (timeToFormat != null) {
             Calendar cal = Calendar.getInstance();
@@ -49,6 +52,18 @@ public class Utility {
             }
         }
         return finalDateTime;
+    }
+
+    public static Long convertDateStringToMilliseconds( String dateString){
+        SimpleDateFormat iso8601Format = new SimpleDateFormat("MMM d, yyyy, HH:mm a");
+        Long timeInMilliseconds = 0l;
+        try {
+            Date mDate = iso8601Format.parse(dateString);
+            timeInMilliseconds = mDate.getTime();
+        } catch (ParseException e) {
+            Log.d(LOG_TAG, "Unable to parse time format.");
+        }
+        return timeInMilliseconds;
     }
 
     public static void setTrendValuesInSpinner(Spinner spinner, Context context){

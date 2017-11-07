@@ -23,11 +23,18 @@ import java.util.List;
  */
 public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewHolder> {
     private static final String LOG_TAG = MyExpenseRecyclerViewAdapter.class.getSimpleName();
-    private final List<ExpenseData> mValues;
+
+    private ExpenseDataset dataset;
+
+    public void dataset(ExpenseDataset dataset){
+        this.dataset = dataset;
+    }
+
+    //private final List<ExpenseData> mValues;
     private final OnListFragmentInteractionListener mContextListener;
     private OnRecyclerItemClickedListener mItemLongClickedListener;
-    private final List<String> mExpenseDataIdList = new ArrayList<>(0);
-    private Double totalExpenseAmount = 0.0;
+   /* private final List<String> mExpenseDataIdList = new ArrayList<>(0);
+    private Double totalExpenseAmount = 0.0;*/
 
     public interface OnRecyclerItemClickedListener {
         void onItemClicked(int position);
@@ -36,8 +43,8 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
         //int updateCurrentMonthBudgetRow(List<String> expenseIdList);
     }
 
-    public MyExpenseRecyclerViewAdapter(List<ExpenseData> items, OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemLongClickedListener) {
-        mValues = items;
+    public MyExpenseRecyclerViewAdapter(OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemLongClickedListener) {
+        //mValues = items;
         mContextListener = listener;
         mItemLongClickedListener = itemLongClickedListener;
     }
@@ -52,7 +59,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
 
     @Override
     public void onBindViewHolder(final ExpenseViewHolder holder, final int position) {
-        holder.bindTo(mValues.get(position));
+        holder.bindTo(dataset.getExpenseData(position));
         CardView v = (CardView) holder.mView.findViewById(R.id.expense_card_view);
         if (isSelected(position)) {
             v.setCardBackgroundColor(Color.parseColor("#ff0099cc"));//Dark blue
@@ -65,74 +72,30 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
 
     @Override
     public int getItemCount() {
-        if (mValues != null) {
-            return mValues.size();
-        } else
-            return 0;
+        return dataset.size();
     }
 
-    public void removeItem(int position) {
-        // Add the id of removed item into list. This id list will be used to update database in fragment.
-        ExpenseData expense = mValues.get(position);
-        mExpenseDataIdList.add(expense.getExpenseId());
-        totalExpenseAmount += Double.valueOf(expense.getAmount());
-        mValues.remove(position);
-        notifyItemRemoved(position);
-    }
+    /*public void removeItem(int position) {
+        dataset.removeItem(position);
+    }*/
 
-    public void removeItems(List<Integer> positions) {
-        // Reverse-sort the list
-        Collections.sort(positions, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer lhs, Integer rhs) {
-                return rhs - lhs;
-            }
-        });
+    /*public void removeItems(List<Integer> positions) {
 
-        // Split the list in ranges
-        while (!positions.isEmpty()) {
-            if (positions.size() == 1) {
-                removeItem(positions.get(0));
-                positions.remove(0);
-            } else {
-                int count = 1;
-                while (positions.size() > count && positions.get(count).equals(positions.get(count - 1) - 1)) {
-                    ++count;
-                }
+    }*/
 
-                if (count == 1) {
-                    removeItem(positions.get(0));
-                } else {
-                    removeRange(positions.get(count - 1), count);
-                }
-
-                for (int i = 0; i < count; ++i) {
-                    positions.remove(0);
-                }
-            }
-        }
-    }
-
-    private void removeRange(int positionStart, int itemCount) {
-        for (int i = 0; i < itemCount; ++i) {
-            ExpenseData expense = mValues.get(positionStart);
-            mExpenseDataIdList.add(expense.getExpenseId());
-            totalExpenseAmount += Double.valueOf(expense.getAmount());
-            mValues.remove(positionStart);
-        }
-        notifyItemRangeRemoved(positionStart, itemCount);
-    }
+   /* private void removeRange(int positionStart, int itemCount) {
+        dataset.removeRange(positionStart, itemCount);
+    }*/
 
     /*public int updateCurrentMonthBudgetRow(){
         return mItemLongClickedListener.updateCurrentMonthBudgetRow(mExpenseDataIdList);
     }*/
-    public List<String> getExpenseDataIdList() {
-        return mExpenseDataIdList;
+   /* public List<String> getExpenseDataIdList() {
+        return dataset.getExpenseDataIdList();
     }
 
     public Double getTotalExpenseAmount() {
-        return totalExpenseAmount;
-    }
-
+        return dataset.getTotalExpenseAmount();
+    }*/
 
 }

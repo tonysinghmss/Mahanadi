@@ -280,6 +280,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         else{
             mExpenseSet.clear();
         }*/
+
         while (dataCursor.moveToNext()) {
             ExpenseData s = new ExpenseData();
             s.setExpenseId(dataCursor.getString(dataCursor.getColumnIndex(MahanadiContract.Expense._ID)));
@@ -294,10 +295,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             mExpenseSet.add(s);
         }
         mExpenseDataset.add(mExpenseSet);
-
-        if(myExpenseRecyclerViewAdapter!=null){
+        //Clear all data from the set.
+        mExpenseSet.clear();
+        /*if(myExpenseRecyclerViewAdapter!=null){
             myExpenseRecyclerViewAdapter.notifyDataSetChanged();
-        }
+        }*/
     }
 
     @Override
@@ -308,6 +310,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        Log.d(LOG_TAG, "Trend spinner onItemSelected");
         String trend = parent.getItemAtPosition(pos).toString();
         if(null != mListener){
             mListener.onExpenseTrendInteraction(trend);
@@ -377,6 +380,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     public int updateCurrentMonthBudgetRow(List<String> expenseIdList){
+        Log.d(LOG_TAG, "updateCurrentMonthBudgetRow");
         // Step 1: Delete the rows from expense table.
         int deleteCount = deleteExpenses(expenseIdList);
         // Step 2: Update the budget row of current month.
@@ -399,6 +403,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void toggleSelection(int position){
+        Log.d(LOG_TAG, "toggleSelection");
         myExpenseRecyclerViewAdapter.toggleSelection(position);
         int count = myExpenseRecyclerViewAdapter.getSelectedItemCount();
         if(count == 0){
@@ -417,6 +422,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     // Called when the action mode is created; startActionMode() was called
     @Override
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        Log.d(LOG_TAG, "onCreateActionMode");
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.expense_action_mode_menu, menu);
@@ -434,12 +440,13 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     // Called when the user selects a contextual menu item
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        Log.d(LOG_TAG, "onActionItemClicked");
         switch (item.getItemId()) {
             case R.id.action_delete:
                 //remove Selected Items from dataset
                 Log.d(LOG_TAG, "Before removal : "+myExpenseRecyclerViewAdapter.getSelectedItems().toString());
                 mExpenseDataset.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
-                // TODO: After deletion, refresh the recycler view.
+
                 int updateCount = updateCurrentMonthBudgetRow(mExpenseDataset.getExpenseDataIdList());
                 Log.d(LOG_TAG, "Update count : "+updateCount);
                 if(updateCount>0) {
@@ -454,11 +461,13 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     // Called when the user exits the action mode
     @Override
     public void onDestroyActionMode(ActionMode mode) {
+        Log.d(LOG_TAG, "onDestroyActionMode");
         myExpenseRecyclerViewAdapter.clearSelection();
         mActionMode = null;
     }
 
     private int deleteExpenses(List<String> expenseIds){
+        Log.d(LOG_TAG, "deleteExpenses");
         StringBuilder where = new StringBuilder(MahanadiContract.Expense._ID + " IN (");
         String delim = "";
         for(String id : expenseIds){
@@ -471,6 +480,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private Double findCurrentBudgetAmount(){
+        Log.d(LOG_TAG, "findCurrentBudgetAmount");
         String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
         String filterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?";
         Bundle args = Utility.getDateRange(MONTHLY);
@@ -492,8 +502,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public boolean onQueryTextChange(String query) {
+        Log.d(LOG_TAG, "onQueryTextChange");
         // Here is where we are going to implement the filter logic
-        final Set<ExpenseData> filteredModelList = filter(mExpenseSet, query);
+        final Set<ExpenseData> filteredModelList = filter(query);
         mExpenseDataset.replaceAll(filteredModelList);
         //mRecyclerView.scrollToPosition(0);
         return true;
@@ -504,7 +515,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         return false;
     }
 
-    private static Set<ExpenseData> filter(Collection<ExpenseData> models, String query) {
+    private Set<ExpenseData> filter(String query) {
+        Log.d(LOG_TAG, "filter");
+        List<ExpenseData> models = mExpenseDataset.asList();
         final String lowerCaseQuery = query.toLowerCase();
         final Set<ExpenseData> expenseDataHashSet = new HashSet<>(0);
         if(query.length() == 0){

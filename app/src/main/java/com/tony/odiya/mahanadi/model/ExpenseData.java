@@ -4,6 +4,7 @@ package com.tony.odiya.mahanadi.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.tony.odiya.mahanadi.utils.Utility;
 
@@ -14,6 +15,7 @@ import java.util.Comparator;
  */
 
 public class ExpenseData {
+    public static final String LOG_TAG = ExpenseData.class.getSimpleName();
     public String expenseId;
     public String category, item, amount, remark, createdOn;
 
@@ -144,6 +146,10 @@ public class ExpenseData {
         public int compare(ExpenseData expenseData, ExpenseData t1) {
             Long createdOn1 = Utility.convertDateStringToMilliseconds(expenseData.getCreatedOn());
             Long createdOn2 =  Utility.convertDateStringToMilliseconds(t1.getCreatedOn());
+            Log.d(LOG_TAG, "CreatedOnComparator");
+            Log.d(LOG_TAG, expenseData+ createdOn1.toString());
+            Log.d(LOG_TAG, t1+ createdOn2.toString());
+            Log.d(LOG_TAG, "Compare : "+Long.compare(createdOn1,createdOn2));
             return Long.compare(createdOn1,createdOn2);
         }
     }
@@ -155,15 +161,18 @@ public class ExpenseData {
     public static final ExpenseCreatedOnComparator CREATION_TIME_COMPARATOR = new ExpenseCreatedOnComparator();
 
     public int compare(ExpenseData expenseData) {
+        Log.d(LOG_TAG, "Compare :"+CREATION_TIME_COMPARATOR.compare(this, expenseData));
         return CREATION_TIME_COMPARATOR.compare(this, expenseData);
     }
 
     public boolean areContentsTheSame(ExpenseData that){
+        Log.d(LOG_TAG, "areContentsTheSame : "+Boolean.toString(this.equals(that)));
         // Called by the SortedList when it wants to check whether two items have the same data or not
         return  this.equals(that);
     }
 
     public boolean areItemsTheSame(ExpenseData that){
+        Log.d(LOG_TAG, "areItemsTheSame : "+Boolean.toString(this.hashCode() == that.hashCode()));
         // Called by the SortedList to decide whether two object represent the same Item or not.
         return this.hashCode() == that.hashCode();
     }

@@ -51,6 +51,7 @@ public class ExpenseDataset {
     }
 
     public ExpenseDataset(final RecyclerView recyclerView, final RecyclerView.Adapter adapter){
+
         this.mSortedList = new SortedList<>(ExpenseData.class,
                 new SortedList.BatchedCallback<>(new SortedListAdapterCallback<ExpenseData>(adapter) {
             @Override public int compare(ExpenseData a1, ExpenseData a2) {
@@ -67,7 +68,29 @@ public class ExpenseDataset {
 
             @Override public void onInserted(int position, int count) {
                 super.onInserted(position, count);
-                recyclerView.scrollToPosition(position);
+                //recyclerView.scrollToPosition(position);
+                adapter.notifyItemInserted(position);
+                adapter.notifyItemRangeInserted(position,count);
+            }
+
+            @Override
+            public void onRemoved(int position, int count) {
+                super.onRemoved(position, count);
+                adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeRemoved(position, count);
+            }
+
+            @Override
+            public void onMoved(int fromPosition, int toPosition) {
+                super.onMoved(fromPosition, toPosition);
+                adapter.notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public void onChanged(int position, int count) {
+                super.onChanged(position, count);
+                adapter.notifyItemChanged(position);
+                adapter.notifyItemRangeChanged(position, count);
             }
         }));
 
@@ -164,10 +187,10 @@ public class ExpenseDataset {
 
     public void removeItems(List<Integer> positions) {
         Log.d(LOG_TAG, "Remove Items");
-        for(Integer i : positions){
+        /*for(Integer i : positions){
             removeItem(i);
-        }
-       /* // Reverse-sort the list
+        }*/
+        // Reverse-sort the list
         Collections.sort(positions, new Comparator<Integer>() {
             @Override
             public int compare(Integer lhs, Integer rhs) {
@@ -182,6 +205,7 @@ public class ExpenseDataset {
                 positions.remove(0);
             } else {
                 int count = 1;
+                // Jarvis says Awesome logic!!!
                 while (positions.size() > count && positions.get(count).equals(positions.get(count - 1) - 1)) {
                     ++count;
                 }
@@ -196,7 +220,7 @@ public class ExpenseDataset {
                     positions.remove(0);
                 }
             }
-        }*/
+        }
     }
 
     public void replaceAll(Set<ExpenseData> models) {

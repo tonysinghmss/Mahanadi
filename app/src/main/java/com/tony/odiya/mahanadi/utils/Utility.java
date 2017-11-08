@@ -34,12 +34,12 @@ public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
     public static String convertMillisecondsToDateString(Context context, Long timeToFormat){
         String finalDateTime = "";
-        // SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = null;
+        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        //Date date = null;
         if (timeToFormat != null) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(timeToFormat);
-            date = cal.getTime();
+           /* date = cal.getTime();
             if (date != null) {
                 long when = date.getTime();
                 int flags = 0;
@@ -49,13 +49,14 @@ public class Utility {
                 flags |= android.text.format.DateUtils.FORMAT_SHOW_YEAR;
                 finalDateTime = android.text.format.DateUtils.formatDateTime(context,
                         when + TimeZone.getDefault().getOffset(when), flags);
-            }
+            }*/
+            finalDateTime = iso8601Format.format(cal.getTime());
         }
         return finalDateTime;
     }
 
     public static Long convertDateStringToMilliseconds( String dateString){
-        SimpleDateFormat iso8601Format = new SimpleDateFormat("MMM d, yyyy, HH:mm a");
+        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Long timeInMilliseconds = 0l;
         try {
             Date mDate = iso8601Format.parse(dateString);

@@ -91,7 +91,7 @@ public class ExpenseData {
         if (o == null || getClass() != o.getClass()) return false;
 
         ExpenseData that = (ExpenseData) o;
-        //if (Long.valueOf(expenseId) != Long.valueOf(that.expenseId)) return false;
+        if (Long.valueOf(expenseId) != Long.valueOf(that.expenseId)) return false;
         if (!category.equals(that.category)) return false;
         if (!item.equals(that.item)) return false;
         if (!amount.equals(that.amount)) return false;
@@ -172,9 +172,9 @@ public class ExpenseData {
     }
 
     public boolean areItemsTheSame(ExpenseData that){
-        Log.d(LOG_TAG, "areItemsTheSame : "+Boolean.toString(this.hashCode() == that.hashCode()));
+        Log.d(LOG_TAG, "areItemsTheSame : "+Boolean.toString(Long.valueOf(expenseId) == Long.valueOf(that.expenseId)));
         // Called by the SortedList to decide whether two object represent the same Item or not.
-        return this.hashCode() == that.hashCode();
+        return Long.valueOf(expenseId) == Long.valueOf(that.expenseId);
     }
 
     @Override

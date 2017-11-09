@@ -280,7 +280,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         else{
             mExpenseSet.clear();
         }*/
-
+        if(!mExpenseSet.isEmpty()){
+            mExpenseSet.clear();
+        }
         while (dataCursor.moveToNext()) {
             ExpenseData s = new ExpenseData();
             s.setExpenseId(dataCursor.getString(dataCursor.getColumnIndex(MahanadiContract.Expense._ID)));
@@ -296,7 +298,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         }
         mExpenseDataset.add(mExpenseSet);
         //Clear all data from the set.
-        mExpenseSet.clear();
+        // mExpenseSet.clear();
         /*if(myExpenseRecyclerViewAdapter!=null){
             myExpenseRecyclerViewAdapter.notifyDataSetChanged();
         }*/
@@ -517,7 +519,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
 
     private Set<ExpenseData> filter(String query) {
         Log.d(LOG_TAG, "filter");
-        List<ExpenseData> models = mExpenseDataset.asList();
+        List<ExpenseData> models = new ArrayList<>(mExpenseSet);
         final String lowerCaseQuery = query.toLowerCase();
         final Set<ExpenseData> expenseDataHashSet = new HashSet<>(0);
         if(query.length() == 0){

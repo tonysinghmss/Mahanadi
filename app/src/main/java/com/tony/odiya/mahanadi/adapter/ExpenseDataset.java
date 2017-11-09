@@ -225,12 +225,7 @@ public class ExpenseDataset {
 
     public void replaceAll(Set<ExpenseData> models) {
         mSortedList.beginBatchedUpdates();
-        for (int i = mSortedList.size() - 1; i >= 0; i--) {
-            final ExpenseData model = mSortedList.get(i);
-            if (!models.contains(model)) {
-                mSortedList.remove(model);
-            }
-        }
+        mSortedList.clear();
         mSortedList.addAll(models);
         mSortedList.endBatchedUpdates();
     }

@@ -23,7 +23,8 @@
     <string name="action_add">Add</string>
     <string name="action_delete">Delete</string>
     <string name="action_setup">Setup</string>
-    <string name="action_edit">Edit</string>
+    <string name="action_edit_budget">Edit Budget</string>
+    <string name="action_edit_expense">Edit Expense</string>
     <string name="action_reset">Reset</string>
     <string name="action_search">Search</string>
 
@@ -40,7 +41,8 @@
     <string name="dialog_budget_setup_msg">Keeping a monthly budget helps in the long run. Enter your monthly budget below.</string>
     <string name="dialog_budget_edit_msg">Increasing your monthly budget is not a healthy saving habit !!</string>
     <string name="dialog_budget_reset_msg">This action will reset all your expenses and budget for this month. Are you sure?</string>
-    <string name="dialog_budget_confirm_reset">Your expenses and budget for this month havae been reset.</string>
+    <string name="dialog_budget_confirm_reset">Your budget for this month havae been reset.</string>
+    <string name="dialog_expense_confirm_reset">Your expenses for this month havae been reset.</string>
     <string name="dialog_budget_setup_hint">Your budget !</string>
     <string name="dialog_budget_empty_setup_msg">Budget cannot be empty!!</string>
     <string name="dialog_budget_decrease_msg">You have made expenditures already. You cannot decrease your budget now!!</string>

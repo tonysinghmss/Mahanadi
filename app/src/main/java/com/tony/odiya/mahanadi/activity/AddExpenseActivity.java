@@ -58,8 +58,8 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
         addExpenseToolbar = (Toolbar) findViewById(R.id.add_expense_toolbar);
         mCategorySpinner = (Spinner) findViewById(R.id.expense_category_spinner);
         mCategorySpinner.setOnItemSelectedListener(this);
-        setCategoryValuesInSpinner(mCategorySpinner,getApplicationContext());
-        selectDefaultCategoryInSpinner(mCategorySpinner, HOME);
+        Utility.setCategoryValuesInSpinner(mCategorySpinner,getApplicationContext());
+        Utility.selectDefaultCategoryInSpinner(mCategorySpinner, HOME);
         setSupportActionBar(addExpenseToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -80,7 +80,7 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
     }*/
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+        public boolean onOptionsItemSelected(MenuItem item){
 
         switch (item.getItemId()) {
             case R.id.action_save:
@@ -107,7 +107,7 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
                     Uri insertUri = getContentResolver().insert(Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,SAVE_EXPENSE_CODE),expenseDetails);
                     Long rowId = ContentUris.parseId(insertUri);
 
-                    // Update budget table
+                    // UPDATE BUDGET table
                     int rowsUpdatedCount = updateCurrentMonthBudgetRow();
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
@@ -124,7 +124,7 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    private void setCategoryValuesInSpinner(Spinner spinner, Context context){
+    /*private void setCategoryValuesInSpinner(Spinner spinner, Context context){
         List<String> valueList = new ArrayList<>();
         valueList.add(GROCERY);
         valueList.add(ELECTRONICS);
@@ -137,14 +137,14 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
                 valueList);
         trendAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(trendAdapter);
-    }
-    private void selectDefaultCategoryInSpinner(Spinner spinner, String category    ){
+    }*/
+    /*private void selectDefaultCategoryInSpinner(Spinner spinner, String category){
         ArrayAdapter<String> trendAdapter = (ArrayAdapter<String>) spinner.getAdapter();
         if(category!=null && !category.isEmpty()){
             int pos = trendAdapter.getPosition(category);
             spinner.setSelection(pos);
         }
-    }
+    }*/
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
         mCategory = parent.getItemAtPosition(pos).toString();
@@ -152,6 +152,11 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
     @Override
     public void onNothingSelected(AdapterView<?> parent){}
 
+    /**
+     * This method will update the budget for current month.
+     * For each new expense added, budget will be subtracted by the same amount as that of expense.
+     * @return
+     */
     private int updateCurrentMonthBudgetRow(){
         String MONTHLY_BUDGET_FILTER = "datetime("+MahanadiContract.Budget.COL_END_DATE +"/1000,'unixepoch') >= datetime('now','unixepoch')";
         String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";

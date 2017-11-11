@@ -66,9 +66,14 @@ public class BudgetSetupDialogFragment extends DialogFragment {
                             public void onClick(DialogInterface dialog, int id) {
                                 EditText budgetAmountEditText = (EditText)budgetSetupView.findViewById(R.id.dialog_budget_setup_amount);
                                 String budgetAmountString = budgetAmountEditText.getText().toString();
-                                if(!budgetAmountString.equals("")){
+                                if(!budgetAmountString.equals("") && !budgetAmountString.equals("0.0")){
                                     // get the budget amount from dialog view
                                     Double amount = Double.valueOf(budgetAmountString);
+                                    // fetch expenses for the current month and subtract it from total amount.
+                                    Double expensesForThisMonth = findCurrentMonthExpenses();
+                                    if(expensesForThisMonth>0){
+                                        amount = amount - expensesForThisMonth;
+                                    }
                                     ContentValues budgetDetails = new ContentValues();
                                     budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, amount);
                                     budgetDetails.put(MahanadiContract.Budget.COL_TYPE, BUDGET_TYPE_MONTHLY);
@@ -79,7 +84,7 @@ public class BudgetSetupDialogFragment extends DialogFragment {
                                     Bundle dataForView = new Bundle();
                                     dataForView.putLong(SAVE_BUDGET_ROW_KEY,rowId);
                                     dataForView.putDouble(SAVE_BUDGET_AMOUNT_KEY, amount);
-                                    mListener.onDialogInteraction(dataForView);
+                                    mListener.onBudgetSetup(dataForView);
                                 }
                                 else{
                                     Toast.makeText(budgetSetupView.getContext(), R.string.dialog_budget_empty_setup_msg, Toast.LENGTH_SHORT).show();
@@ -143,6 +148,7 @@ public class BudgetSetupDialogFragment extends DialogFragment {
 
                                         // Budget row doesn't exist in database and hence we have to insert a row.
                                         Long rowId = 0l;
+                                        Bundle updateArgs = new Bundle();
                                         if(updateCount == 0){
                                             Double amount = Double.valueOf(budgetAmountString);
                                             budgetDetails.put(MahanadiContract.Budget.COL_TYPE, BUDGET_TYPE_MONTHLY);
@@ -152,12 +158,12 @@ public class BudgetSetupDialogFragment extends DialogFragment {
                                                 , budgetDetails);
                                             rowId = ContentUris.parseId(insertUri);
                                             Bundle dataForView = new Bundle();
-                                            dataForView.putLong(SAVE_BUDGET_ROW_KEY,rowId);
-                                            dataForView.putDouble(SAVE_BUDGET_AMOUNT_KEY, amount);
+                                            updateArgs.putLong(SAVE_BUDGET_ROW_KEY,rowId);
+                                            updateArgs.putDouble(SAVE_BUDGET_AMOUNT_KEY, amount);
+                                            updateCount = 1;
                                         }
-                                        Bundle updateArgs = new Bundle();
                                         updateArgs.putInt(UPDATE_BUDGET_AMOUNT_COUNT,updateCount);
-                                        mListener.onDialogInteraction(updateArgs);
+                                        mListener.onBudgetEdit(updateArgs);
                                     }
 
                                 }
@@ -190,13 +196,17 @@ public class BudgetSetupDialogFragment extends DialogFragment {
                                             ,DatabaseUtils.concatenateWhere(monthlyBudgetFilter,budgetFilterClause),filterArgs);
                                     int deleteExpenseCount = getActivity().getContentResolver().delete(MahanadiContract.Expense.CONTENT_URI
                                             ,expenseFilterClause,filterArgs);
-                                    if(deleteBudgetCount>0 && deleteExpenseCount>0){
-                                        Bundle deleteArgs = new Bundle();
+                                    Bundle deleteArgs = new Bundle();
+                                    if(deleteExpenseCount>0){
                                         deleteArgs.putInt(DELETE_EXPENSE_COUNT,deleteExpenseCount);
+                                        Toast.makeText(budgetSetupView.getContext(), R.string.dialog_expense_confirm_reset, Toast.LENGTH_SHORT).show();
+                                    }
+                                    if(deleteBudgetCount>0){
                                         deleteArgs.putInt(DELETE_BUDGET_COUNT,deleteBudgetCount);
-                                        mListener.onDialogInteraction(deleteArgs);
                                         Toast.makeText(budgetSetupView.getContext(), R.string.dialog_budget_confirm_reset, Toast.LENGTH_SHORT).show();
                                     }
+                                    mListener.onBudgetReset(deleteArgs);
+
                             }
                         })
                         .setNegativeButton(R.string.budget_later, new DialogInterface.OnClickListener() {

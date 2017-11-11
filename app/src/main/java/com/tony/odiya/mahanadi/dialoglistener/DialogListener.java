@@ -7,6 +7,8 @@ import android.os.Bundle;
  */
 
 public interface DialogListener {
-    void onDialogInteraction(Bundle args);
+    void onBudgetReset(Bundle args);
+    void onBudgetSetup(Bundle args);
+    void onBudgetEdit(Bundle args);
 
 }

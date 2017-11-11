@@ -33,6 +33,7 @@ import android.widget.Spinner;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.activity.AddExpenseActivity;
+import com.tony.odiya.mahanadi.activity.ExpenseDetailActivity;
 import com.tony.odiya.mahanadi.adapter.ExpenseDataset;
 import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
@@ -41,7 +42,6 @@ import com.tony.odiya.mahanadi.utils.Utility;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,13 +49,15 @@ import java.util.Set;
 import static com.tony.odiya.mahanadi.common.Constants.CURRENT_BUDGET_PROJECTION;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.EXPENSE_ID;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 import static com.tony.odiya.mahanadi.common.Constants.QUERY_BUDGET_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_EDIT_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
 import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
-import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_ADD_CODE;
 
 
 /**
@@ -191,11 +193,12 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         switch (item.getItemId()) {
             case R.id.action_add:
                 Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
-                startActivityForResult(intent,REQUEST_EXPENSE_CODE);
+                startActivityForResult(intent, REQUEST_EXPENSE_ADD_CODE);
                 break;
             case R.id.action_search:
                 Log.d(LOG_TAG, " Inside search option.");
                 break;
+
 
 
         }
@@ -205,12 +208,17 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode == REQUEST_EXPENSE_CODE && resultCode == Activity.RESULT_OK){
+        if(requestCode == REQUEST_EXPENSE_ADD_CODE && resultCode == Activity.RESULT_OK){
             // Data has been saved into database.
             // Reload the total data for given  trend time as well as total.
             Bundle dateRangeArgs = Utility.getDateRange(mTrend);
             getLoaderManager().restartLoader(EXPENSE_LOADER_ID,dateRangeArgs,this);
 
+        }
+        if(requestCode == REQUEST_EXPENSE_EDIT_CODE && resultCode == Activity.RESULT_OK) {
+            // TODO: Check request code for details of an activity.
+            Bundle dateRangeArgs = Utility.getDateRange(mTrend);
+            getLoaderManager().restartLoader(EXPENSE_LOADER_ID,dateRangeArgs,this);
         }
     }
 
@@ -364,7 +372,15 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public void onItemClicked(int position){
         Log.d(LOG_TAG, "You have clicked on "+position);
         if(mActionMode != null){
+            // Toggle selection highlight.
             toggleSelection(position);
+        }
+        else{
+            // Open the activity to show details of a particular expense.
+            Bundle expenseDataId = findExpenseDataId(position);
+            Intent intent = new Intent(getActivity(), ExpenseDetailActivity.class);
+            intent.putExtras(expenseDataId);
+            startActivityForResult(intent, REQUEST_EXPENSE_EDIT_CODE);
         }
     }
 
@@ -416,6 +432,13 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             mActionMode.invalidate();
         }
 
+    }
+
+    private Bundle findExpenseDataId(int position){
+        ExpenseData expense = mExpenseDataset.getSortedList().get(position);
+        Bundle args = new Bundle();
+        args.putString(EXPENSE_ID, expense.getExpenseId());
+        return args;
     }
 
     /**

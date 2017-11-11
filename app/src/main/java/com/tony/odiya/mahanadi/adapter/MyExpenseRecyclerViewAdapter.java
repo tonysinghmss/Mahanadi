@@ -12,11 +12,6 @@ import com.tony.odiya.mahanadi.adapter.vholder.ExpenseViewHolder;
 import com.tony.odiya.mahanadi.fragment.ExpenseFragment.OnListFragmentInteractionListener;
 import com.tony.odiya.mahanadi.model.ExpenseData;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * {@link RecyclerView.Adapter} that can display a {@link ExpenseData} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
@@ -32,7 +27,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
 
     //private final List<ExpenseData> mValues;
     private final OnListFragmentInteractionListener mContextListener;
-    private OnRecyclerItemClickedListener mItemLongClickedListener;
+    private OnRecyclerItemClickedListener mItemClickedListener;
    /* private final List<String> mExpenseDataIdList = new ArrayList<>(0);
     private Double totalExpenseAmount = 0.0;*/
 
@@ -43,10 +38,10 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
         //int updateCurrentMonthBudgetRow(List<String> expenseIdList);
     }
 
-    public MyExpenseRecyclerViewAdapter(OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemLongClickedListener) {
+    public MyExpenseRecyclerViewAdapter(OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemClickedListener) {
         //mValues = items;
         mContextListener = listener;
-        mItemLongClickedListener = itemLongClickedListener;
+        mItemClickedListener = itemClickedListener;
     }
 
     @Override
@@ -54,7 +49,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
         //Take viewtype and change the color of views in future
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.expense_card, parent, false);
-        return new ExpenseViewHolder(view, mItemLongClickedListener);
+        return new ExpenseViewHolder(view, mItemClickedListener);
     }
 
     @Override
@@ -88,7 +83,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
     }*/
 
     /*public int updateCurrentMonthBudgetRow(){
-        return mItemLongClickedListener.updateCurrentMonthBudgetRow(mExpenseDataIdList);
+        return mItemClickedListener.updateCurrentMonthBudgetRow(mExpenseDataIdList);
     }*/
    /* public List<String> getExpenseDataIdList() {
         return dataset.getExpenseDataIdList();

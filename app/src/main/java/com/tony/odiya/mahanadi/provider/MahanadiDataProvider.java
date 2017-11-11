@@ -398,6 +398,12 @@ public class MahanadiDataProvider extends ContentProvider{
                         selection,
                         selectionArgs);
                 break;
+            case EXPENSE_ROW:
+                updateCount = localSQLiteDatabase.update(MahanadiContract.Expense.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Update: Invalid URI: " + uri);
         }

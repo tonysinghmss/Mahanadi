@@ -46,9 +46,10 @@ import static com.tony.odiya.mahanadi.common.Constants.REQUEST_BUDGET_SETUP_CODE
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.TOTAL_EXPENSE_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.TREND_EXPENSE_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_AMOUNT_COUNT;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
 import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
-import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_ADD_CODE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -141,7 +142,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
-                startActivityForResult(intent,REQUEST_EXPENSE_CODE);
+                startActivityForResult(intent, REQUEST_EXPENSE_ADD_CODE);
             }
         });
         ((AppCompatActivity)getActivity()).setSupportActionBar(homeToolbar);
@@ -240,7 +241,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode == REQUEST_EXPENSE_CODE && resultCode == Activity.RESULT_OK){
+        if(requestCode == REQUEST_EXPENSE_ADD_CODE && resultCode == Activity.RESULT_OK){
             // Data has been saved into database.
             // Reload the total data for given  trend time as well as total.
             Bundle dateRangeArgs = Utility.getDateRange(mTrend);
@@ -384,6 +385,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                     budgetIsSet = Boolean.TRUE;
                     getActivity().invalidateOptionsMenu();
                 }
+                else if(cnt == 0 ){
+                    totalBudgetAmount = 0.0;
+                    budgetIsSet = Boolean.FALSE;
+                }
                 //here total alias will refer to total budget for a given month.
                 while (dataCursor.moveToNext()) {
                     totalBudgetAmount = dataCursor.getDouble(dataCursor.getColumnIndex("BUDGET"));
@@ -401,16 +406,41 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoaderReset(Loader<Cursor> loader){}
 
+    public void onBudgetReset(Bundle args){
+        budgetIsSet = Boolean.FALSE;
+        getActivity().invalidateOptionsMenu();
+        Bundle trendArgs = Utility.getDateRange(mTrend);
+        if(args.containsKey(DELETE_EXPENSE_COUNT)){
+            getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID, trendArgs, this);
+            getLoaderManager().restartLoader(TOTAL_EXPENSE_LOADER_ID, trendArgs, this);
+        }
+        Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
+        getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
 
-    public void onDialogInteraction(Bundle args){
+
+    }
+
+    public void onBudgetEdit(Bundle args){
+        if(args.containsKey(UPDATE_BUDGET_AMOUNT_COUNT)){
+            budgetIsSet = Boolean.TRUE;
+            getActivity().invalidateOptionsMenu();
+            Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
+            getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
+        }
+    }
+
+    public void onBudgetSetup(Bundle args){
         budgetIsSet = Boolean.TRUE;
         getActivity().invalidateOptionsMenu();
         Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
         getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
-        if(args.containsKey(DELETE_EXPENSE_COUNT) && args.containsKey(DELETE_BUDGET_COUNT)){
-            Bundle trendArgs = Utility.getDateRange(mTrend);
+        /*Bundle trendArgs = Utility.getDateRange(mTrend);
+        if(args.containsKey(DELETE_EXPENSE_COUNT)){
             getLoaderManager().restartLoader(TREND_EXPENSE_LOADER_ID, trendArgs, this);
             getLoaderManager().restartLoader(TOTAL_EXPENSE_LOADER_ID, trendArgs, this);
-        }
+        }*/
+        /*if( args.containsKey(DELETE_BUDGET_COUNT)){
+
+        }*/
     }
 }

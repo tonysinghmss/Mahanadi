@@ -15,7 +15,7 @@
         android:checkable="false"
         android:enabled="true"
         android:icon="@drawable/ic_create_black_24dp"
-        android:title="@string/action_edit"
+        android:title="@string/action_edit_budget"
         app:showAsAction="ifRoom|withText"
         />
 

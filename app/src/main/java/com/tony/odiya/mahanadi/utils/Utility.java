@@ -19,8 +19,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import static com.tony.odiya.mahanadi.common.Constants.CLOTHES;
+import static com.tony.odiya.mahanadi.common.Constants.CUSTOM;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
+import static com.tony.odiya.mahanadi.common.Constants.ELECTRONICS;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.FOOD;
+import static com.tony.odiya.mahanadi.common.Constants.GROCERY;
+import static com.tony.odiya.mahanadi.common.Constants.HOME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
@@ -169,5 +175,28 @@ public class Utility {
         cal.set(Calendar.MILLISECOND,1000);
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
         return cal.getTimeInMillis();
+    }
+
+    public static void setCategoryValuesInSpinner(Spinner spinner, Context context){
+        List<String> valueList = new ArrayList<>();
+        valueList.add(GROCERY);
+        valueList.add(ELECTRONICS);
+        valueList.add(FOOD);
+        valueList.add(HOME);
+        valueList.add(CLOTHES);
+        valueList.add(CUSTOM);
+        ArrayAdapter<String> trendAdapter = new ArrayAdapter<>(context,
+                android.R.layout.simple_spinner_item,
+                valueList);
+        trendAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(trendAdapter);
+    }
+
+    public static void selectDefaultCategoryInSpinner(Spinner spinner, String category){
+        ArrayAdapter<String> trendAdapter = (ArrayAdapter<String>) spinner.getAdapter();
+        if(category!=null && !category.isEmpty()){
+            int pos = trendAdapter.getPosition(category);
+            spinner.setSelection(pos);
+        }
     }
 }

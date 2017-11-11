@@ -64,7 +64,8 @@ public class ExpenseViewHolder extends RecyclerView.ViewHolder implements View.O
         this.mCategoryView.setText(expenseData.category);
         this.mItemView.setText(expenseData.item);
         this.mAmountView.setText(expenseData.amount);
-        this.mRemarkView.setText(expenseData.remark);
+        CharSequence shortendRemark = expenseData.remark.length()>10?expenseData.remark.subSequence(0,10)+"...":expenseData.remark;
+        this.mRemarkView.setText(shortendRemark);
     }
     
     public void setViewTextColor(int color){

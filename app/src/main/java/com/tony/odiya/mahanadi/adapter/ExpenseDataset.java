@@ -173,20 +173,25 @@ public class ExpenseDataset {
         ExpenseData expense = mSortedList.get(position);
         mExpenseDataIdList.add(expense.getExpenseId());
         totalExpenseAmount += Double.valueOf(expense.getAmount());
+        mSortedList.beginBatchedUpdates();
         mSortedList.removeItemAt(position);
+        mSortedList.endBatchedUpdates();
     }
 
     public void removeRange(int positionStart, int itemCount) {
+        mSortedList.beginBatchedUpdates();
         for (int i = 0; i < itemCount; ++i) {
             ExpenseData expense = mSortedList.get(positionStart);
             mExpenseDataIdList.add(expense.getExpenseId());
             totalExpenseAmount += Double.valueOf(expense.getAmount());
             mSortedList.removeItemAt(positionStart);
         }
+        mSortedList.endBatchedUpdates();
     }
 
     public void removeItems(List<Integer> positions) {
         Log.d(LOG_TAG, "Remove Items");
+        totalExpenseAmount = 0.0;
         /*for(Integer i : positions){
             removeItem(i);
         }*/

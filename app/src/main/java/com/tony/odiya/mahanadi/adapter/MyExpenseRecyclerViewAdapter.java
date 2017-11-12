@@ -54,14 +54,15 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<ExpenseViewH
 
     @Override
     public void onBindViewHolder(final ExpenseViewHolder holder, final int position) {
-        holder.bindTo(dataset.getExpenseData(position));
+        holder.bindTo(dataset.getExpenseData(position), position);
         CardView v = (CardView) holder.mView.findViewById(R.id.expense_card_view);
+        holder.setViewTextColor(Color.WHITE);
         if (isSelected(position)) {
-            v.setCardBackgroundColor(Color.parseColor("#ff0099cc"));//Dark blue
-            holder.setViewTextColor(Color.WHITE);
+            v.setCardBackgroundColor(Color.parseColor("#ff4081"));//Dark blue
+            //holder.setViewTextColor(Color.WHITE);
         } else {
-            v.setCardBackgroundColor(Color.WHITE);
-            holder.setViewTextColor(Color.BLACK);
+            v.setCardBackgroundColor(Color.parseColor("#ff33b5e5"));
+            //holder.setViewTextColor(Color.WHITE);
         }
     }
 

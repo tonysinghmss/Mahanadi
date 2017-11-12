@@ -59,7 +59,8 @@ public class ExpenseViewHolder extends RecyclerView.ViewHolder implements View.O
         return false;
     }
 
-    public void bindTo(ExpenseData expenseData){
+    public void bindTo(ExpenseData expenseData, int position){
+
         this.mItem = expenseData;
         this.mCategoryView.setText(expenseData.category);
         this.mItemView.setText(expenseData.item);

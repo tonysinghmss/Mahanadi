@@ -37,12 +37,13 @@ import static com.tony.odiya.mahanadi.common.Constants.UPDATE_EXPENSE_CODE;
 public class ExpenseDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = ExpenseDetailActivity.class.getSimpleName();
     private Toolbar expenseDetailToolbar;
-    private Spinner mCategorySpinner;
+    //private Spinner mCategorySpinner;
     private TextView mCategoryTextView;
     private TextView mItemTextView;
     private TextView mRemarkTextView;
     private TextView mAmountTextView;
 
+    private EditText mCategoryEditText;
     private EditText mItemEditText;
     private EditText mRemarkEditText;
     private EditText mAmountEditText;
@@ -62,9 +63,9 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
         expenseDetailToolbar = (Toolbar) findViewById(R.id.expense_detail_toolbar);
         setSupportActionBar(expenseDetailToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mCategorySpinner = (Spinner) findViewById(R.id.expense_detail_edit_category_spinner);
+        /*mCategorySpinner = (Spinner) findViewById(R.id.expense_detail_edit_category_spinner);
         mCategorySpinner.setOnItemSelectedListener(this);
-        Utility.setCategoryValuesInSpinner(mCategorySpinner,getApplicationContext());
+        Utility.setCategoryValuesInSpinner(mCategorySpinner,getApplicationContext());*/
         Intent intent = getIntent();
         mExpenseId = intent.getStringExtra(EXPENSE_ID);
         // Initialize views
@@ -72,6 +73,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
         mItemTextView = (TextView) findViewById(R.id.expense_detail_item);
         mRemarkTextView = (TextView) findViewById(R.id.expense_detail_remark);
         mAmountTextView = (TextView) findViewById(R.id.expense_detail_amount);
+        mCategoryEditText = (EditText) findViewById(R.id.expense_detail_edit_category);
         mItemEditText = (EditText) findViewById(R.id.expense_detail_edit_item);
         mRemarkEditText = (EditText)findViewById(R.id.expense_detail_edit_remark);
         mAmountEditText = (EditText)findViewById(R.id.expense_detail_edit_amount);
@@ -135,6 +137,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
             case R.id.action_save_expense:
 
                 editFlag = Boolean.FALSE;
+                String sCategory = mCategoryEditText.getText().toString();
                 String sAmount = mAmountEditText.getText().toString();
                 String sRemark = mRemarkEditText.getText().toString();
                 String sItem = mItemEditText.getText().toString();
@@ -144,7 +147,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
                 else{
                     Double dAmount = Double.valueOf(sAmount);
                     ContentValues expenseDetails = new ContentValues();
-                    expenseDetails.put(MahanadiContract.Expense.COL_CATEGORY,mCategory);
+                    expenseDetails.put(MahanadiContract.Expense.COL_CATEGORY,sCategory);
                     expenseDetails.put(MahanadiContract.Expense.COL_ITEM,sItem);
                     expenseDetails.put(MahanadiContract.Expense.COL_AMOUNT,dAmount);
                     expenseDetails.put(MahanadiContract.Expense.COL_REMARK,sRemark);
@@ -189,7 +192,8 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
             mRemarkTextView.setVisibility(View.GONE);
             mAmountTextView.setVisibility(View.GONE);
 
-            mCategorySpinner.setVisibility(View.VISIBLE);
+            //mCategorySpinner.setVisibility(View.VISIBLE);
+            mCategoryEditText.setVisibility(View.VISIBLE);
             mItemEditText.setVisibility(View.VISIBLE);
             mRemarkEditText.setVisibility(View.VISIBLE);
             mAmountEditText.setVisibility(View.VISIBLE);
@@ -200,7 +204,8 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
             mRemarkTextView.setVisibility(View.VISIBLE);
             mAmountTextView.setVisibility(View.VISIBLE);
 
-            mCategorySpinner.setVisibility(View.GONE);
+            //mCategorySpinner.setVisibility(View.GONE);
+            mCategoryEditText.setVisibility(View.GONE);
             mItemEditText.setVisibility(View.GONE);
             mRemarkEditText.setVisibility(View.GONE);
             mAmountEditText.setVisibility(View.GONE);
@@ -209,10 +214,16 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
 
     private void setValuesOfView(){
         if(editFlag) {
-            if(mCategory!=null && !mCategory.isEmpty()) {
+            /*if(mCategory!=null && !mCategory.isEmpty()) {
                 Utility.selectDefaultCategoryInSpinner(mCategorySpinner, mCategory);
             }else {
                 Utility.selectDefaultCategoryInSpinner(mCategorySpinner, HOME);
+            }*/
+            if(mCategory!=null){
+                mCategoryEditText.setText(mCategory);
+            }
+            else{
+                mCategoryEditText.setText("");
             }
             if(mItem !=null && mRemark != null && mAmount!=null ){
                 mItemEditText.setText(mItem);
@@ -235,7 +246,8 @@ public class ExpenseDetailActivity extends AppCompatActivity implements AdapterV
             }
             else{
                 Log.i(LOG_TAG, "Item or remark or amount or all of them didn't load from database properly.");
-                mCategoryTextView.setText(HOME);
+                Toast.makeText(this,"Item details didn't load properly !!!", Toast.LENGTH_SHORT).show();
+                mCategoryTextView.setText("");
                 mItemTextView.setText("");
                 mRemarkTextView.setText("");
                 mAmountTextView.setText("0.0");

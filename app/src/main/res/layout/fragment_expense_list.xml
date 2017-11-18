@@ -12,17 +12,39 @@
         android:elevation="4dp"
         android:theme="@style/AppTheme.AppBarOverlay"
         app:popupTheme="@style/AppTheme.PopupOverlay"/>
+    <TextView
+        android:id="@+id/expense_trend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/expense_detail_horiz_margin"
+        android:layout_marginLeft="@dimen/expense_detail_vert_margin"
+        android:layout_marginRight="@dimen/expense_detail_vert_margin"
+        android:layout_marginTop="@dimen/expense_detail_horiz_margin"
+        android:visibility="visible"
+        android:text="@string/expense_list_trend"
+        />
     <Spinner
         android:id="@+id/expense_trend_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/expense_detail_horiz_margin"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/expense_detail_horiz_margin"
         android:gravity="center"
         android:background="@android:color/holo_blue_light"
         android:popupBackground="@android:color/holo_blue_light"
+        />
+    <TextView
+        android:id="@+id/expense_list_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/expense_detail_horiz_margin"
+        android:layout_marginLeft="@dimen/expense_detail_vert_margin"
+        android:layout_marginRight="@dimen/expense_detail_vert_margin"
+        android:layout_marginTop="@dimen/expense_detail_horiz_margin"
+        android:visibility="visible"
+        android:text="@string/expense_list"
         />
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -15,6 +16,8 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
+
+import java.util.Arrays;
 
 /**
  * Created by tony on 19/10/17.
@@ -243,6 +246,10 @@ public class MahanadiDataProvider extends ContentProvider{
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = null;
         //Log.d(LOG_TAG,"Uri Matcher case : "+Integer.toString(sUriMatcher.match(uri) ));
+        String query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                projection,selection,null,null,sortOrder,null);
+        Log.d(LOG_TAG, "Query : "+query);
+        Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
         switch (sUriMatcher.match(uri)) {
             case EXPENSE_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";

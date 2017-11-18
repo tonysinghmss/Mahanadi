@@ -23,4 +23,15 @@
         <item name="android:colorBackground">@color/colorAccent</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+    <style name="AppTheme.spinnerItemStyle">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+    <style name="AppTheme.spinnerDropDownItemStyle" >
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="AppTheme.Spinner" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:spinnerItemStyle">@style/AppTheme.spinnerItemStyle</item>
+        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.spinnerDropDownItemStyle</item>
+    </style>
 </resources>

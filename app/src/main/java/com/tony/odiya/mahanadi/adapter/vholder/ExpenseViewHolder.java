@@ -62,10 +62,16 @@ public class ExpenseViewHolder extends RecyclerView.ViewHolder implements View.O
     public void bindTo(ExpenseData expenseData, int position){
 
         this.mItem = expenseData;
-        this.mCategoryView.setText(expenseData.category);
+        this.mCategoryView.setText(expenseData.category.length()>0?expenseData.category:"N.A.");
         this.mItemView.setText(expenseData.item);
         this.mAmountView.setText(expenseData.amount);
-        CharSequence shortendRemark = expenseData.remark.length()>10?expenseData.remark.subSequence(0,10)+"...":expenseData.remark;
+        CharSequence shortendRemark = null;
+        if(expenseData.remark.length()>0) {
+            shortendRemark = expenseData.remark.length() > 10 ? expenseData.remark.subSequence(0, 10) + "..." : expenseData.remark;
+        }
+        else {
+            shortendRemark = "N.A.";
+        }
         this.mRemarkView.setText(shortendRemark);
     }
     

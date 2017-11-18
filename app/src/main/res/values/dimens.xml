@@ -2,6 +2,8 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="expense_detail_horiz_margin">8dp</dimen>
+    <dimen name="expense_detail_vert_margin">8dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="expense_text_margin">2dp</dimen>
     <dimen name="insert_fab_margin">8dp</dimen>

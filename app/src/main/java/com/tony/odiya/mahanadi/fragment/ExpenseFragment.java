@@ -126,9 +126,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             mTrend = getArguments().getString(ARG_TREND);
         }
         // Set the filter arguments for query here
-        Bundle args = Utility.getDateRange(mTrend);
+        // Bundle args = Utility.getDateRange(mTrend);
         // Load data into cursor asynchronously.
-        getLoaderManager().initLoader(EXPENSE_LOADER_ID, args, this);
+        // getLoaderManager().initLoader(EXPENSE_LOADER_ID, args, this);
     }
 
     @Override
@@ -289,8 +289,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             mExpenseSet.clear();
         }*/
         if(!mExpenseSet.isEmpty()){
+            Log.d(LOG_TAG, "Clear expense list.");
             mExpenseSet.clear();
         }
+        Log.d(LOG_TAG, "Count of rows selected : "+dataCursor.getCount());
+        Log.d(LOG_TAG, "Expenses selected are : ");
         while (dataCursor.moveToNext()) {
             ExpenseData s = new ExpenseData();
             s.setExpenseId(dataCursor.getString(dataCursor.getColumnIndex(MahanadiContract.Expense._ID)));
@@ -302,9 +305,10 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             Long milliSeconds = dataCursor.getLong(dataCursor.getColumnIndex(MahanadiContract.Expense.COL_CREATED_ON));
             String sDate = Utility.convertMillisecondsToDateString(getActivity().getApplicationContext(), milliSeconds);
             s.setCreatedOn(sDate);
+            Log.d(LOG_TAG, s.toString());
             mExpenseSet.add(s);
         }
-        mExpenseDataset.add(mExpenseSet);
+        mExpenseDataset.replaceAll(mExpenseSet);
         //Clear all data from the set.
         // mExpenseSet.clear();
         /*if(myExpenseRecyclerViewAdapter!=null){
@@ -322,6 +326,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         Log.d(LOG_TAG, "Trend spinner onItemSelected");
         String trend = parent.getItemAtPosition(pos).toString();
+        Log.i(LOG_TAG, "Trend selected :"+trend);
         if(null != mListener){
             mListener.onExpenseTrendInteraction(trend);
         }

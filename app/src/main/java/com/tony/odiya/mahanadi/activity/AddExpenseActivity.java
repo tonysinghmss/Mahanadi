@@ -42,10 +42,11 @@ import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
 
 
-public class AddExpenseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class AddExpenseActivity extends AppCompatActivity {
+// public class AddExpenseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private static final String LOG_TAG = AddExpenseActivity.class.getSimpleName();
     private Toolbar addExpenseToolbar;
-    private Spinner mCategorySpinner;
+    //private Spinner mCategorySpinner;
     private String mCategory;
     private String mItem;
     private String mRemark;
@@ -56,10 +57,10 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_expense);
         addExpenseToolbar = (Toolbar) findViewById(R.id.add_expense_toolbar);
-        mCategorySpinner = (Spinner) findViewById(R.id.expense_category_spinner);
+        /*mCategorySpinner = (Spinner) findViewById(R.id.expense_category_spinner);
         mCategorySpinner.setOnItemSelectedListener(this);
         Utility.setCategoryValuesInSpinner(mCategorySpinner,getApplicationContext());
-        Utility.selectDefaultCategoryInSpinner(mCategorySpinner, HOME);
+        Utility.selectDefaultCategoryInSpinner(mCategorySpinner, HOME);*/
         setSupportActionBar(addExpenseToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -85,6 +86,8 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
         switch (item.getItemId()) {
             case R.id.action_save:
                 //User chose to save the details inserted.
+                EditText editCategory = (EditText)findViewById(R.id.edit_category);
+                mCategory = editCategory.getText().toString();
                 EditText editItem = (EditText)findViewById(R.id.edit_item);
                 mItem = editItem.getText().toString();
                 EditText editAmount = (EditText)findViewById(R.id.edit_amount);
@@ -93,7 +96,7 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
                 EditText editRemark = (EditText)findViewById(R.id.edit_remark);
                 mRemark = editRemark.getText().toString();
                 if(mItem.equals("")||sAmount.equals("")){
-                    Toast.makeText(this,"Item and Amount are mandatory.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,"Item, Category and Amount are mandatory.", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     mAmount = Double.valueOf(sAmount);
@@ -124,33 +127,13 @@ public class AddExpenseActivity extends AppCompatActivity implements AdapterView
         }
     }
 
-    /*private void setCategoryValuesInSpinner(Spinner spinner, Context context){
-        List<String> valueList = new ArrayList<>();
-        valueList.add(GROCERY);
-        valueList.add(ELECTRONICS);
-        valueList.add(FOOD);
-        valueList.add(HOME);
-        valueList.add(CLOTHES);
-        valueList.add(CUSTOM);
-        ArrayAdapter<String> trendAdapter = new ArrayAdapter<>(context,
-                android.R.layout.simple_spinner_item,
-                valueList);
-        trendAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(trendAdapter);
-    }*/
-    /*private void selectDefaultCategoryInSpinner(Spinner spinner, String category){
-        ArrayAdapter<String> trendAdapter = (ArrayAdapter<String>) spinner.getAdapter();
-        if(category!=null && !category.isEmpty()){
-            int pos = trendAdapter.getPosition(category);
-            spinner.setSelection(pos);
-        }
-    }*/
-    @Override
+
+    /*@Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
         mCategory = parent.getItemAtPosition(pos).toString();
     }
     @Override
-    public void onNothingSelected(AdapterView<?> parent){}
+    public void onNothingSelected(AdapterView<?> parent){}*/
 
     /**
      * This method will update the budget for current month.

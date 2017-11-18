@@ -15,22 +15,20 @@
         android:theme="@style/AppTheme.AppBarOverlay"
         app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-    <Spinner
-        android:id="@+id/expense_category_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:background="@android:color/holo_blue_light"
-        android:gravity="center"
-        android:popupBackground="@android:color/holo_blue_light" />
     <EditText
         android:id="@+id/edit_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/item_hint"
+        android:layout_margin="@dimen/expense_text_margin"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:maxLength="16"/>
+    <EditText
+        android:id="@+id/edit_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/category_hint"
         android:layout_margin="@dimen/expense_text_margin"
         android:textAppearance="?attr/textAppearanceListItem"
         android:inputType="textCapSentences|textAutoCorrect"

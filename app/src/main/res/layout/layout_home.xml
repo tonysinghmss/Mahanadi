@@ -74,9 +74,8 @@
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_weight="1"
-                android:background="@android:color/holo_blue_light"
                 android:gravity="center"
-                android:popupBackground="@android:color/holo_blue_light" />
+                />
 
             <TextView
                 android:id="@+id/expense_amount"

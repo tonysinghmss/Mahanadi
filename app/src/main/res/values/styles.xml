@@ -13,6 +13,10 @@
         <item name="windowActionModeOverlay">true</item>
         <!-- Action mode background color -->
         <item name="actionModeBackground">@color/colorPrimary</item>
+        <!-- Spinner style -->
+        <item name="android:spinnerStyle">@style/AppTheme.spinnerStyle</item>
+        <!-- Spinner dropdown style-->
+        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.spinnerDropDownItemStyle</item>
 
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -23,15 +27,13 @@
         <item name="android:colorBackground">@color/colorAccent</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
-    <style name="AppTheme.spinnerItemStyle">
-        <item name="android:textColor">@color/colorPrimary</item>
-    </style>
-    <style name="AppTheme.spinnerDropDownItemStyle" >
+    <style name="AppTheme.spinnerStyle" parent="@android:style/Widget.Material.Light.Spinner">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@color/colorPrimary</item>
     </style>
-    <style name="AppTheme.Spinner" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:spinnerItemStyle">@style/AppTheme.spinnerItemStyle</item>
-        <item name="android:spinnerDropDownItemStyle">@style/AppTheme.spinnerDropDownItemStyle</item>
+    <style name="AppTheme.spinnerDropDownItemStyle" parent="@android:style/Widget.Material.DropDownItem.Spinner">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/colorPrimary</item>
     </style>
+
 </resources>

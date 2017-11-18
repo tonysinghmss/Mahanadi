@@ -32,8 +32,6 @@
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/expense_detail_horiz_margin"
         android:gravity="center"
-        android:background="@android:color/holo_blue_light"
-        android:popupBackground="@android:color/holo_blue_light"
         />
     <TextView
         android:id="@+id/expense_list_label"

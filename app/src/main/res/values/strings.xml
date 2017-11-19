@@ -4,7 +4,7 @@
     <string name="title_home">Home</string>
     <string name="title_hello">Hello Friend!!</string>
     <string name="title_expense">Expense</string>
-    <string name="title_analysis">Summary</string>
+    <string name="title_analysis">Charts</string>
     <string name="title_activity_add_expense">Add Expense</string>
     <string name="title_activity_expense_detail">Expense Detail</string>
     <string name="title_delete_expense">Delete Expense</string>
@@ -51,5 +51,8 @@
     <string name="dialog_budget_decrease_msg">You have made expenditures already. You cannot decrease your budget now!!</string>
     <string name="dialog_expense_delete_message">Deleting your past expense cannot be reverted. Are you sure?</string>
     <string name="budget_left_monthly">Budget left for month</string>
+
+
+    <string name="analysis">Analysis</string>
 
 </resources>

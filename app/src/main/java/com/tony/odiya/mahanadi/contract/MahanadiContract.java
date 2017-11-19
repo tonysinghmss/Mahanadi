@@ -19,7 +19,7 @@ public class MahanadiContract {
 
     public static class Category implements BaseColumns{
         public static final String TABLE_NAME = "Category";
-        public static final String COL_NAME = "name";
+        public static final String COL_NAME = "pointName";
         public static final String COL_CREATED_ON = "createdOn";
             public static final Uri CONTENT_URI = Uri.parse(SCHEME + "://" + AUTHORITY+"/"+TABLE_NAME);
         public static final String MIME_TYPE_ROWS =
@@ -38,6 +38,8 @@ public class MahanadiContract {
         public static final Uri CONTENT_URI = Uri.parse(SCHEME + "://" + AUTHORITY+"/"+TABLE_NAME);
         public static final String MIME_TYPE_ROWS =
                 "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME;
+        public static final String MIME_TYPE_GROUPBY_CATEGORY =
+                "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME+"."+"category";
         public static final String MIME_TYPE_SINGLE_ROW =
                 "vnd.android.cursor.item/vnd."+AUTHORITY+"."+TABLE_NAME;
     }

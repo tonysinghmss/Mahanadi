@@ -216,7 +216,6 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
 
         }
         if(requestCode == REQUEST_EXPENSE_EDIT_CODE && resultCode == Activity.RESULT_OK) {
-            // TODO: Check request code for details of an activity.
             Bundle dateRangeArgs = Utility.getDateRange(mTrend);
             getLoaderManager().restartLoader(EXPENSE_LOADER_ID,dateRangeArgs,this);
         }
@@ -529,7 +528,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         }
         return budgetAmount;
     }
-
+    // CALLBACKS FOR SEARCH VIEW
     @Override
     public boolean onQueryTextChange(String query) {
         Log.d(LOG_TAG, "onQueryTextChange");

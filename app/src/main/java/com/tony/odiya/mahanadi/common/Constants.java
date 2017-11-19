@@ -16,6 +16,7 @@ public final class Constants {
 
     public static final String START_TIME = "starttime";
     public static final String END_TIME = "endtime";
+    public static final String CATEGORY_NAME = "category";
 
     public static final String GROCERY = "GROCERY";
     public static final String ELECTRONICS = "ELECTRONICS";

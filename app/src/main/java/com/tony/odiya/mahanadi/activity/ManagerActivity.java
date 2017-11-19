@@ -10,13 +10,15 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.tony.odiya.mahanadi.R;
+import com.tony.odiya.mahanadi.fragment.AnalysisFragment;
 import com.tony.odiya.mahanadi.fragment.ExpenseFragment;
 import com.tony.odiya.mahanadi.fragment.HomeFragment;
 import com.tony.odiya.mahanadi.model.ExpenseData;
 
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 
-public class ManagerActivity extends AppCompatActivity implements HomeFragment.OnHomeTrendInteractionListener, ExpenseFragment.OnListFragmentInteractionListener{
+public class ManagerActivity extends AppCompatActivity implements HomeFragment.OnHomeTrendInteractionListener, ExpenseFragment.OnListFragmentInteractionListener,
+        AnalysisFragment.OnAnalysisFragmentInteractionListener{
 
     private static final String LOG_TAG = ManagerActivity.class.getSimpleName();
     private Fragment fragment;
@@ -43,8 +45,8 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
                     selected =  true;
                     break;
                 case R.id.navigation_analysis:
-                    // TODO: Future release.
-                    //return false;
+                    fragment = AnalysisFragment.newInstance(selectedTrend);
+                    selected = true;
                     break;
             }
             if(fragment !=null){
@@ -105,6 +107,13 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
     }
 
     public void onListFragmentInteraction(ExpenseData item){}
+
+    /**
+     *  This method communicates trend selection on Analysis fragment to Manager activity
+     *  which eventually can be used by other fragments.
+     * @param trend Trend set on Analysis fragment.
+     */
+    public void onAnalysisTrendInteraction(String trend){ this.selectedTrend = trend;}
 
 
     public void onBackPressed() {

@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -29,11 +28,14 @@ public class MahanadiDataProvider extends ContentProvider{
     public static final int EXPENSE_LIST = 1;
     public static final int EXPENSE_ROW = 2;
 
+
     public static final int CATEGORY_LIST = 3;
     public static final int CATEGORY_ROW = 4;
 
     public static final int BUDGET_LIST = 5;
     public static final int BUDGET_ROW = 6;
+
+    public static final int EXPENSE_GROUPBY_CATEGORY = 7;
 
     public static final int INVALID_URI = -1;
 
@@ -113,6 +115,10 @@ public class MahanadiDataProvider extends ContentProvider{
                 MahanadiContract.AUTHORITY,
                 MahanadiContract.Expense.TABLE_NAME+"/#",
                 EXPENSE_ROW);
+        sUriMatcher.addURI(
+                MahanadiContract.AUTHORITY,
+                MahanadiContract.Expense.TABLE_NAME+"/g",
+                EXPENSE_GROUPBY_CATEGORY);
         // Sets up BUDGET_LIST as code to represent URI for multiple rows of ExpenseData table.
         sUriMatcher.addURI(
                 MahanadiContract.AUTHORITY,
@@ -136,6 +142,8 @@ public class MahanadiDataProvider extends ContentProvider{
         sMimeTypes.put(
                 EXPENSE_ROW,
                 MahanadiContract.Expense.MIME_TYPE_SINGLE_ROW);
+        sMimeTypes.put(EXPENSE_GROUPBY_CATEGORY,
+                MahanadiContract.Expense.MIME_TYPE_GROUPBY_CATEGORY);
         // Specifies a custom MIME type for a multiple rows of ExpenseData table.
         sMimeTypes.put(
                 BUDGET_LIST,
@@ -246,15 +254,19 @@ public class MahanadiDataProvider extends ContentProvider{
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = null;
         //Log.d(LOG_TAG,"Uri Matcher case : "+Integer.toString(sUriMatcher.match(uri) ));
-        String query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
-                projection,selection,null,null,sortOrder,null);
-        Log.d(LOG_TAG, "Query : "+query);
-        Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
+        String groupBy = null;
+        String query = null;
+
         switch (sUriMatcher.match(uri)) {
             case EXPENSE_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                        projection,selection,null,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
+
                 cursor = db.query(
-                        MahanadiContract.Expense.TABLE_NAME,    //Table name
+                        MahanadiContract.Expense.TABLE_NAME,    //Table pointName
                         projection,                                 //Columns to be shown
                         selection,                                  //Filter clause
                         selectionArgs,                              //Filter arguments
@@ -264,8 +276,12 @@ public class MahanadiDataProvider extends ContentProvider{
                 );
                 break;
             case EXPENSE_ROW:
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                        projection,selection,null,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
                 cursor = db.query(
-                        MahanadiContract.Expense.TABLE_NAME,    //Table name
+                        MahanadiContract.Expense.TABLE_NAME,    //Table pointName
                         projection,                                 //Columns to be shown
                         selection,                                  //Filter clause
                         selectionArgs,                              //Filter arguments
@@ -274,10 +290,31 @@ public class MahanadiDataProvider extends ContentProvider{
                         sortOrder                                   //order by clause
                 );
                 break;
+            case EXPENSE_GROUPBY_CATEGORY:
+                if (TextUtils.isEmpty(sortOrder)) sortOrder = MahanadiContract.Expense.COL_CATEGORY+" ASC";
+                groupBy = MahanadiContract.Expense.COL_CATEGORY;
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                        projection,selection,groupBy,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
+                cursor = db.query(
+                        MahanadiContract.Expense.TABLE_NAME,    //Table pointName
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        groupBy,                                       //group by clause
+                        null,                                       //having clause
+                        sortOrder                                   //order by clause
+                );
+                break;
             case CATEGORY_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Category.TABLE_NAME,
+                        projection,selection,null,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
                 cursor = db.query(
-                        MahanadiContract.Category.TABLE_NAME,    //Table name
+                        MahanadiContract.Category.TABLE_NAME,    //Table pointName
                         projection,                                 //Columns to be shown
                         selection,                                  //Filter clause
                         selectionArgs,                              //Filter arguments
@@ -288,8 +325,12 @@ public class MahanadiDataProvider extends ContentProvider{
                 break;
             case BUDGET_LIST:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = "_ID ASC";
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Budget.TABLE_NAME,
+                        projection,selection,null,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
                 cursor = db.query(
-                        MahanadiContract.Budget.TABLE_NAME,    //Table name
+                        MahanadiContract.Budget.TABLE_NAME,    //Table pointName
                         projection,                                 //Columns to be shown
                         selection,                                  //Filter clause
                         selectionArgs,                              //Filter arguments
@@ -299,8 +340,12 @@ public class MahanadiDataProvider extends ContentProvider{
                 );
                 break;
             case BUDGET_ROW:
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Budget.TABLE_NAME,
+                        projection,selection,null,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
                 cursor = db.query(
-                        MahanadiContract.Budget.TABLE_NAME,    //Table name
+                        MahanadiContract.Budget.TABLE_NAME,    //Table pointName
                         projection,                                 //Columns to be shown
                         selection,                                  //Filter clause
                         selectionArgs,                              //Filter arguments

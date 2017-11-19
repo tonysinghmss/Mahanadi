@@ -17,12 +17,14 @@ public class GraphDataPoint implements DataPointInterface {
     public static final Comparator<GraphDataPoint> ALPHABETIC_COMPARATOR = new PointNameComparator();
 
     public GraphDataPoint( String xpointName, Double pointValue) {
-        if(xpointName.length()>0){
-            this.xpointName = xpointName.length()>3?xpointName.substring(0,3):xpointName;
+        if(pointValue>0) {
+            if (xpointName.length() > 0) {
+                this.xpointName = xpointName.length() > 3 ? xpointName.substring(0, 3) : xpointName;
+            } else {
+                this.xpointName = "N.A.";
+            }
         }
-        else{
-            this.xpointName = "N.A.";
-        }
+        else this.xpointName ="";
         this.pointValue = pointValue;
     }
 

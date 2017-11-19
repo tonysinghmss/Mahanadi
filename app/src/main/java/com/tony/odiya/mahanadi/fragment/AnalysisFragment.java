@@ -10,12 +10,15 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.tony.odiya.mahanadi.R;
@@ -51,7 +54,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
     private GraphView graph;
     private BarGraphSeries<GraphDataPoint> series;
     private static final int MAX_DATA_POINT = 100;
-
+    private Toolbar analysisToolbar;
     private OnAnalysisFragmentInteractionListener mListener;
 
     public AnalysisFragment() {
@@ -86,12 +89,23 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_analysis, container, false);
+        analysisToolbar = (Toolbar)view.findViewById(R.id.analysis_toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(analysisToolbar);
         //TODO: Set the width and height of graph programmatically to match phone.
         graph = (GraphView) view.findViewById(R.id.category_graph);
         series = new BarGraphSeries<>();
-        graph.addSeries(series);
         series.setDrawValuesOnTop(true);
         series.setValuesOnTopColor(Color.RED);
+        series.setSpacing(50);
+        series.setValueDependentColor(new ValueDependentColor<GraphDataPoint>() {
+            @Override
+            public int get(GraphDataPoint d) {
+                return Color.parseColor("#ff33b5e5");
+                //return Color.rgb(((int)d.getY()/16)%16,((int)d.getY()/16)%16, 255);
+            }
+        });
+        graph.addSeries(series);
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(135);
         Bundle args =  Utility.getDateRange(mTrend);
         getLoaderManager().restartLoader(ANALYSIS_CATEGORY_LOADER_ID,args,this);
         //TODO: Drill down to item level for future release.
@@ -184,15 +198,28 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         List<GraphDataPoint> graphDataPoints = new ArrayList<>(0);
         int count = 0;
         Log.d(LOG_TAG, "Cursor count : "+dataCursor.getCount());
+        double max =0;
         while (dataCursor.moveToNext()) {
             // Create data list for the graph.
             double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
+            if(amount > max){
+                max = amount;
+            }
             String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
             GraphDataPoint dataPoint = new GraphDataPoint( xPoint, amount);
             graphDataPoints.add(dataPoint);
         }
+        graph.getViewport().setMaxY(max+10);
+        graph.getViewport().setMinY(0);
         // populate the graph with data obtained above.
         if(!graphDataPoints.isEmpty()) {
+            if(graphDataPoints.size()==1){
+                /*
+                 * Blank datapoint added to avoid labels format exception incase of single datapoint.
+                 */
+                GraphDataPoint blank = new GraphDataPoint( "", 0.0);
+                graphDataPoints.add(blank);
+            }
             Collections.sort(graphDataPoints, GraphDataPoint.ALPHABETIC_COMPARATOR);
             // Set the x axis labels.
             List<String> horizontalLabels = new ArrayList<>(0);

@@ -32,8 +32,9 @@ public class ExpenseDataset {
         CREATION_TIME
     }
 
-    private final List<String> mExpenseDataIdList = new ArrayList<>(0);
+    private List<String> mExpenseDataIdList = new ArrayList<>(0);
     private Double totalExpenseAmount = 0.0;
+
 
     public List<String> getExpenseDataIdList() {
         return mExpenseDataIdList;

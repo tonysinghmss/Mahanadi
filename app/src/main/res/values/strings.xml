@@ -20,6 +20,7 @@
     <string name="category_hint">Item\'s Category</string>
     <string name="expense_list_trend">Trend</string>
     <string name="expense_list">Items bought</string>
+    <string name="expense_detail_header">EXPENSE DETAIL</string>
 
     <string name="action_save">Save</string>
     <string name="action_back">Back</string>

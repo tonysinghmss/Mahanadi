@@ -381,10 +381,13 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         }
         else{
             // Open the activity to show details of a particular expense.
-            Bundle expenseDataId = findExpenseDataId(position);
+            /*Bundle expenseDataId = findExpenseDataId(position);
             Intent intent = new Intent(getActivity(), ExpenseDetailActivity.class);
             intent.putExtras(expenseDataId);
-            startActivityForResult(intent, REQUEST_EXPENSE_EDIT_CODE);
+            startActivityForResult(intent, REQUEST_EXPENSE_EDIT_CODE);*/
+            // Expand the item inside recycler view
+            toggleView(position);
+
         }
     }
 
@@ -401,7 +404,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         return true;
     }
 
-    public int updateCurrentMonthBudgetRow(List<String> expenseIdList){
+    public boolean updateCurrentMonthBudgetRow(List<String> expenseIdList){
         Log.d(LOG_TAG, "updateCurrentMonthBudgetRow");
         // Step 1: Delete the rows from expense table.
         int deleteCount = deleteExpenses(expenseIdList);
@@ -410,7 +413,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         String filterClause = MahanadiContract.Budget.COL_CREATED_ON + " BETWEEN ? AND ?";
         int updateCount = 0;
         Double existingBudgetForMonth = findCurrentBudgetAmount();
-        if(deleteCount>0){
+        if(deleteCount>0 ){
             Bundle args = Utility.getDateRange(MONTHLY);
             String [] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
             ContentValues budgetDetails = new ContentValues();
@@ -421,7 +424,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
                     ,DatabaseUtils.concatenateWhere(filterClause,monthlyBudgetFilter)
                     ,budgetFilterArgs);
         }
-        return  updateCount;
+
+        if(deleteCount>0 || updateCount>0){
+            return true;
+        }
+        return  false;
     }
 
     private void toggleSelection(int position){
@@ -436,6 +443,15 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             mActionMode.invalidate();
         }
 
+    }
+
+    /**
+     * Toggle the layout of card view. Expanded item collapses and collapsed item expands.
+     * @param position
+     */
+    private void toggleView(int position){
+        Log.d(LOG_TAG, "toggleView");
+        myExpenseRecyclerViewAdapter.toggleView(position);
     }
 
     private Bundle findExpenseDataId(int position){
@@ -476,9 +492,11 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
                 Log.d(LOG_TAG, "Before removal : "+myExpenseRecyclerViewAdapter.getSelectedItems().toString());
                 mExpenseDataset.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
 
-                int updateCount = updateCurrentMonthBudgetRow(mExpenseDataset.getExpenseDataIdList());
-                Log.d(LOG_TAG, "Update count : "+updateCount);
-                if(updateCount>0) {
+                boolean updateFlag = updateCurrentMonthBudgetRow(mExpenseDataset.getExpenseDataIdList());
+                // Clear the expense item id list selected for removal.
+                mExpenseDataset.getExpenseDataIdList().clear();
+                Log.d(LOG_TAG, "Update flag : "+updateFlag);
+                if(updateFlag) {
                     mode.finish(); // Action picked, so close the Contextual ActionBar
                     return true;
                 }

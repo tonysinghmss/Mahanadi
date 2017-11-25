@@ -19,6 +19,8 @@ public class ExpenseData {
     public String expenseId;
     public String category, item, amount, remark, createdOn;
 
+    public Boolean expansionFlag = Boolean.FALSE;
+
     public static final Parcelable.Creator<ExpenseData> CREATOR
             = new Parcelable.Creator<ExpenseData>() {
         public ExpenseData createFromParcel(Parcel in) {
@@ -84,6 +86,15 @@ public class ExpenseData {
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
     }
+
+    public Boolean getExpansionFlag() {
+        return expansionFlag;
+    }
+
+    public void setExpansionFlag(Boolean expansionFlag) {
+        this.expansionFlag = expansionFlag;
+    }
+
 
     @Override
     public boolean equals(Object o) {

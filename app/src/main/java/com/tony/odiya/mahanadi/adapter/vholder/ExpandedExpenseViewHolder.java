@@ -2,6 +2,8 @@ package com.tony.odiya.mahanadi.adapter.vholder;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -17,7 +19,7 @@ import com.tony.odiya.mahanadi.model.ExpenseData;
  */
 
 
-public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
     private static final String LOG_TAG = ExpenseViewHolder.class.getSimpleName();
     public final View mView;
     public final TextView mCategoryLabelView;
@@ -34,10 +36,24 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
     public final EditText mRemarkEditText;
     public final EditText mAmountEditText;
 
-    public final SwitchCompat mSwitchCompat;
+    public Boolean mItemChanged = Boolean.FALSE;
+    //public final SwitchCompat mSwitchCompat;
 
     public ExpenseData mItem;
     private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener;
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            mItemChanged = Boolean.TRUE;
+        }
+    };
 
     public ExpandedExpenseViewHolder(View view, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener) {
         super(view);
@@ -53,17 +69,22 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         mAmountView = (TextView) view.findViewById(R.id.expanded_amount);
         mRemarkView = (TextView) view.findViewById(R.id.expanded_remark);
 
-        mCategoryEditText = (EditText)view.findViewById(R.id.expanded_edit_category);
+        mCategoryEditText = (EditText) view.findViewById(R.id.expanded_edit_category);
         mItemEditText = (EditText) view.findViewById(R.id.expanded_edit_item);
         mAmountEditText = (EditText) view.findViewById(R.id.expanded_edit_amount);
         mRemarkEditText = (EditText) view.findViewById(R.id.expanded_edit_remark);
 
-        mSwitchCompat = (SwitchCompat) view.findViewById(R.id.edit_expense_toggle);
+        mCategoryEditText.addTextChangedListener(textWatcher);
+        mItemEditText.addTextChangedListener(textWatcher);
+        mAmountEditText.addTextChangedListener(textWatcher);
+        mRemarkEditText.addTextChangedListener(textWatcher);
+
+        /*mSwitchCompat = (SwitchCompat) view.findViewById(R.id.edit_expense_toggle);
         mSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 toggleEditView(isChecked);
             }
-        });
+        });*/
         this.recyclerItemClickedListener = recyclerItemClickedListener;
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);
@@ -71,45 +92,49 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
 
     @Override
     public String toString() {
-        return super.toString() + " '" + mCategoryView.getText()+", "+mItemView.getText()+", " +mAmountView.getText()+ "'";
+        return super.toString() + " '" + mCategoryView.getText() + ", " + mItemView.getText() + ", " + mAmountView.getText() + "'";
     }
 
     @Override
-    public void onClick(View v){
-        Log.d(LOG_TAG, "You have clicked on "+mItemView.getText());
+    public void onClick(View v) {
+        Log.d(LOG_TAG, "You have clicked on " + mItemView.getText());
         int position = getAdapterPosition();
-        if(recyclerItemClickedListener !=null){
+        if (recyclerItemClickedListener != null) {
             recyclerItemClickedListener.onItemClicked(position);
         }
     }
 
     @Override
-    public boolean onLongClick(View v){
-        Log.d(LOG_TAG, "You have long clicked on "+mItemView.getText());
+    public boolean onLongClick(View v) {
+        Log.d(LOG_TAG, "You have long clicked on " + mItemView.getText());
         int position = getAdapterPosition();
-        if(recyclerItemClickedListener !=null){
+        if (recyclerItemClickedListener != null) {
             return recyclerItemClickedListener.onItemLongClicked(position);
         }
         return false;
     }
 
-    public void bindTo(ExpenseData expenseData, int position){
+    public void bindTo(ExpenseData expenseData, int position) {
 
         this.mItem = expenseData;
-        this.mCategoryView.setText(expenseData.category.length()>0?expenseData.category:"N.A.");
+        this.mCategoryView.setText(expenseData.category.length() > 0 ? expenseData.category : "N.A.");
         this.mItemView.setText(expenseData.item);
         this.mAmountView.setText(expenseData.amount);
         CharSequence shortendRemark = null;
-        if(expenseData.remark.length()>0) {
+        if (expenseData.remark.length() > 0) {
             shortendRemark = expenseData.remark.length() > 10 ? expenseData.remark.subSequence(0, 10) + "..." : expenseData.remark;
-        }
-        else {
+        } else {
             shortendRemark = "N.A.";
         }
         this.mRemarkView.setText(shortendRemark);
+
+        this.mCategoryEditText.setText(expenseData.category);
+        this.mItemEditText.setText(expenseData.item);
+        this.mAmountEditText.setText(expenseData.amount);
+        this.mRemarkEditText.setText(expenseData.remark);
     }
 
-    public void setViewTextColor(int color){
+    public void setViewTextColor(int color) {
         this.mCategoryLabelView.setTextColor(color);
         this.mItemLabelView.setTextColor(color);
         this.mAmountLabelView.setTextColor(color);
@@ -119,9 +144,14 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         this.mItemView.setTextColor(color);
         this.mAmountView.setTextColor(color);
         this.mRemarkView.setTextColor(color);
+
+        this.mCategoryEditText.setTextColor(color);
+        this.mItemEditText.setTextColor(color);
+        this.mAmountEditText.setTextColor(color);
+        this.mRemarkEditText.setTextColor(color);
     }
 
-    private void toggleEditView(boolean isChecked){
+    public void toggleEditView(boolean isChecked) {
         if (isChecked) {
             // The toggle is enabled
             mCategoryView.setVisibility(View.GONE);
@@ -129,10 +159,10 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
             mAmountView.setVisibility(View.GONE);
             mRemarkView.setVisibility(View.GONE);
 
-            mCategoryLabelView.setVisibility(View.VISIBLE);
-            mItemLabelView.setVisibility(View.VISIBLE);
-            mAmountLabelView.setVisibility(View.VISIBLE);
-            mRemarkLabelView.setVisibility(View.VISIBLE);
+            mCategoryEditText.setVisibility(View.VISIBLE);
+            mItemEditText.setVisibility(View.VISIBLE);
+            mAmountEditText.setVisibility(View.VISIBLE);
+            mRemarkEditText.setVisibility(View.VISIBLE);
 
         } else {
             // The toggle is disabled
@@ -141,12 +171,21 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
             mAmountView.setVisibility(View.VISIBLE);
             mRemarkView.setVisibility(View.VISIBLE);
 
-            mCategoryLabelView.setVisibility(View.GONE);
-            mItemLabelView.setVisibility(View.GONE);
-            mAmountLabelView.setVisibility(View.GONE);
-            mRemarkLabelView.setVisibility(View.GONE);
+            mCategoryEditText.setVisibility(View.GONE);
+            mItemEditText.setVisibility(View.GONE);
+            mAmountEditText.setVisibility(View.GONE);
+            mRemarkEditText.setVisibility(View.GONE);
 
+            if(mItemChanged){
+                mCategoryView.setText(mCategoryEditText.getText());
+                mItemView.setText(mItemEditText.getText());
+                mAmountView.setText(mAmountEditText.getText());
+                mRemarkView.setText(mRemarkEditText.getText());
+                //TODO: Save the changes into database
+                mItemChanged = Boolean.FALSE;
+            }
         }
+
     }
 
 }

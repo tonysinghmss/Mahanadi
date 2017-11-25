@@ -17,6 +17,7 @@
     <dimen name="card_margin">5dp</dimen>
     <dimen name="card_text_margin_top">4dp</dimen>
     <dimen name="card_text_margin_start">8dp</dimen>
+    <dimen name="edit_text_margin_start">4dp</dimen>
     <dimen name="card_album_radius">0dp</dimen>
     <dimen name="card_corner_radius">2dp</dimen>
 

@@ -126,15 +126,7 @@
         card_view:layout_constraintRight_toLeftOf="@id/guidelinev50"
         android:layout_marginStart="@dimen/card_text_margin_start"
         />
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/edit_expense_toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        card_view:layout_constraintTop_toTopOf="@id/guidelinehRow1Top"
-        card_view:layout_constraintBottom_toTopOf="@id/guidelinehRow1Bottom"
-        card_view:layout_constraintLeft_toRightOf="@id/guidelinev66"
-        card_view:layout_constraintRight_toLeftOf="@id/guidelinev95"
-        android:checked="false"/>
+
     <TextView
         android:id="@+id/item_label"
         android:layout_width="wrap_content"
@@ -177,7 +169,7 @@
         card_view:layout_constraintLeft_toRightOf="@id/guidelinev50"
         card_view:layout_constraintRight_toLeftOf="@id/guidelinev95"
         card_view:layout_constraintBaseline_toBaselineOf="@id/item_label"
-        android:layout_marginStart="@dimen/card_text_margin_start"
+        android:layout_marginStart="@dimen/edit_text_margin_start"
         android:inputType="textCapSentences|textAutoCorrect"
         android:visibility="gone"
         />
@@ -219,7 +211,7 @@
         card_view:layout_constraintTop_toTopOf="@id/guidelinehRow3Top"
         card_view:layout_constraintBottom_toTopOf="@id/guidelinehRow3Bottom"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="@dimen/card_text_margin_start"
+        android:layout_marginStart="@dimen/edit_text_margin_start"
         card_view:layout_constraintLeft_toRightOf="@id/guidelinev50"
         card_view:layout_constraintRight_toRightOf="@id/guidelinev95"
         android:text="@string/amount_hint"
@@ -265,7 +257,7 @@
         card_view:layout_constraintTop_toTopOf="@id/guidelinehRow4Top"
         card_view:layout_constraintBottom_toTopOf="@id/guidelinehRow4Bottom"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="@dimen/card_text_margin_start"
+        android:layout_marginStart="@dimen/edit_text_margin_start"
         card_view:layout_constraintLeft_toRightOf="@id/guidelinev50"
         card_view:layout_constraintRight_toLeftOf="@id/guidelinev95"
         android:text="@string/category_hint"
@@ -312,7 +304,7 @@
         card_view:layout_constraintTop_toTopOf="@id/guidelinehRow5Top"
         card_view:layout_constraintBottom_toTopOf="@id/guidelinehRow5Bottom"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="@dimen/card_text_margin_start"
+        android:layout_marginStart="@dimen/edit_text_margin_start"
         card_view:layout_constraintLeft_toRightOf="@id/guidelinev50"
         card_view:layout_constraintRight_toRightOf="@id/guidelinev95"
         android:text="@string/remark_hint"

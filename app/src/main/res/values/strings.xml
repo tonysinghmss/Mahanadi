@@ -14,13 +14,14 @@
 
     <string name="authority">com.tony.odiya.mahanadi.provider</string>
 
-    <string name="item_hint">Item bought</string>
+    <string name="item_hint">Item</string>
     <string name="amount_hint">Amount</string>
     <string name="remark_hint">Remark</string>
-    <string name="category_hint">Item\'s Category</string>
+    <string name="category_hint">Category</string>
     <string name="expense_list_trend">Trend</string>
     <string name="expense_list">Items bought</string>
     <string name="expense_detail_header">EXPENSE DETAIL</string>
+    <string name="expense_editable_switch">Edit</string>
 
     <string name="action_save">Save</string>
     <string name="action_back">Back</string>

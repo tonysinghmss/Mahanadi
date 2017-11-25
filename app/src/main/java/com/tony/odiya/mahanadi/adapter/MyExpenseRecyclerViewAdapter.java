@@ -3,9 +3,11 @@ package com.tony.odiya.mahanadi.adapter;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.adapter.vholder.ExpandedExpenseViewHolder;
@@ -89,9 +91,15 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
                 expenseViewHolder.setViewTextColor(Color.WHITE);
                 break;
             case EXPANDED_VIEW:
-                ExpandedExpenseViewHolder expandedExpenseViewHolder = (ExpandedExpenseViewHolder)holder;
+                final ExpandedExpenseViewHolder expandedExpenseViewHolder = (ExpandedExpenseViewHolder)holder;
                 expandedExpenseViewHolder.bindTo(dataset.getExpenseData(position), position);
                 v = (CardView) expandedExpenseViewHolder.mView.findViewById(R.id.expense_card_view);
+                SwitchCompat sc = (SwitchCompat) expandedExpenseViewHolder.mView.findViewById(R.id.edit_expense_toggle);
+                sc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        expandedExpenseViewHolder.toggleEditView(isChecked);
+                    }
+                });
                 expandedExpenseViewHolder.setViewTextColor(Color.WHITE);
                 break;
         }

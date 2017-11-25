@@ -1,11 +1,12 @@
 package com.tony.odiya.mahanadi.adapter.vholder;
 
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
@@ -33,7 +34,7 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
     public final EditText mRemarkEditText;
     public final EditText mAmountEditText;
 
-    public final ToggleButton mToggleButton;
+    public final SwitchCompat mSwitchCompat;
 
     public ExpenseData mItem;
     private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener;
@@ -57,7 +58,12 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         mAmountEditText = (EditText) view.findViewById(R.id.expanded_edit_amount);
         mRemarkEditText = (EditText) view.findViewById(R.id.expanded_edit_remark);
 
-        mToggleButton = (ToggleButton) view.findViewById(R.id.edit_expense_toggle);
+        mSwitchCompat = (SwitchCompat) view.findViewById(R.id.edit_expense_toggle);
+        mSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                toggleEditView(isChecked);
+            }
+        });
         this.recyclerItemClickedListener = recyclerItemClickedListener;
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);
@@ -113,6 +119,34 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         this.mItemView.setTextColor(color);
         this.mAmountView.setTextColor(color);
         this.mRemarkView.setTextColor(color);
+    }
+
+    private void toggleEditView(boolean isChecked){
+        if (isChecked) {
+            // The toggle is enabled
+            mCategoryView.setVisibility(View.GONE);
+            mItemView.setVisibility(View.GONE);
+            mAmountView.setVisibility(View.GONE);
+            mRemarkView.setVisibility(View.GONE);
+
+            mCategoryLabelView.setVisibility(View.VISIBLE);
+            mItemLabelView.setVisibility(View.VISIBLE);
+            mAmountLabelView.setVisibility(View.VISIBLE);
+            mRemarkLabelView.setVisibility(View.VISIBLE);
+
+        } else {
+            // The toggle is disabled
+            mCategoryView.setVisibility(View.VISIBLE);
+            mItemView.setVisibility(View.VISIBLE);
+            mAmountView.setVisibility(View.VISIBLE);
+            mRemarkView.setVisibility(View.VISIBLE);
+
+            mCategoryLabelView.setVisibility(View.GONE);
+            mItemLabelView.setVisibility(View.GONE);
+            mAmountLabelView.setVisibility(View.GONE);
+            mRemarkLabelView.setVisibility(View.GONE);
+
+        }
     }
 
 }

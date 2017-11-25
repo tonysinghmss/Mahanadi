@@ -126,14 +126,15 @@
         card_view:layout_constraintRight_toLeftOf="@id/guidelinev50"
         android:layout_marginStart="@dimen/card_text_margin_start"
         />
-    <ToggleButton
+    <android.support.v7.widget.SwitchCompat
         android:id="@+id/edit_expense_toggle"
-        android:layout_width="@dimen/expense_toggle_width"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         card_view:layout_constraintTop_toTopOf="@id/guidelinehRow1Top"
         card_view:layout_constraintBottom_toTopOf="@id/guidelinehRow1Bottom"
         card_view:layout_constraintLeft_toRightOf="@id/guidelinev66"
-        card_view:layout_constraintRight_toLeftOf="@id/guidelinev95"/>
+        card_view:layout_constraintRight_toLeftOf="@id/guidelinev95"
+        android:checked="false"/>
     <TextView
         android:id="@+id/item_label"
         android:layout_width="wrap_content"

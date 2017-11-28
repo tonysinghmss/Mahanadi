@@ -8,10 +8,10 @@ import android.text.TextWatcher;
  */
 
 public class ExpenseChangeListener implements TextWatcher {
-    private Boolean mItemChanged = Boolean.FALSE;
+    private Boolean itemChanged = Boolean.FALSE;
     private static int mPosition =0;
-    public ExpenseChangeListener(Boolean changeFlag) {
-        mItemChanged = changeFlag;
+    public ExpenseChangeListener() {
+
     }
 
     public void updatePosition( int position){
@@ -22,9 +22,17 @@ public class ExpenseChangeListener implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        mItemChanged = Boolean.TRUE;
+        itemChanged = Boolean.TRUE;
     }
 
     @Override
     public void afterTextChanged(Editable editable) {}
+
+    public Boolean getItemChanged() {
+        return itemChanged;
+    }
+
+    public void setItemChanged(Boolean itemChanged) {
+        this.itemChanged = itemChanged;
+    }
 }

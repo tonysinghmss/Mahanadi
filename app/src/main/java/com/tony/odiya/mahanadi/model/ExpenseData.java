@@ -18,8 +18,10 @@ public class ExpenseData {
     public static final String LOG_TAG = ExpenseData.class.getSimpleName();
     public String expenseId;
     public String category, item, amount, remark, createdOn;
-
+    // Flag to indicate view holder type inside recyler view.
     public Boolean expansionFlag = Boolean.FALSE;
+    //Flag to indicate data is being edited inside recycler view.
+    public Boolean editFlag = Boolean.FALSE;
 
     public static final Parcelable.Creator<ExpenseData> CREATOR
             = new Parcelable.Creator<ExpenseData>() {
@@ -95,6 +97,13 @@ public class ExpenseData {
         this.expansionFlag = expansionFlag;
     }
 
+    public Boolean getEditFlag() {
+        return editFlag;
+    }
+
+    public void setEditFlag(Boolean editFlag) {
+        this.editFlag = editFlag;
+    }
 
     @Override
     public boolean equals(Object o) {

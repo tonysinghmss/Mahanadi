@@ -44,14 +44,14 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
         void onItemClicked(int position);
 
         boolean onItemLongClicked(int position);
-        //int updateCurrentMonthBudgetRow(List<String> expenseIdList);
+        //int updateCurrentMonthBudgetRowForDeletion(List<String> expenseIdList);
     }
 
     /**
      * This method is used to communicate edit changes in items of recycler view with the fragment.
      */
     public interface OnRecyclerItemChangeListener{
-        void onItemEdit(int position);
+        boolean onItemEdit(int position, String previousAmount, ExpenseData expenseData);
     }
 
 
@@ -104,13 +104,20 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
                 expenseViewHolder.setViewTextColor(Color.WHITE);
                 break;
             case EXPANDED_VIEW:
+                final ExpenseData data = dataset.getExpenseData(position);
                 final ExpandedExpenseViewHolder expandedExpenseViewHolder = (ExpandedExpenseViewHolder)holder;
-                expandedExpenseViewHolder.bindTo(dataset.getExpenseData(position), position);
+                expandedExpenseViewHolder.bindTo(data, position);
                 v = (CardView) expandedExpenseViewHolder.mView.findViewById(R.id.expense_card_view);
                 SwitchCompat sc = (SwitchCompat) expandedExpenseViewHolder.mView.findViewById(R.id.edit_expense_toggle);
                 sc.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        expandedExpenseViewHolder.toggleEditView(isChecked);
+                        expandedExpenseViewHolder.toggleEditText(isChecked, position);
+                        if(isChecked){
+                            data.setEditFlag(true);
+
+                        } else{
+                            data.setEditFlag(false);
+                        }
                     }
                 });
                 expandedExpenseViewHolder.setViewTextColor(Color.WHITE);
@@ -133,8 +140,11 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
 
     public void toggleView(int position){
         ExpenseData e = dataset.getExpenseData(position);
-        e.setExpansionFlag(!e.getExpansionFlag());
-        notifyItemChanged(position);
+        // if the expense item is being edited, don't change the view.
+        if(!e.getEditFlag()) {
+            e.setExpansionFlag(!e.getExpansionFlag());
+            notifyItemChanged(position);
+        }
     }
 
     /*public void removeItem(int position) {
@@ -149,8 +159,8 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
         dataset.removeRange(positionStart, itemCount);
     }*/
 
-    /*public int updateCurrentMonthBudgetRow(){
-        return mItemClickedListener.updateCurrentMonthBudgetRow(mExpenseDataIdList);
+    /*public int updateCurrentMonthBudgetRowForDeletion(){
+        return mItemClickedListener.updateCurrentMonthBudgetRowForDeletion(mExpenseDataIdList);
     }*/
    /* public List<String> getExpenseDataIdList() {
         return dataset.getExpenseDataIdList();

@@ -30,10 +30,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.activity.AddExpenseActivity;
-import com.tony.odiya.mahanadi.activity.ExpenseDetailActivity;
 import com.tony.odiya.mahanadi.adapter.ExpenseDataset;
 import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
@@ -55,6 +55,7 @@ import static com.tony.odiya.mahanadi.common.Constants.QUERY_BUDGET_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_EDIT_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.UPDATE_EXPENSE_CODE;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
 import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
 import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_ADD_CODE;
@@ -386,6 +387,8 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             Intent intent = new Intent(getActivity(), ExpenseDetailActivity.class);
             intent.putExtras(expenseDataId);
             startActivityForResult(intent, REQUEST_EXPENSE_EDIT_CODE);*/
+
+            // TODO: Toggle view only if item is not being edited.
             // Expand the item inside recycler view
             toggleView(position);
 
@@ -405,11 +408,97 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         return true;
     }
 
-    public void onItemEdit(int position){
+    public boolean onItemEdit(int position, String previousAmount, ExpenseData expenseData){
+        Log.d(LOG_TAG, "You have edited item at "+position);
+        //Update database
+        String sExpenseId = expenseData.getExpenseId();
+        String sItem = expenseData.getItem();
+        String sCategory = expenseData.getCategory();
+        String sAmount = expenseData.getAmount();
+        String sRemark = expenseData.getRemark();
 
+
+
+        int updateBudgetCount = 0;
+        if(sItem.equals("")||sAmount.equals("")){
+            Toast.makeText(getActivity(),"Item and Amount are mandatory.", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Double dAmount = Double.valueOf(sAmount);
+            ContentValues expenseDetails = new ContentValues();
+            expenseDetails.put(MahanadiContract.Expense.COL_CATEGORY,sCategory);
+            expenseDetails.put(MahanadiContract.Expense.COL_ITEM,sItem);
+            expenseDetails.put(MahanadiContract.Expense.COL_AMOUNT,dAmount);
+            expenseDetails.put(MahanadiContract.Expense.COL_REMARK,sRemark);
+            String where = MahanadiContract.Expense._ID + " = ? ";
+            String[] whereArgs = {sExpenseId};
+
+            double prevAmount = 0.0;
+            // Update expense
+            int updateExpenseCount = getActivity().getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,UPDATE_EXPENSE_CODE), expenseDetails,
+                    where, whereArgs);
+            // Update budget
+            if(updateExpenseCount>0){
+                Double budgetDiff  = dAmount - Double.valueOf(previousAmount);
+                updateBudgetCount = updateCurrentMonthBudgetRowUponEdit(budgetDiff);
+                updateDataset(position, expenseData);
+                myExpenseRecyclerViewAdapter.notifyItemChanged(position);
+            }
+        }
+        // Save the changes in database and return back.
+        return updateBudgetCount>0?true:false;
     }
-    public boolean updateCurrentMonthBudgetRow(List<String> expenseIdList){
-        Log.d(LOG_TAG, "updateCurrentMonthBudgetRow");
+    private void updateDataset(int position, ExpenseData expenseData){
+        ExpenseData data = mExpenseDataset.getExpenseData(position);
+        data.setItem(expenseData.getItem());
+        data.setAmount(expenseData.getAmount());
+        data.setCategory(expenseData.getCategory());
+        data.setRemark(expenseData.getRemark());
+    }
+    private int updateCurrentMonthBudgetRowUponEdit(Double difference) {
+        String MONTHLY_BUDGET_FILTER = "datetime(" + MahanadiContract.Budget.COL_END_DATE + "/1000,'unixepoch') >= datetime('now','unixepoch')";
+        String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
+        Bundle args = Utility.getDateRange(MONTHLY);
+        String[] budgetFilterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
+        Cursor cursor = getActivity().getContentResolver().query(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI, QUERY_BUDGET_CODE)
+                , CURRENT_BUDGET_PROJECTION
+                , DatabaseUtils.concatenateWhere(filterClause, MONTHLY_BUDGET_FILTER)
+                , budgetFilterArgs
+                , null);
+        int updateCount = -1;
+        Log.d(LOG_TAG, "Row count of cursor for budget updation is " + cursor.getCount());
+        if(cursor.getCount()>0) {
+            //If budget has been set for the current month only then update budget.
+            ContentValues budgetDetails = new ContentValues();
+            Double budgetAmount = 0.0;
+            //Long budgetRowId = -1l;
+            // cursor.moveToFirst();
+            while (cursor.moveToNext()) {
+                //budgetRowId = cursor.getLong(cursor.getColumnIndex(MahanadiContract.Budget._ID));
+                budgetAmount = cursor.getDouble(cursor.getColumnIndex("BUDGET"));
+            }
+            budgetDetails.put(MahanadiContract.Budget.COL_AMOUNT, Double.toString(budgetAmount - difference));
+            Log.d(LOG_TAG, "Budget amount after updation : " + Double.toString(budgetAmount - difference));
+            updateCount = getActivity().getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Budget.CONTENT_URI, UPDATE_BUDGET_CODE)
+                    ,budgetDetails
+                    ,DatabaseUtils.concatenateWhere(filterClause,MONTHLY_BUDGET_FILTER)
+                    ,budgetFilterArgs);
+            Log.d(LOG_TAG, "Budget update count : "+ updateCount);
+        }
+        return updateCount;
+    }
+
+    /**
+     * This method will update budget of current month, when user deletes some recyler items.
+     * First this will delete the rows corresponding to expense ids provided in the input list argument.
+     * Then it will try to update the budget of current month, if budget for current month exists in database.
+     * If only deletion of expense rows; or both deletion of expense rows and updation of current months budget
+     * is done, this method will return true. For other cases, it will return false.
+     * @param expenseIdList : List of expense ids which have been deleted by the user.
+     * @return A boolean indicating whether update was successful or not.
+     */
+    public boolean updateCurrentMonthBudgetRowForDeletion(List<String> expenseIdList){
+        Log.d(LOG_TAG, "updateCurrentMonthBudgetRowForDeletion");
         // Step 1: Delete the rows from expense table.
         int deleteCount = deleteExpenses(expenseIdList);
         // Step 2: Update the budget row of current month.
@@ -496,7 +585,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
                 Log.d(LOG_TAG, "Before removal : "+myExpenseRecyclerViewAdapter.getSelectedItems().toString());
                 mExpenseDataset.removeItems(myExpenseRecyclerViewAdapter.getSelectedItems());
 
-                boolean updateFlag = updateCurrentMonthBudgetRow(mExpenseDataset.getExpenseDataIdList());
+                boolean updateFlag = updateCurrentMonthBudgetRowForDeletion(mExpenseDataset.getExpenseDataIdList());
                 // Clear the expense item id list selected for removal.
                 mExpenseDataset.getExpenseDataIdList().clear();
                 Log.d(LOG_TAG, "Update flag : "+updateFlag);

@@ -55,18 +55,13 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
     public final EditText mAmountEditText;
 
     public Boolean mItemChanged = Boolean.FALSE;
-    private String mExpenseId;
-    private String mItemBought;
-    private String mCategory;
-    private String mRemark;
-    private String mAmount;
-    //public final SwitchCompat mSwitchCompat;
+
 
     public ExpenseData mItem;
     private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener;
     private MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener recyclerItemChangeListener;
 
-    private TextWatcher textWatcher = new ExpenseChangeListener(mItemChanged);
+    private ExpenseChangeListener textWatcher = new ExpenseChangeListener();
 
     public ExpandedExpenseViewHolder(View view, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener,
                                      MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener recyclerItemChangeListener) {
@@ -88,15 +83,15 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         mAmountEditText = (EditText) view.findViewById(R.id.expanded_edit_amount);
         mRemarkEditText = (EditText) view.findViewById(R.id.expanded_edit_remark);
 
-        mCategoryEditText.addTextChangedListener(textWatcher);
+       /* mCategoryEditText.addTextChangedListener(textWatcher);
         mItemEditText.addTextChangedListener(textWatcher);
         mAmountEditText.addTextChangedListener(textWatcher);
-        mRemarkEditText.addTextChangedListener(textWatcher);
+        mRemarkEditText.addTextChangedListener(textWatcher);*/
 
         /*mSwitchCompat = (SwitchCompat) view.findViewById(R.id.edit_expense_toggle);
         mSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                toggleEditView(isChecked);
+                toggleEditText(isChecked);
             }
         });*/
         this.recyclerItemClickedListener = recyclerItemClickedListener;
@@ -166,9 +161,9 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         this.mRemarkEditText.setTextColor(color);
     }
 
-    public void toggleEditView(boolean isChecked) {
+    public void toggleEditText(boolean isChecked, int position) {
         if (isChecked) {
-            // The toggle is enabled
+            // The switch has been enabled for editing the values of expense.
             mCategoryView.setVisibility(View.GONE);
             mItemView.setVisibility(View.GONE);
             mAmountView.setVisibility(View.GONE);
@@ -178,9 +173,47 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
             mItemEditText.setVisibility(View.VISIBLE);
             mAmountEditText.setVisibility(View.VISIBLE);
             mRemarkEditText.setVisibility(View.VISIBLE);
+            // Add textwatcher for any change in data.
+            mCategoryEditText.addTextChangedListener(textWatcher);
+            mItemEditText.addTextChangedListener(textWatcher);
+            mAmountEditText.addTextChangedListener(textWatcher);
+            mRemarkEditText.addTextChangedListener(textWatcher);
 
         } else {
-            // The toggle is disabled
+            // The switch has been disabled. Save values if valid changes have been done to item,
+            // else raise a toast.
+            mItemChanged = textWatcher.getItemChanged();
+            // Remove textwatcher from edit text while saving to database.
+            mCategoryEditText.removeTextChangedListener(textWatcher);
+            mItemEditText.removeTextChangedListener(textWatcher);
+            mAmountEditText.removeTextChangedListener(textWatcher);
+            mRemarkEditText.removeTextChangedListener(textWatcher);
+
+            if(mItemChanged){
+                // Update changes into database if mItemChanged flag is set to true.
+                String sCategory = mCategoryEditText.getText().toString();
+                String sAmount = mAmountEditText.getText().toString();
+                String sRemark = mRemarkEditText.getText().toString();
+                String sItem = mItemEditText.getText().toString();
+                String prevAmount = mAmountView.getText().toString();
+
+                ExpenseData editedExpense = new ExpenseData();
+                editedExpense.setCategory(sCategory);
+                editedExpense.setAmount(sAmount);
+                editedExpense.setRemark(sRemark);
+                editedExpense.setItem(sItem);
+                editedExpense.setExpenseId(this.mItem.getExpenseId());
+                boolean dbUpdated = this.recyclerItemChangeListener.onItemEdit(position, prevAmount, editedExpense);
+                if(dbUpdated){
+                    mCategoryView.setText(sCategory);
+                    mItemView.setText(sItem);
+                    mAmountView.setText(sAmount);
+                    mRemarkView.setText(sRemark);
+                }
+                mItemChanged = Boolean.FALSE;
+                textWatcher.setItemChanged(Boolean.FALSE);
+            }
+            // revert back the view.
             mCategoryView.setVisibility(View.VISIBLE);
             mItemView.setVisibility(View.VISIBLE);
             mAmountView.setVisibility(View.VISIBLE);
@@ -191,41 +224,6 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
             mAmountEditText.setVisibility(View.GONE);
             mRemarkEditText.setVisibility(View.GONE);
 
-            if(mItemChanged){
-                // Update changes into database
-                String sCategory = mCategoryEditText.getText().toString();
-                String sAmount = mAmountEditText.getText().toString();
-                String sRemark = mRemarkEditText.getText().toString();
-                String sItem = mItemEditText.getText().toString();
-                //TODO: Save into database
-                if(sItem.equals("")||sAmount.equals("")){
-                    /*Toast.makeText(this,"Item and Amount are mandatory.", Toast.LENGTH_SHORT).show();*/
-                }
-                else {
-                    /*Double dAmount = Double.valueOf(sAmount);
-                    ContentValues expenseDetails = new ContentValues();
-                    expenseDetails.put(MahanadiContract.Expense.COL_CATEGORY, sCategory);
-                    expenseDetails.put(MahanadiContract.Expense.COL_ITEM, sItem);
-                    expenseDetails.put(MahanadiContract.Expense.COL_AMOUNT, dAmount);
-                    expenseDetails.put(MahanadiContract.Expense.COL_REMARK, sRemark);
-                    String where = MahanadiContract.Expense._ID + " = ? ";
-                    String[] whereArgs = {this.mItem.getExpenseId()};
-                    // Update expense
-                    int updateExpenseCount = getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI, UPDATE_EXPENSE_CODE), expenseDetails,
-                            where, whereArgs);
-                    // Update budget
-                    if(updateExpenseCount>0){
-                        Double budgetDiff  = dAmount - Double.valueOf(mAmount);
-                        int updateBudgetCount = updateCurrentMonthBudgetRow(budgetDiff);
-                        // restore the flag to false
-                        mItemChanged = Boolean.FALSE;
-                        mCategoryView.setText(mCategoryEditText.getText());
-                        mItemView.setText(mItemEditText.getText());
-                        mAmountView.setText(mAmountEditText.getText());
-                        mRemarkView.setText(mRemarkEditText.getText());
-                    }*/
-                }
-            }
         }
 
     }

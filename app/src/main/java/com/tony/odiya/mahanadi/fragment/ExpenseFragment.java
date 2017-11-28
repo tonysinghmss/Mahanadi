@@ -68,7 +68,8 @@ import static com.tony.odiya.mahanadi.common.Constants.REQUEST_EXPENSE_ADD_CODE;
  */
 public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
         , AdapterView.OnItemSelectedListener, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener
-        , ActionMode.Callback, SearchView.OnQueryTextListener {
+        , ActionMode.Callback, SearchView.OnQueryTextListener
+        , MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener {
     private static final String LOG_TAG = ExpenseFragment.class.getSimpleName();
     //private static final String ARG_COLUMN_COUNT = "column_count";
     private static final String ARG_TREND = "trend";
@@ -151,7 +152,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             mRecyclerView = (RecyclerView) recycler;
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mListener, this);
+            myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mListener, this, this);
             mExpenseDataset = new ExpenseDataset(mRecyclerView, myExpenseRecyclerViewAdapter);
             myExpenseRecyclerViewAdapter.dataset(mExpenseDataset);
             //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseSet, mListener);
@@ -404,6 +405,9 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
         return true;
     }
 
+    public void onItemEdit(int position){
+
+    }
     public boolean updateCurrentMonthBudgetRow(List<String> expenseIdList){
         Log.d(LOG_TAG, "updateCurrentMonthBudgetRow");
         // Step 1: Delete the rows from expense table.

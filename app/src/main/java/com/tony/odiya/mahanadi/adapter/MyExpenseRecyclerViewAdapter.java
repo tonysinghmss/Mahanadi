@@ -33,9 +33,13 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
     //private final List<ExpenseData> mValues;
     private final OnListFragmentInteractionListener mContextListener;
     private OnRecyclerItemClickedListener mItemClickedListener;
+    private OnRecyclerItemChangeListener mItemChangeListener;
    /* private final List<String> mExpenseDataIdList = new ArrayList<>(0);
     private Double totalExpenseAmount = 0.0;*/
 
+    /**
+     * This interface is used to communicate item clicks with the fragment.
+     */
     public interface OnRecyclerItemClickedListener {
         void onItemClicked(int position);
 
@@ -43,10 +47,19 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
         //int updateCurrentMonthBudgetRow(List<String> expenseIdList);
     }
 
-    public MyExpenseRecyclerViewAdapter(OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemClickedListener) {
+    /**
+     * This method is used to communicate edit changes in items of recycler view with the fragment.
+     */
+    public interface OnRecyclerItemChangeListener{
+        void onItemEdit(int position);
+    }
+
+
+    public MyExpenseRecyclerViewAdapter(OnListFragmentInteractionListener listener, OnRecyclerItemClickedListener itemClickedListener, OnRecyclerItemChangeListener itemChangeListener) {
         //mValues = items;
         mContextListener = listener;
         mItemClickedListener = itemClickedListener;
+        mItemChangeListener = itemChangeListener;
     }
 
     @Override
@@ -74,7 +87,7 @@ public class MyExpenseRecyclerViewAdapter extends SelectableAdapter<RecyclerView
             case EXPANDED_VIEW:
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.expanded_expense_card, parent, false);
-                holder = new ExpandedExpenseViewHolder(view, mItemClickedListener);
+                holder = new ExpandedExpenseViewHolder(view, mItemClickedListener, mItemChangeListener);
                 break;
         }
         return holder;

@@ -1,5 +1,10 @@
 package com.tony.odiya.mahanadi.adapter.vholder;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
@@ -9,10 +14,23 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
+import com.tony.odiya.mahanadi.adapter.holderlistener.ExpenseChangeListener;
+import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.model.ExpenseData;
+import com.tony.odiya.mahanadi.utils.Utility;
+
+import static com.tony.odiya.mahanadi.common.Constants.CURRENT_BUDGET_PROJECTION;
+import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
+import static com.tony.odiya.mahanadi.common.Constants.QUERY_BUDGET_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.QUERY_EXPENSE_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
+import static com.tony.odiya.mahanadi.common.Constants.UPDATE_EXPENSE_CODE;
 
 /**
  * Created by tony on 25/11/17.
@@ -37,25 +55,21 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
     public final EditText mAmountEditText;
 
     public Boolean mItemChanged = Boolean.FALSE;
+    private String mExpenseId;
+    private String mItemBought;
+    private String mCategory;
+    private String mRemark;
+    private String mAmount;
     //public final SwitchCompat mSwitchCompat;
 
     public ExpenseData mItem;
     private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener;
+    private MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener recyclerItemChangeListener;
 
-    private TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+    private TextWatcher textWatcher = new ExpenseChangeListener(mItemChanged);
 
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            mItemChanged = Boolean.TRUE;
-        }
-    };
-
-    public ExpandedExpenseViewHolder(View view, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener) {
+    public ExpandedExpenseViewHolder(View view, MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener recyclerItemClickedListener,
+                                     MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener recyclerItemChangeListener) {
         super(view);
         mView = view;
 
@@ -86,6 +100,7 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
             }
         });*/
         this.recyclerItemClickedListener = recyclerItemClickedListener;
+        this.recyclerItemChangeListener = recyclerItemChangeListener;
         view.setOnClickListener(this);
         view.setOnLongClickListener(this);
     }
@@ -177,12 +192,39 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
             mRemarkEditText.setVisibility(View.GONE);
 
             if(mItemChanged){
-                mCategoryView.setText(mCategoryEditText.getText());
-                mItemView.setText(mItemEditText.getText());
-                mAmountView.setText(mAmountEditText.getText());
-                mRemarkView.setText(mRemarkEditText.getText());
-                //TODO: Save the changes into database
-                mItemChanged = Boolean.FALSE;
+                // Update changes into database
+                String sCategory = mCategoryEditText.getText().toString();
+                String sAmount = mAmountEditText.getText().toString();
+                String sRemark = mRemarkEditText.getText().toString();
+                String sItem = mItemEditText.getText().toString();
+                //TODO: Save into database
+                if(sItem.equals("")||sAmount.equals("")){
+                    /*Toast.makeText(this,"Item and Amount are mandatory.", Toast.LENGTH_SHORT).show();*/
+                }
+                else {
+                    /*Double dAmount = Double.valueOf(sAmount);
+                    ContentValues expenseDetails = new ContentValues();
+                    expenseDetails.put(MahanadiContract.Expense.COL_CATEGORY, sCategory);
+                    expenseDetails.put(MahanadiContract.Expense.COL_ITEM, sItem);
+                    expenseDetails.put(MahanadiContract.Expense.COL_AMOUNT, dAmount);
+                    expenseDetails.put(MahanadiContract.Expense.COL_REMARK, sRemark);
+                    String where = MahanadiContract.Expense._ID + " = ? ";
+                    String[] whereArgs = {this.mItem.getExpenseId()};
+                    // Update expense
+                    int updateExpenseCount = getContentResolver().update(Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI, UPDATE_EXPENSE_CODE), expenseDetails,
+                            where, whereArgs);
+                    // Update budget
+                    if(updateExpenseCount>0){
+                        Double budgetDiff  = dAmount - Double.valueOf(mAmount);
+                        int updateBudgetCount = updateCurrentMonthBudgetRow(budgetDiff);
+                        // restore the flag to false
+                        mItemChanged = Boolean.FALSE;
+                        mCategoryView.setText(mCategoryEditText.getText());
+                        mItemView.setText(mItemEditText.getText());
+                        mAmountView.setText(mAmountEditText.getText());
+                        mRemarkView.setText(mRemarkEditText.getText());
+                    }*/
+                }
             }
         }
 

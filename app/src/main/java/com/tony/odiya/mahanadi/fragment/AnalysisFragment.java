@@ -169,6 +169,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         String [] filterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
         switch (loaderId) {
             case ANALYSIS_CATEGORY_LOADER_ID:
+                graph.setTitle("By Category");
                 return new CursorLoader(getActivity(),
                         Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,"g"),
                         categoryProjection,               // List of columns to fetch
@@ -177,6 +178,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         null); // Sort order
 
             case ANALYSIS_ITEM_LOADER_ID:
+                graph.setTitle("By Item");
                 String categoryFilter = MahanadiContract.Expense.COL_CATEGORY + " = ? ";
                 String itemFilterClause = DatabaseUtils.concatenateWhere(filterClause,categoryFilter);
                 String[] categoryArgs = {args.getString(CATEGORY_NAME)};
@@ -206,7 +208,8 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 max = amount;
             }
             String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
-            GraphDataPoint dataPoint = new GraphDataPoint( xPoint, amount);
+            //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
+            GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
             graphDataPoints.add(dataPoint);
         }
 
@@ -222,7 +225,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 /*
                  * Blank datapoint added to avoid labels format exception incase of single datapoint.
                  */
-                GraphDataPoint blank = new GraphDataPoint( "", 0.0);
+                GraphDataPoint blank = new GraphDataPoint("", 0.0);
                 graphDataPoints.add(blank);
             }
             Collections.sort(graphDataPoints, GraphDataPoint.ALPHABETIC_COMPARATOR);

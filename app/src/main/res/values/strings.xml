@@ -56,5 +56,7 @@
 
 
     <string name="analysis">Analysis</string>
+    <string name="by_category">By Category</string>
+    <string name="by_item">By Item</string>
 
 </resources>

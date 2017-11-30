@@ -209,8 +209,13 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             GraphDataPoint dataPoint = new GraphDataPoint( xPoint, amount);
             graphDataPoints.add(dataPoint);
         }
-        graph.getViewport().setMaxY(max+10);
+
+        graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(0);
+        graph.getViewport().setMaxY(max+10);
+        if(graphDataPoints.size()>10){
+            graph.getViewport().setScrollableY(true);
+        }
         // populate the graph with data obtained above.
         if(!graphDataPoints.isEmpty()) {
             if(graphDataPoints.size()==1){

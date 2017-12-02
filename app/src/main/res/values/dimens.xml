@@ -34,4 +34,9 @@
     <dimen name="ic_album_overflow_width">20dp</dimen>
     <dimen name="ic_album_overflow_height">30dp</dimen>
     <dimen name="ic_album_overflow_margin_top">10dp</dimen>
+
+    <dimen name="hm_greeting_text_size">20sp</dimen>
+    <dimen name="hm_expense_text_size">40sp</dimen>
+    <dimen name="hm_budget_left_text_size">35sp</dimen>
+    <dimen name="hm_grand_total_text_size">20sp</dimen>
 </resources>

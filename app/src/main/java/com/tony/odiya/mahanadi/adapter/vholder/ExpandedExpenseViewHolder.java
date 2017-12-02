@@ -1,36 +1,15 @@
 package com.tony.odiya.mahanadi.adapter.vholder;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SwitchCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
 import com.tony.odiya.mahanadi.adapter.holderlistener.ExpenseChangeListener;
-import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.model.ExpenseData;
-import com.tony.odiya.mahanadi.utils.Utility;
-
-import static com.tony.odiya.mahanadi.common.Constants.CURRENT_BUDGET_PROJECTION;
-import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
-import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
-import static com.tony.odiya.mahanadi.common.Constants.QUERY_BUDGET_CODE;
-import static com.tony.odiya.mahanadi.common.Constants.QUERY_EXPENSE_CODE;
-import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
-import static com.tony.odiya.mahanadi.common.Constants.UPDATE_BUDGET_CODE;
-import static com.tony.odiya.mahanadi.common.Constants.UPDATE_EXPENSE_CODE;
 
 /**
  * Created by tony on 25/11/17.
@@ -40,6 +19,7 @@ import static com.tony.odiya.mahanadi.common.Constants.UPDATE_EXPENSE_CODE;
 public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
     private static final String LOG_TAG = ExpenseViewHolder.class.getSimpleName();
     public final View mView;
+    public final TextView mExpenseHeaderView;
     public final TextView mCategoryLabelView;
     public final TextView mItemLabelView;
     public final TextView mAmountLabelView;
@@ -67,7 +47,7 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
                                      MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener recyclerItemChangeListener) {
         super(view);
         mView = view;
-
+        mExpenseHeaderView = (TextView) view.findViewById(R.id.expense_header);
         mCategoryLabelView = (TextView) view.findViewById(R.id.category_label);
         mItemLabelView = (TextView) view.findViewById(R.id.item_label);
         mAmountLabelView = (TextView) view.findViewById(R.id.amount_label);
@@ -145,6 +125,7 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
     }
 
     public void setViewTextColor(int color) {
+        this.mExpenseHeaderView.setTextColor(color);
         this.mCategoryLabelView.setTextColor(color);
         this.mItemLabelView.setTextColor(color);
         this.mAmountLabelView.setTextColor(color);

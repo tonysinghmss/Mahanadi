@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -100,12 +101,13 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         series.setValueDependentColor(new ValueDependentColor<GraphDataPoint>() {
             @Override
             public int get(GraphDataPoint d) {
-                return Color.parseColor("#ff33b5e5");
+                return Color.parseColor("#ff0099cc");
                 //return Color.rgb(((int)d.getY()/16)%16,((int)d.getY()/16)%16, 255);
             }
         });
         graph.addSeries(series);
-        graph.getGridLabelRenderer().setHorizontalLabelsAngle(135);
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(115);
+        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         Bundle args =  Utility.getDateRange(mTrend);
         getLoaderManager().restartLoader(ANALYSIS_CATEGORY_LOADER_ID,args,this);
         //TODO: Drill down to item level for future release.

@@ -22,7 +22,10 @@ public class GraphDataPoint implements DataPointInterface {
         //if(pointValue>0) {
             if (xpointName.length() > 0) {
                 this.xpointName = xpointName.length() > 3 ? xpointName.substring(0, 3) : xpointName;
-            } else {
+            } else if(xpointName.length() == 0){
+                this.xpointName = "";
+            }
+            else {
                 this.xpointName = "N.A.";
             }
         /*}

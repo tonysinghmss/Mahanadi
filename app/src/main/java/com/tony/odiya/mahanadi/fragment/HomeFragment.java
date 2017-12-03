@@ -196,11 +196,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
         MenuItem editBudgetItem = menu.findItem(R.id.action_edit_budget);
         MenuItem resetBudgetItem = menu.findItem(R.id.action_reset);
-        Utility.colorMenuItem(editBudgetItem,"white");
-        Utility.colorMenuItem(resetBudgetItem, "#FF4081");//R.color.colorAccent
+        Utility.colorMenuItem(editBudgetItem,Color.WHITE);
+        Utility.colorMenuItem(resetBudgetItem, Color.WHITE);
         if(!budgetIsSet) {
             //int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
-            Utility.colorMenuItem(alertMenuItem, "#FF4081");
+            Utility.colorMenuItem(alertMenuItem, Color.WHITE);
         }
         else if(budgetIsSet && alertMenuItem!=null){
             Log.d(LOG_TAG,"Remove budget alert icon from Toolbar");

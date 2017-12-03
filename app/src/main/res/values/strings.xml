@@ -58,5 +58,9 @@
     <string name="analysis">Analysis</string>
     <string name="by_category">By Category</string>
     <string name="by_item">By Item</string>
+    <string name="by_trend_daily">By Daily Trend</string>
+    <string name="by_trend_weekly">By Weekly Trend</string>
+    <string name="by_trend_monthly">By Monthly Trend</string>
+    <string name="by_trend_yearly">By Yearly Trend</string>
 
 </resources>

@@ -32,8 +32,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.tony.odiya.mahanadi.common.Constants.CATEGORY_NAME;
+import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
+import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,6 +53,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
 
     private static final int ANALYSIS_CATEGORY_LOADER_ID = 31;
     private static final int ANALYSIS_ITEM_LOADER_ID = 32;
+    private static final int ANALYSIS_TIME_LOADER_ID = 33;
 
     private String mTrend;
 
@@ -109,7 +114,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         graph.getGridLabelRenderer().setHorizontalLabelsAngle(115);
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         Bundle args =  Utility.getDateRange(mTrend);
-        getLoaderManager().restartLoader(ANALYSIS_CATEGORY_LOADER_ID,args,this);
+        getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
         //TODO: Drill down to item level for future release.
         return view;
     }
@@ -161,12 +166,62 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
             MahanadiContract.Expense.COL_ITEM+" AS X"
     };
+    /*private String[] trendProjectionByDay = {
+            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
+            MahanadiContract.Expense.COL_CREATED_ON +" AS X"
+    };*/
+    private String[] trendProjectionByDayOfWeek = {
+            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
+            " case cast ( strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
+                    "when 0 then 'S ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
+                    "when 1 then 'M ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
+                    "when 2 then 'T ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
+                    "when 3 then 'W ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
+                    "when 4 then 'T ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
+                    "when 5 then 'F ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
+                    "else 'S ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) end " +
+                    "AS X"
+    };
+
+    private String[] trendProjectionByWeek = {
+            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
+            // week of month = (week of year - week of first day of month + 1)
+            /*"strftime('%W', "+MahanadiContract.Expense.COL_CREATED_ON+
+                    ") - strftime('%W', date("+MahanadiContract.Expense.COL_CREATED_ON+", 'start of month')) +1 AS MW",
+            "strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+
+                    ", 'weekday 0', '-7 days') || '-'||strftime('%d',"
+                    +MahanadiContract.Expense.COL_CREATED_ON+", 'weekday 0','-1 days') ",*/
+            "(strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "
+                    +MahanadiContract.Expense.COL_CREATED_ON+")) ||'-'|| (strftime('%d',"+
+                    MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "+
+                    MahanadiContract.Expense.COL_CREATED_ON+")+6 ) AS X"
+    };
+
+    private String[] trendProjectionByMonth = {
+            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
+            "case cast ( strftime('%m',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
+                    "when 1 then 'JAN'"+
+                    "when 2 then 'FEB'"+
+                    "when 3 then 'MAR'"+
+                    "when 4 then 'APR'"+
+                    "when 5 then 'MAY'"+
+                    "when 6 then 'JUN'"+
+                    "when 7 then 'JUL'"+
+                    "when 8 then 'AUG'"+
+                    "when 9 then 'SEP'"+
+                    "when 10 then 'OCT'"+
+                    "when 11 then 'NOV'"+
+                    "else 'DEC' end "+
+                    "AS X"
+
+    };
     /**
      *
      */
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
         Log.d(LOG_TAG, "Inside onCreateLoader");
+        String[] projection =null;
         String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
         String [] filterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
         switch (loaderId) {
@@ -191,6 +246,40 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         itemFilterClause,
                         itemFilterArgs,
                         null);
+            case ANALYSIS_TIME_LOADER_ID:
+
+                Uri trendUri = null;
+                /*String trendFilterClause = null;
+                String[] extraArgs = null;
+                String[] extraFilterArgs = null;*/
+                switch (mTrend){
+                    case DAILY:
+                        graph.setTitle(getString(R.string.by_trend_daily));
+                        projection =itemProjection;
+                        trendUri = MahanadiContract.Expense.CONTENT_URI;
+                        break;
+                    case WEEKLY:
+                        graph.setTitle(getString(R.string.by_trend_weekly));
+                        projection =trendProjectionByDayOfWeek;
+                        trendUri = Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,"dayOfWeek");
+                        break;
+                    case MONTHLY:
+                        graph.setTitle(getString(R.string.by_trend_monthly));
+                        projection = trendProjectionByWeek;
+                        trendUri = Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,"weekOfMonth");
+                        break;
+                    case YEARLY:
+                        graph.setTitle(getString(R.string.by_trend_yearly));
+                        projection =trendProjectionByMonth;
+                        trendUri = Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,"monthOfYear");
+                        break;
+                }
+                return new CursorLoader(getActivity(),
+                        trendUri,
+                        projection,               // List of columns to fetch
+                        filterClause,                       // Filter clauses
+                        filterArgs,                         // Filter args
+                        null); // Sort order
             default:
                 return null;
         }
@@ -203,17 +292,70 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         int count = 0;
         Log.d(LOG_TAG, "Cursor count : "+dataCursor.getCount());
         double max =0;
-        while (dataCursor.moveToNext()) {
-            // Create data list for the graph.
-            double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
-            if(amount > max){
-                max = amount;
-            }
-            String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
-            //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
-            GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
-            graphDataPoints.add(dataPoint);
+        switch (loader.getId()){
+            case ANALYSIS_CATEGORY_LOADER_ID:
+                while (dataCursor.moveToNext()) {
+                    // Create data list for the graph.
+                    double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
+                    if(amount > max){
+                        max = amount;
+                    }
+                    String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    if (xPoint.length() > 0) {
+                        xPoint = xPoint.length() > 3 ? xPoint.substring(0, 3) : xPoint;
+                    } else if(xPoint.length() == 0){
+                        xPoint = "";
+                    }
+                    else {
+                        xPoint = "N.A.";
+                    }
+                    Log.d(LOG_TAG,xPoint);
+
+                    //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
+                    GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+                    graphDataPoints.add(dataPoint);
+                }
+                break;
+            case ANALYSIS_ITEM_LOADER_ID:
+                while (dataCursor.moveToNext()) {
+                    // Create data list for the graph.
+                    double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
+                    if(amount > max){
+                        max = amount;
+                    }
+                    String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    if (xPoint.length() > 0) {
+                        xPoint = xPoint.length() > 3 ? xPoint.substring(0, 3) : xPoint;
+                    } else if(xPoint.length() == 0){
+                        xPoint = "";
+                    }
+                    else {
+                        xPoint = "N.A.";
+                    }
+                    Log.d(LOG_TAG,xPoint);
+
+                    //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
+                    GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+                    graphDataPoints.add(dataPoint);
+                }
+                break;
+            case ANALYSIS_TIME_LOADER_ID:
+                while (dataCursor.moveToNext()) {
+                    // Create data list for the graph.
+                    double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
+                    if(amount > max){
+                        max = amount;
+                    }
+                    String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    Log.d(LOG_TAG,xPoint);
+
+                    //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
+                    GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+                    graphDataPoints.add(dataPoint);
+                }
+                break;
         }
+
 
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(0);

@@ -36,6 +36,9 @@ public class MahanadiDataProvider extends ContentProvider{
     public static final int BUDGET_ROW = 6;
 
     public static final int EXPENSE_GROUPBY_CATEGORY = 7;
+    public static final int EXPENSE_GROUPBY_DAYOFWEEK = 8;
+    public static final int EXPENSE_GROUPBY_WEEKOFMONTH = 9;
+    public static final int EXPENSE_GROUPBY_MONTHOFYEAR = 10;
 
     public static final int INVALID_URI = -1;
 
@@ -119,6 +122,18 @@ public class MahanadiDataProvider extends ContentProvider{
                 MahanadiContract.AUTHORITY,
                 MahanadiContract.Expense.TABLE_NAME+"/g",
                 EXPENSE_GROUPBY_CATEGORY);
+        sUriMatcher.addURI(
+                MahanadiContract.AUTHORITY,
+                MahanadiContract.Expense.TABLE_NAME+"/dayOfWeek",
+                EXPENSE_GROUPBY_DAYOFWEEK);
+        sUriMatcher.addURI(
+                MahanadiContract.AUTHORITY,
+                MahanadiContract.Expense.TABLE_NAME+"/weekOfMonth",
+                EXPENSE_GROUPBY_WEEKOFMONTH);
+        sUriMatcher.addURI(
+                MahanadiContract.AUTHORITY,
+                MahanadiContract.Expense.TABLE_NAME+"/monthOfYear",
+                EXPENSE_GROUPBY_MONTHOFYEAR);
         // Sets up BUDGET_LIST as code to represent URI for multiple rows of ExpenseData table.
         sUriMatcher.addURI(
                 MahanadiContract.AUTHORITY,
@@ -144,6 +159,12 @@ public class MahanadiDataProvider extends ContentProvider{
                 MahanadiContract.Expense.MIME_TYPE_SINGLE_ROW);
         sMimeTypes.put(EXPENSE_GROUPBY_CATEGORY,
                 MahanadiContract.Expense.MIME_TYPE_GROUPBY_CATEGORY);
+        sMimeTypes.put(EXPENSE_GROUPBY_DAYOFWEEK,
+                MahanadiContract.Expense.MIME_TYPE_GROUPBY_DAYOFWEEK);
+        sMimeTypes.put(EXPENSE_GROUPBY_WEEKOFMONTH,
+                MahanadiContract.Expense.MIME_TYPE_GROUPBY_WEEKOFMONTH);
+        sMimeTypes.put(EXPENSE_GROUPBY_MONTHOFYEAR,
+                MahanadiContract.Expense.MIME_TYPE_GROUPBY_MONTHOFYEAR);
         // Specifies a custom MIME type for a multiple rows of ExpenseData table.
         sMimeTypes.put(
                 BUDGET_LIST,
@@ -293,6 +314,63 @@ public class MahanadiDataProvider extends ContentProvider{
             case EXPENSE_GROUPBY_CATEGORY:
                 if (TextUtils.isEmpty(sortOrder)) sortOrder = MahanadiContract.Expense.COL_CATEGORY+" ASC";
                 groupBy = MahanadiContract.Expense.COL_CATEGORY;
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                        projection,selection,groupBy,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
+                cursor = db.query(
+                        MahanadiContract.Expense.TABLE_NAME,    //Table pointName
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        groupBy,                                       //group by clause
+                        null,                                       //having clause
+                        sortOrder                                   //order by clause
+                );
+                break;
+            case EXPENSE_GROUPBY_DAYOFWEEK:
+                if (TextUtils.isEmpty(sortOrder)) sortOrder =  "strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +") ASC";
+                groupBy = "strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +")";
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                        projection,selection,groupBy,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
+                cursor = db.query(
+                        MahanadiContract.Expense.TABLE_NAME,    //Table pointName
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        groupBy,                                       //group by clause
+                        null,                                       //having clause
+                        sortOrder                                   //order by clause
+                );
+                break;
+            case EXPENSE_GROUPBY_WEEKOFMONTH:
+                if (TextUtils.isEmpty(sortOrder)) sortOrder =  "strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "
+                        +MahanadiContract.Expense.COL_CREATED_ON+") ||'-'|| strftime('%d',"+
+                        MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "+
+                        MahanadiContract.Expense.COL_CREATED_ON+")+6 ASC";
+                groupBy = "(strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "
+                        +MahanadiContract.Expense.COL_CREATED_ON+")) ||'-'|| (strftime('%d',"+
+                        MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "+
+                        MahanadiContract.Expense.COL_CREATED_ON+")+6 )";
+                query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
+                        projection,selection,groupBy,null,sortOrder,null);
+                Log.d(LOG_TAG, "Query : "+query);
+                Log.d(LOG_TAG, " Query args : "+ Arrays.toString(selectionArgs));
+                cursor = db.query(
+                        MahanadiContract.Expense.TABLE_NAME,    //Table pointName
+                        projection,                                 //Columns to be shown
+                        selection,                                  //Filter clause
+                        selectionArgs,                              //Filter arguments
+                        groupBy,                                       //group by clause
+                        null,                                       //having clause
+                        sortOrder                                   //order by clause
+                );
+                break;
+            case EXPENSE_GROUPBY_MONTHOFYEAR:
+                if (TextUtils.isEmpty(sortOrder)) sortOrder =   "strftime('%m',"+MahanadiContract.Expense.COL_CREATED_ON +") ASC";
+                groupBy = "strftime('%m',"+MahanadiContract.Expense.COL_CREATED_ON +")";
                 query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
                         projection,selection,groupBy,null,sortOrder,null);
                 Log.d(LOG_TAG, "Query : "+query);

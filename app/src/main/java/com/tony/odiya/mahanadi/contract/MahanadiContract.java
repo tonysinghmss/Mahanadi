@@ -40,6 +40,12 @@ public class MahanadiContract {
                 "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME;
         public static final String MIME_TYPE_GROUPBY_CATEGORY =
                 "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME+"."+"category";
+        public static final String MIME_TYPE_GROUPBY_DAYOFWEEK =
+                "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME+"."+"dayOfWeek";
+        public static final String MIME_TYPE_GROUPBY_WEEKOFMONTH =
+                "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME+"."+"weekOfMonth";
+        public static final String MIME_TYPE_GROUPBY_MONTHOFYEAR =
+                "vnd.android.cursor.dir/vnd."+AUTHORITY+"."+TABLE_NAME+"."+"monthOfYear";
         public static final String MIME_TYPE_SINGLE_ROW =
                 "vnd.android.cursor.item/vnd."+AUTHORITY+"."+TABLE_NAME;
     }

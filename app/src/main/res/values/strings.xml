@@ -2,7 +2,7 @@
     <string name="app_name">Mahanadi</string>
 
     <string name="title_home">Home</string>
-    <string name="title_hello">Hello Friend!!</string>
+    <string name="title_expense_details">Your expense details</string>
     <string name="title_expense">Expense</string>
     <string name="title_analysis">Charts</string>
     <string name="title_activity_add_expense">Add Expense</string>

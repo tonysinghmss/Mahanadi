@@ -5,11 +5,24 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.OffsetDateTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZoneOffset;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.temporal.TemporalAdjusters;
+import org.threeten.bp.temporal.WeekFields;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Locale;
 
 import static com.tony.odiya.mahanadi.common.Constants.CLOTHES;
 import static com.tony.odiya.mahanadi.common.Constants.CUSTOM;
@@ -38,39 +51,20 @@ import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
 
 public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
-    public static String convertMillisecondsToDateString(Context context, Long timeToFormat){
-        String finalDateTime = "";
-        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        //Date date = null;
-        if (timeToFormat != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(timeToFormat);
-           /* date = cal.getTime();
-            if (date != null) {
-                long when = date.getTime();
-                int flags = 0;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_TIME;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_DATE;
-                flags |= android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_YEAR;
-                finalDateTime = android.text.format.DateUtils.formatDateTime(context,
-                        when + TimeZone.getDefault().getOffset(when), flags);
-            }*/
-            finalDateTime = iso8601Format.format(cal.getTime());
-        }
+    public static String convertMillisecondsToDateString( Long timeToFormat){
+        DateTimeFormatter iso8601Format = DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss.SSS");
+        Instant instant = Instant.ofEpochMilli(timeToFormat);
+        //Get datetime based on zone
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        String finalDateTime = iso8601Format.format(zdt);
         return finalDateTime;
     }
 
     public static Long convertDateStringToMilliseconds( String dateString){
-        SimpleDateFormat iso8601Format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        Long timeInMilliseconds = 0l;
-        try {
-            Date mDate = iso8601Format.parse(dateString);
-            timeInMilliseconds = mDate.getTime();
-        } catch (ParseException e) {
-            Log.d(LOG_TAG, "Unable to parse time format.");
-        }
-        return timeInMilliseconds;
+        DateTimeFormatter iso8601Format = DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss.SSS");
+        LocalDateTime  localDateTime = LocalDateTime.parse(dateString,iso8601Format);
+        ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
     }
 
     public static void setTrendValuesInSpinner(Spinner spinner, Context context){
@@ -96,47 +90,37 @@ public class Utility {
 
     public static Bundle getDateRange(String trend){
         Bundle args = new Bundle();
-        Calendar cal = Calendar.getInstance();
-        Long endTime = cal.getTimeInMillis();
+        Long endTime = 0l; //cal.getTimeInMillis();
         Long startTime = 0l;
-        args.putString(END_TIME,endTime.toString());
+        // JSR-310
+        Instant instant = Instant.now();
+        ZonedDateTime zdtStart = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
+        ZoneOffset offset = OffsetDateTime.now(ZoneId.of("UTC")).getOffset();
+        LocalDate today = zdtStart.toLocalDate();
+        Locale defaultLocale = Locale.getDefault();
         switch (trend){
             case DAILY:
-                cal.set(Calendar.HOUR_OF_DAY,0);
-                cal.set(Calendar.MINUTE,0);
-                cal.set(Calendar.SECOND,0);
-                cal.set(Calendar.MILLISECOND,0);
-                startTime = cal.getTimeInMillis();
-                args.putString(START_TIME, startTime.toString());
+                startTime = today.atStartOfDay().toInstant(offset).toEpochMilli();
+                endTime = zdtStart.toLocalDateTime().with(LocalDateTime.MAX).toInstant(offset).toEpochMilli();
                 break;
             case WEEKLY:
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE,0);
-                cal.set(Calendar.SECOND,0);
-                cal.set(Calendar.MILLISECOND,0);
-                cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-                startTime = cal.getTimeInMillis();
-                args.putString(START_TIME, startTime.toString());
+                DayOfWeek firstDayOfWeek = WeekFields.of(defaultLocale).getFirstDayOfWeek();
+                DayOfWeek lastDayOfWeek = firstDayOfWeek.plus(6);
+                startTime = today.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+                        .atStartOfDay().toInstant(offset).toEpochMilli();
+                endTime = today.with(TemporalAdjusters.nextOrSame(lastDayOfWeek)).atTime(23,59,59).toInstant(offset).toEpochMilli();
                 break;
             case MONTHLY:
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE,0);
-                cal.set(Calendar.SECOND,0);
-                cal.set(Calendar.MILLISECOND,0);
-                cal.set(Calendar.DAY_OF_MONTH, 1);
-                startTime = cal.getTimeInMillis();
-                args.putString(START_TIME, startTime.toString());
+                startTime = today.withDayOfMonth(1).atStartOfDay().toInstant(offset).toEpochMilli();
+                endTime = today.withDayOfMonth(today.lengthOfMonth()).atTime(23,59,59).toInstant(offset).toEpochMilli();
                 break;
             case YEARLY:
-                cal.set(Calendar.HOUR_OF_DAY, 0);
-                cal.set(Calendar.MINUTE,0);
-                cal.set(Calendar.SECOND,0);
-                cal.set(Calendar.MILLISECOND,0);
-                cal.set(Calendar.DAY_OF_YEAR,1);
-                startTime = cal.getTimeInMillis();
-                args.putString(START_TIME, startTime.toString());
+                startTime = today.withDayOfYear(1).atStartOfDay().toInstant(offset).toEpochMilli();
+                endTime = today.withDayOfYear(today.lengthOfYear()).atTime(23,59,59).toInstant(offset).toEpochMilli();
                 break;
         }
+        args.putString(START_TIME, startTime.toString());
+        args.putString(END_TIME,endTime.toString());
         return args;
     }
 
@@ -167,14 +151,13 @@ public class Utility {
         return drawable;
     }
 
+    @NonNull
     public static Long getMonthEndInMilliSeconds(){
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 23);
-        cal.set(Calendar.MINUTE,59);
-        cal.set(Calendar.SECOND,59);
-        cal.set(Calendar.MILLISECOND,1000);
-        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        return cal.getTimeInMillis();
+        Instant instant = Instant.now();
+        ZonedDateTime zdtStart = ZonedDateTime.ofInstant(instant, ZoneId.of("UTC"));
+        ZoneOffset offset = OffsetDateTime.now(ZoneId.of("UTC")).getOffset();
+        LocalDate today = zdtStart.toLocalDate();
+        return today.withDayOfMonth(today.lengthOfMonth()).atTime(23,59,59).toInstant(offset).toEpochMilli();
     }
 
     public static void setCategoryValuesInSpinner(Spinner spinner, Context context){

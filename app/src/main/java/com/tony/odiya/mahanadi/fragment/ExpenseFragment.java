@@ -304,7 +304,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             s.setRemark(dataCursor.getString(dataCursor.getColumnIndex(MahanadiContract.Expense.COL_REMARK)));
             // Convert milliseconds to date string
             Long milliSeconds = dataCursor.getLong(dataCursor.getColumnIndex(MahanadiContract.Expense.COL_CREATED_ON));
-            String sDate = Utility.convertMillisecondsToDateString(getActivity().getApplicationContext(), milliSeconds);
+            String sDate = Utility.convertMillisecondsToDateString(milliSeconds);
             s.setCreatedOn(sDate);
             Log.d(LOG_TAG, s.toString());
             mExpenseSet.add(s);

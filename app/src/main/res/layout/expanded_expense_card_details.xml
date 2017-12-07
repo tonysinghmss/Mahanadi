@@ -126,7 +126,19 @@
         card_view:layout_constraintRight_toLeftOf="@id/guidelinev50"
         android:layout_marginStart="@dimen/card_text_margin_start"
         />
-
+    <TextView
+        android:id="@+id/expense_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/expense_time"
+        android:textAppearance="?attr/textAppearanceListItem"
+        card_view:layout_constraintTop_toTopOf="@id/guidelinehRow1Top"
+        card_view:layout_constraintBottom_toTopOf="@id/guidelinehRow1Bottom"
+        android:layout_marginTop="8dp"
+        card_view:layout_constraintLeft_toRightOf="@id/guidelinev50"
+        card_view:layout_constraintRight_toLeftOf="@id/guidelinev95"
+        android:layout_marginStart="@dimen/card_text_margin_start"
+        />
     <TextView
         android:id="@+id/item_label"
         android:layout_width="wrap_content"

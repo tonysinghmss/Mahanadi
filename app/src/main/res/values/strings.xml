@@ -21,6 +21,8 @@
     <string name="expense_list_trend">Trend</string>
     <string name="expense_list">Items bought</string>
     <string name="expense_detail_header">EXPENSE DETAIL</string>
+    <string name="expense_time">DD MON YEAR HH:MM:SS</string>
+    <string name="expense_time_format">d MMM yyyy HH:mm</string>
     <string name="expense_editable_switch">Edit</string>
 
     <string name="action_save">Save</string>

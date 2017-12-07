@@ -11,6 +11,11 @@ import com.tony.odiya.mahanadi.adapter.MyExpenseRecyclerViewAdapter;
 import com.tony.odiya.mahanadi.adapter.holderlistener.ExpenseChangeListener;
 import com.tony.odiya.mahanadi.model.ExpenseData;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.format.DateTimeFormatter;
+
 /**
  * Created by tony on 25/11/17.
  */
@@ -20,6 +25,7 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
     private static final String LOG_TAG = ExpenseViewHolder.class.getSimpleName();
     public final View mView;
     public final TextView mExpenseHeaderView;
+    public final TextView mExpenseTimeView;
     public final TextView mCategoryLabelView;
     public final TextView mItemLabelView;
     public final TextView mAmountLabelView;
@@ -47,6 +53,7 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
                                      MyExpenseRecyclerViewAdapter.OnRecyclerItemChangeListener recyclerItemChangeListener) {
         super(view);
         mView = view;
+        mExpenseTimeView = (TextView) view.findViewById(R.id.expense_time);
         mExpenseHeaderView = (TextView) view.findViewById(R.id.expense_header);
         mCategoryLabelView = (TextView) view.findViewById(R.id.category_label);
         mItemLabelView = (TextView) view.findViewById(R.id.item_label);
@@ -122,9 +129,16 @@ public class ExpandedExpenseViewHolder extends RecyclerView.ViewHolder implement
         this.mItemEditText.setText(expenseData.item);
         this.mAmountEditText.setText(expenseData.amount);
         this.mRemarkEditText.setText(expenseData.remark);
+        //Create time in format
+        Long timeInMillisecs = LocalDateTime.parse(expenseData.createdOn, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                                .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(this.mView.getContext().getString(R.string.expense_time_format));
+        String sDateTime = timeFormatter.format(Instant.ofEpochMilli(timeInMillisecs).atZone(ZoneId.systemDefault()).toLocalDateTime());
+        this.mExpenseTimeView.setText(sDateTime);
     }
 
     public void setViewTextColor(int color) {
+        this.mExpenseTimeView.setTextColor(color);
         this.mExpenseHeaderView.setTextColor(color);
         this.mCategoryLabelView.setTextColor(color);
         this.mItemLabelView.setTextColor(color);

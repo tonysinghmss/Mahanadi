@@ -6,8 +6,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -24,11 +22,7 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.TemporalAdjusters;
 import org.threeten.bp.temporal.WeekFields;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -52,17 +46,15 @@ import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
 public class Utility {
     private static final String LOG_TAG = Utility.class.getSimpleName();
     public static String convertMillisecondsToDateString( Long timeToFormat){
-        DateTimeFormatter iso8601Format = DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss.SSS");
         Instant instant = Instant.ofEpochMilli(timeToFormat);
         //Get datetime based on zone
         ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-        String finalDateTime = iso8601Format.format(zdt);
+        String finalDateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(zdt);
         return finalDateTime;
     }
 
     public static Long convertDateStringToMilliseconds( String dateString){
-        DateTimeFormatter iso8601Format = DateTimeFormatter.ofPattern ("yyyy-MM-dd HH:mm:ss.SSS");
-        LocalDateTime  localDateTime = LocalDateTime.parse(dateString,iso8601Format);
+        LocalDateTime  localDateTime = LocalDateTime.parse(dateString,DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return zdt.toInstant().toEpochMilli();
     }
@@ -102,7 +94,6 @@ public class Utility {
             case DAILY:
                 startTime = today.atStartOfDay().toInstant(offset).toEpochMilli();
                 endTime = today.now().atTime(23,59,59).toInstant(offset).toEpochMilli();
-                // endTime = zdtStart.toLocalDateTime().with(LocalDateTime.MAX).toInstant(offset).toEpochMilli();
                 break;
             case WEEKLY:
                 DayOfWeek firstDayOfWeek = WeekFields.of(defaultLocale).getFirstDayOfWeek();

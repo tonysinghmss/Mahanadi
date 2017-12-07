@@ -166,10 +166,15 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
             MahanadiContract.Expense.COL_ITEM+" AS X"
     };
-    /*private String[] trendProjectionByDay = {
+    private String[] trendProjectionByHourOfDay = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            MahanadiContract.Expense.COL_CREATED_ON +" AS X"
-    };*/
+            " case cast ( strftime('%H',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
+                    "when 0 then '12AM Morning' "+
+                    "when 12 then '12PM Noon' "+
+                    "when 24 then '12AM Night' "+
+                    "else '' end "+
+                    " AS X"
+    };
     private String[] trendProjectionByDayOfWeek = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
             " case cast ( strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
@@ -255,8 +260,8 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 switch (mTrend){
                     case DAILY:
                         graph.setTitle(getString(R.string.by_trend_daily));
-                        projection =itemProjection;
-                        trendUri = MahanadiContract.Expense.CONTENT_URI;
+                        projection =trendProjectionByHourOfDay;
+                        trendUri = Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI, "hourOfDay");
                         break;
                     case WEEKLY:
                         graph.setTitle(getString(R.string.by_trend_weekly));
@@ -347,7 +352,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         max = amount;
                     }
                     String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
-                    Log.d(LOG_TAG,xPoint);
+                    Log.d(LOG_TAG," X coordinate : "+xPoint);
 
                     //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
                     GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);

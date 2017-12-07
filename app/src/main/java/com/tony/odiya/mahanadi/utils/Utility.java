@@ -101,7 +101,8 @@ public class Utility {
         switch (trend){
             case DAILY:
                 startTime = today.atStartOfDay().toInstant(offset).toEpochMilli();
-                endTime = zdtStart.toLocalDateTime().with(LocalDateTime.MAX).toInstant(offset).toEpochMilli();
+                endTime = today.now().atTime(23,59,59).toInstant(offset).toEpochMilli();
+                // endTime = zdtStart.toLocalDateTime().with(LocalDateTime.MAX).toInstant(offset).toEpochMilli();
                 break;
             case WEEKLY:
                 DayOfWeek firstDayOfWeek = WeekFields.of(defaultLocale).getFirstDayOfWeek();

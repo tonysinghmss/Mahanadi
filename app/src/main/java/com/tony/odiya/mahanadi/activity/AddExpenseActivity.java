@@ -24,6 +24,10 @@ import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.utils.Utility;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,7 +110,8 @@ public class AddExpenseActivity extends AppCompatActivity {
                     expenseDetails.put(MahanadiContract.Expense.COL_ITEM,mItem);
                     expenseDetails.put(MahanadiContract.Expense.COL_AMOUNT,mAmount);
                     expenseDetails.put(MahanadiContract.Expense.COL_REMARK,mRemark);
-                    expenseDetails.put(MahanadiContract.Expense.COL_CREATED_ON,System.currentTimeMillis());
+                    ZonedDateTime zdtUtc = ZonedDateTime.now(ZoneId.of("UTC"));
+                    expenseDetails.put(MahanadiContract.Expense.COL_CREATED_ON,zdtUtc.toInstant().toEpochMilli());
                     Uri insertUri = getContentResolver().insert(Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,SAVE_EXPENSE_CODE),expenseDetails);
                     Long rowId = ContentUris.parseId(insertUri);
 

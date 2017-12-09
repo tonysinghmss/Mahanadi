@@ -120,7 +120,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
         graph.addSeries(series);
-        graph.getGridLabelRenderer().setHorizontalLabelsAngle(115);
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(225);
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         Bundle args =  Utility.getDateRange(mTrend);
         getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
@@ -177,38 +177,38 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
     };
     private String[] trendProjectionByHourOfDay = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            /*" case cast ( strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) as integer) "+
+            " case cast ( strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')) as integer) "+
                     "when 0 then '12AM Morning' "+
                     "when 12 then '12PM Noon' "+
                     "when 24 then '12AM Night' "+
-                    "else strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) end "+
-                    " AS X"*/
-            "strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) AS X"
+                    "else strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')) end "+
+                    " AS X"
+            /*"strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')) AS X"*/
     };
     private String[] trendProjectionByDayOfWeek = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            " case cast ( strftime('%w',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) as integer) "+
-                    "when 0 then 'S ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
-                    "when 1 then 'M ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')))" +
-                    "when 2 then 'T ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
-                    "when 3 then 'W ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
-                    "when 4 then 'T ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
-                    "when 5 then 'F ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
-                    "else 'S ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) end " +
+            " case cast ( strftime('%w',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')) as integer) "+
+                    "when 0 then 'S ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime'))) " +
+                    "when 1 then 'M ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')))" +
+                    "when 2 then 'T ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime'))) " +
+                    "when 3 then 'W ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime'))) " +
+                    "when 4 then 'T ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime'))) " +
+                    "when 5 then 'F ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime'))) " +
+                    "else 'S ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime'))) end " +
                     "AS X"
     };
 
     private String[] trendProjectionByWeek = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
             // week of month = (week of year - week of first day of month + 1)
-             "strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '-'||strftime('%w', datetime(createdOn/1000, 'unixepoch'))||' day' )"+
-"||'-'||strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '+'||(6-strftime('%w', datetime(createdOn/1000, 'unixepoch')))||' day' )"+
+             "strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime'), '-'||strftime('%w', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime'))||' day' )"+
+"||'-'||strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime'), '+'||(6-strftime('%w', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime')))||' day' )"+
                      " AS X"
     };
 
     private String[] trendProjectionByMonth = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            "case cast ( strftime('%m',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) as integer) "+
+            "case cast ( strftime('%m',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')) as integer) "+
                     "when 1 then 'JAN'"+
                     "when 2 then 'FEB'"+
                     "when 3 then 'MAR'"+
@@ -274,7 +274,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         break;
                     case MONTHLY:
                         graph.setTitle(getString(R.string.by_trend_monthly));
-                        projection = trendProjectionByWeek;
+                        projection = null;
                         trendUri = Uri.withAppendedPath(MahanadiContract.Expense.CONTENT_URI,"weekOfMonth");
                         break;
                     case YEARLY:
@@ -352,23 +352,11 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 while (dataCursor.moveToNext()) {
                     // Create data list for the graph.
                     double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
-                    if(amount > max){
+                    if (amount > max) {
                         max = amount;
                     }
-                    String xPoint=null;
-                    //TODO: For all trends convert utc time to local time
-                    if(mTrend.equalsIgnoreCase(DAILY)){
-                        String utcHour = dataCursor.getString(dataCursor.getColumnIndex("X"));
-                        OffsetTime utcTime = LocalTime.parse(utcHour+":00:00").atOffset(ZoneOffset.UTC);
-                        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.systemDefault());
-                        ZoneOffset zoneOffset = zdt.getOffset();
-                        OffsetTime localTime = utcTime.withOffsetSameInstant(zoneOffset);
-                        xPoint = Integer.toString(localTime.getHour());
-                    }
-                    else xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
-                    Log.d(LOG_TAG," X coordinate : "+xPoint);
-
-                    //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
+                    String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    Log.d(LOG_TAG, " X coordinate : " + xPoint);
                     GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
                     graphDataPoints.add(dataPoint);
                 }

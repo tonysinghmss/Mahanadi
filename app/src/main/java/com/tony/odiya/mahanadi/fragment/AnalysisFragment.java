@@ -120,11 +120,10 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
         graph.addSeries(series);
-        graph.getGridLabelRenderer().setHorizontalLabelsAngle(225);
+        graph.getGridLabelRenderer().setHorizontalLabelsAngle(115);
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         Bundle args =  Utility.getDateRange(mTrend);
         getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
-        //TODO: Drill down to item level for future release.
         return view;
     }
 
@@ -198,14 +197,6 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                     "AS X"
     };
 
-    private String[] trendProjectionByWeek = {
-            "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            // week of month = (week of year - week of first day of month + 1)
-             "strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime'), '-'||strftime('%w', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime'))||' day' )"+
-"||'-'||strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime'), '+'||(6-strftime('%w', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch','localtime')))||' day' )"+
-                     " AS X"
-    };
-
     private String[] trendProjectionByMonth = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
             "case cast ( strftime('%m',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch','localtime')) as integer) "+
@@ -258,9 +249,6 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             case ANALYSIS_TIME_LOADER_ID:
 
                 Uri trendUri = null;
-                /*String trendFilterClause = null;
-                String[] extraArgs = null;
-                String[] extraFilterArgs = null;*/
                 switch (mTrend){
                     case DAILY:
                         graph.setTitle(getString(R.string.by_trend_daily));
@@ -379,7 +367,13 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 GraphDataPoint blank = new GraphDataPoint("", 0.0);
                 graphDataPoints.add(blank);
             }
-            Collections.sort(graphDataPoints, GraphDataPoint.ALPHABETIC_COMPARATOR);
+            // Sorting of graph points
+            switch (loader.getId()) {
+                case ANALYSIS_CATEGORY_LOADER_ID:
+                case ANALYSIS_ITEM_LOADER_ID:
+                    Collections.sort(graphDataPoints, GraphDataPoint.ALPHABETIC_COMPARATOR);
+                    break;
+            }
             // Set the x axis labels.
             List<String> horizontalLabels = new ArrayList<>(0);
             for (GraphDataPoint p : graphDataPoints) {

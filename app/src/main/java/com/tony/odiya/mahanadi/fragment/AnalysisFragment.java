@@ -27,6 +27,15 @@ import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.model.GraphDataPoint;
 import com.tony.odiya.mahanadi.utils.Utility;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.OffsetTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZoneOffset;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -168,43 +177,38 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
     };
     private String[] trendProjectionByHourOfDay = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            " case cast ( strftime('%H',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
+            /*" case cast ( strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) as integer) "+
                     "when 0 then '12AM Morning' "+
                     "when 12 then '12PM Noon' "+
                     "when 24 then '12AM Night' "+
-                    "else '' end "+
-                    " AS X"
+                    "else strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) end "+
+                    " AS X"*/
+            "strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) AS X"
     };
     private String[] trendProjectionByDayOfWeek = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            " case cast ( strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
-                    "when 0 then 'S ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
-                    "when 1 then 'M ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
-                    "when 2 then 'T ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
-                    "when 3 then 'W ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
-                    "when 4 then 'T ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
-                    "when 5 then 'F ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) " +
-                    "else 'S ' || (strftime('%d', "+MahanadiContract.Expense.COL_CREATED_ON +") + 1 ) end " +
+            " case cast ( strftime('%w',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) as integer) "+
+                    "when 0 then 'S ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
+                    "when 1 then 'M ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')))" +
+                    "when 2 then 'T ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
+                    "when 3 then 'W ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
+                    "when 4 then 'T ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
+                    "when 5 then 'F ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) " +
+                    "else 'S ' || (strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))) end " +
                     "AS X"
     };
 
     private String[] trendProjectionByWeek = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
             // week of month = (week of year - week of first day of month + 1)
-            /*"strftime('%W', "+MahanadiContract.Expense.COL_CREATED_ON+
-                    ") - strftime('%W', date("+MahanadiContract.Expense.COL_CREATED_ON+", 'start of month')) +1 AS MW",
-            "strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+
-                    ", 'weekday 0', '-7 days') || '-'||strftime('%d',"
-                    +MahanadiContract.Expense.COL_CREATED_ON+", 'weekday 0','-1 days') ",*/
-            "(strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "
-                    +MahanadiContract.Expense.COL_CREATED_ON+")) ||'-'|| (strftime('%d',"+
-                    MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "+
-                    MahanadiContract.Expense.COL_CREATED_ON+")+6 ) AS X"
+             "strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '-'||strftime('%w', datetime(createdOn/1000, 'unixepoch'))||' day' )"+
+"||'-'||strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '+'||(6-strftime('%w', datetime(createdOn/1000, 'unixepoch')))||' day' )"+
+                     " AS X"
     };
 
     private String[] trendProjectionByMonth = {
             "SUM("+MahanadiContract.Expense.COL_AMOUNT+") AS Y",
-            "case cast ( strftime('%m',"+MahanadiContract.Expense.COL_CREATED_ON +") as integer) "+
+            "case cast ( strftime('%m',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) as integer) "+
                     "when 1 then 'JAN'"+
                     "when 2 then 'FEB'"+
                     "when 3 then 'MAR'"+
@@ -351,7 +355,17 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                     if(amount > max){
                         max = amount;
                     }
-                    String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    String xPoint=null;
+                    //TODO: For all trends convert utc time to local time
+                    if(mTrend.equalsIgnoreCase(DAILY)){
+                        String utcHour = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                        OffsetTime utcTime = LocalTime.parse(utcHour+":00:00").atOffset(ZoneOffset.UTC);
+                        ZonedDateTime zdt = ZonedDateTime.now(ZoneId.systemDefault());
+                        ZoneOffset zoneOffset = zdt.getOffset();
+                        OffsetTime localTime = utcTime.withOffsetSameInstant(zoneOffset);
+                        xPoint = Integer.toString(localTime.getHour());
+                    }
+                    else xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
                     Log.d(LOG_TAG," X coordinate : "+xPoint);
 
                     //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));

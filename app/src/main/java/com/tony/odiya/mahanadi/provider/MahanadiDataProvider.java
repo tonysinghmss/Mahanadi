@@ -336,8 +336,8 @@ public class MahanadiDataProvider extends ContentProvider{
                 );
                 break;
             case EXPENSE_GROUPBY_HOUROFDAY:
-                if (TextUtils.isEmpty(sortOrder)) sortOrder = "strftime('%Y-%m-%dT%H:00:00.000',"+MahanadiContract.Expense.COL_CREATED_ON +") ASC";
-                groupBy = "strftime('%Y-%m-%dT%H:00:00.000',"+MahanadiContract.Expense.COL_CREATED_ON +")";
+                if (TextUtils.isEmpty(sortOrder)) sortOrder = "strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) ASC";
+                groupBy = "strftime('%H',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))";
                 query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
                         projection,selection,groupBy,null,sortOrder,null);
                 Log.d(LOG_TAG, "Query : "+query);
@@ -353,8 +353,8 @@ public class MahanadiDataProvider extends ContentProvider{
                 );
                 break;
             case EXPENSE_GROUPBY_DAYOFWEEK:
-                if (TextUtils.isEmpty(sortOrder)) sortOrder =  "strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +") ASC";
-                groupBy = "strftime('%w',"+MahanadiContract.Expense.COL_CREATED_ON +")";
+                if (TextUtils.isEmpty(sortOrder)) sortOrder =  "strftime('%w',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) ASC";
+                groupBy = "strftime('%w',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))";
                 query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
                         projection,selection,groupBy,null,sortOrder,null);
                 Log.d(LOG_TAG, "Query : "+query);
@@ -370,14 +370,11 @@ public class MahanadiDataProvider extends ContentProvider{
                 );
                 break;
             case EXPENSE_GROUPBY_WEEKOFMONTH:
-                if (TextUtils.isEmpty(sortOrder)) sortOrder =  "strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "
-                        +MahanadiContract.Expense.COL_CREATED_ON+") ||'-'|| strftime('%d',"+
-                        MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "+
-                        MahanadiContract.Expense.COL_CREATED_ON+")+6 ASC";
-                groupBy = "(strftime('%d',"+MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "
-                        +MahanadiContract.Expense.COL_CREATED_ON+")) ||'-'|| (strftime('%d',"+
-                        MahanadiContract.Expense.COL_CREATED_ON+") - strftime('%w', "+
-                        MahanadiContract.Expense.COL_CREATED_ON+")+6 )";
+                if (TextUtils.isEmpty(sortOrder)) sortOrder =  "strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '-'||strftime('%w', datetime(createdOn/1000, 'unixepoch'))||' day' )"+
+                        "||'-'||strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '+'||(6-strftime('%w', datetime(createdOn/1000, 'unixepoch')))||' day' )"+
+                        " ASC ";
+                groupBy = "strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '-'||strftime('%w', datetime(createdOn/1000, 'unixepoch'))||' day' )"+
+                        "||'-'||strftime('%d', datetime("+MahanadiContract.Expense.COL_CREATED_ON+"/1000, 'unixepoch'), '+'||(6-strftime('%w', datetime(createdOn/1000, 'unixepoch')))||' day' )";
                 query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
                         projection,selection,groupBy,null,sortOrder,null);
                 Log.d(LOG_TAG, "Query : "+query);
@@ -393,8 +390,8 @@ public class MahanadiDataProvider extends ContentProvider{
                 );
                 break;
             case EXPENSE_GROUPBY_MONTHOFYEAR:
-                if (TextUtils.isEmpty(sortOrder)) sortOrder =   "strftime('%m',"+MahanadiContract.Expense.COL_CREATED_ON +") ASC";
-                groupBy = "strftime('%m',"+MahanadiContract.Expense.COL_CREATED_ON +")";
+                if (TextUtils.isEmpty(sortOrder)) sortOrder =   "strftime('%m',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch')) ASC";
+                groupBy = "strftime('%m',datetime("+MahanadiContract.Expense.COL_CREATED_ON +"/1000, 'unixepoch'))";
                 query = SQLiteQueryBuilder.buildQueryString(false,MahanadiContract.Expense.TABLE_NAME,
                         projection,selection,groupBy,null,sortOrder,null);
                 Log.d(LOG_TAG, "Query : "+query);

@@ -58,6 +58,7 @@
 
 
     <string name="analysis">Analysis</string>
+    <string name="analysis_trend">Trend</string>
     <string name="by_category">By Category</string>
     <string name="by_item">By Item</string>
     <string name="by_trend_daily">By Daily Trend</string>

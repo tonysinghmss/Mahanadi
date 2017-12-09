@@ -11,26 +11,27 @@ import java.util.Comparator;
 public class GraphDataPoint implements DataPointInterface {
 
     private int count;
-    private String xpointName;
+    private String xpointDisplayName;
     private Long xtime;
     private Double pointValue;
+    private String xpoint;
 
     public static final Comparator<GraphDataPoint> ALPHABETIC_COMPARATOR = new PointNameComparator();
     public static final Comparator<GraphDataPoint> CREATION_TIME_COMPARATOR = new PointCreatedOnComparator();
 
-    public GraphDataPoint(String xpointName, Double pointValue) {
+    public GraphDataPoint(String xpointDisplayName, Double pointValue) {
         //if(pointValue>0) {
-            /*if (xpointName.length() > 0) {
-                this.xpointName = xpointName.length() > 3 ? xpointName.substring(0, 3) : xpointName;
-            } else if(xpointName.length() == 0){
-                this.xpointName = "";
+            /*if (xpointDisplayName.length() > 0) {
+                this.xpointDisplayName = xpointDisplayName.length() > 3 ? xpointDisplayName.substring(0, 3) : xpointDisplayName;
+            } else if(xpointDisplayName.length() == 0){
+                this.xpointDisplayName = "";
             }
             else {
-                this.xpointName = "N.A.";
+                this.xpointDisplayName = "N.A.";
             }*/
         /*}
-        else this.xpointName ="";*/
-        this.xpointName = xpointName;
+        else this.xpointDisplayName ="";*/
+        this.xpointDisplayName = xpointDisplayName;
         this.pointValue = pointValue;
     }
 
@@ -53,16 +54,16 @@ public class GraphDataPoint implements DataPointInterface {
         this.count = count;
     }
 
-    public String getXpointName() {
-        return xpointName;
+    public String getXpointDisplayName() {
+        return xpointDisplayName;
     }
 
-    public void setXpointName(String xpointName) {
-        if(xpointName.length()>0){
-            this.xpointName = xpointName.length()>3?xpointName.substring(0,3):xpointName;
+    public void setXpointDisplayName(String xpointDisplayName) {
+        if(xpointDisplayName.length()>0){
+            this.xpointDisplayName = xpointDisplayName.length()>3? xpointDisplayName.substring(0,3): xpointDisplayName;
         }
         else{
-            this.xpointName = "N.A.";
+            this.xpointDisplayName = "N.A.";
         }
     }
 
@@ -82,10 +83,18 @@ public class GraphDataPoint implements DataPointInterface {
         this.pointValue = pointValue;
     }
 
+    public String getXpoint() {
+        return xpoint;
+    }
+
+    public void setXpoint(String xpoint) {
+        this.xpoint = xpoint;
+    }
+
     private static class PointNameComparator implements Comparator<GraphDataPoint>{
         @Override
         public int compare(GraphDataPoint gdp, GraphDataPoint t1) {
-            return gdp.getXpointName().compareTo(t1.getXpointName());
+            return gdp.getXpointDisplayName().compareTo(t1.getXpointDisplayName());
         }
     }
 

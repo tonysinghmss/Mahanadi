@@ -16,35 +16,33 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPointInterface;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.model.GraphDataPoint;
 import com.tony.odiya.mahanadi.utils.Utility;
 
-import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.LocalTime;
-import org.threeten.bp.OffsetTime;
-import org.threeten.bp.ZoneId;
-import org.threeten.bp.ZoneOffset;
-import org.threeten.bp.ZonedDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.tony.odiya.mahanadi.common.Constants.CATEGORY;
 import static com.tony.odiya.mahanadi.common.Constants.CATEGORY_NAME;
 import static com.tony.odiya.mahanadi.common.Constants.DAILY;
 import static com.tony.odiya.mahanadi.common.Constants.END_TIME;
 import static com.tony.odiya.mahanadi.common.Constants.MONTHLY;
 import static com.tony.odiya.mahanadi.common.Constants.START_TIME;
+import static com.tony.odiya.mahanadi.common.Constants.TIME_TREND;
 import static com.tony.odiya.mahanadi.common.Constants.WEEKLY;
 import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
 
@@ -56,7 +54,8 @@ import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
  * Use the {@link AnalysisFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener,
+        OnDataPointTapListener{
     private static final String LOG_TAG = AnalysisFragment.class.getSimpleName();
     private static final String ARG_TREND = "trend";
 
@@ -65,11 +64,14 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
     private static final int ANALYSIS_TIME_LOADER_ID = 33;
 
     private String mTrend;
+    private String mAnalysisType;
 
     private GraphView graph;
     private BarGraphSeries<GraphDataPoint> series;
     private static final int MAX_DATA_POINT = 100;
     private Toolbar analysisToolbar;
+    private Spinner analysisSpinner;
+    private Spinner analysisTimeTrendSpinner;
     private OnAnalysisFragmentInteractionListener mListener;
 
     public AnalysisFragment() {
@@ -107,7 +109,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         analysisToolbar = (Toolbar)view.findViewById(R.id.analysis_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(analysisToolbar);
         //TODO: Set the width and height of graph programmatically to match phone.
-        graph = (GraphView) view.findViewById(R.id.category_graph);
+        graph = (GraphView) view.findViewById(R.id.analysis_graph);
         series = new BarGraphSeries<>();
         series.setDrawValuesOnTop(true);
         series.setValuesOnTopColor(Color.RED);
@@ -122,17 +124,20 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         graph.addSeries(series);
         graph.getGridLabelRenderer().setHorizontalLabelsAngle(115);
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
-        Bundle args =  Utility.getDateRange(mTrend);
-        getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
+        //Set spinners
+        analysisSpinner = (Spinner)view.findViewById(R.id.analysis_spinner);
+        analysisSpinner.setOnItemSelectedListener(this);
+        Utility.setValuesInAnalysisSpinner(analysisSpinner,getActivity().getApplicationContext());
+        //TODO: Set selection on spinner
+        Utility.selectDefaultTrendInSpinner(analysisSpinner,TIME_TREND);
+
+        analysisTimeTrendSpinner = (Spinner)view.findViewById(R.id.analysis_time_trend_spinner);
+        analysisTimeTrendSpinner.setOnItemSelectedListener(this);
+        Utility.setTrendValuesInSpinner(analysisTimeTrendSpinner ,getActivity().getApplicationContext());
+        /*Bundle args =  Utility.getDateRange(mTrend);
+        getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);*/
         return view;
     }
-
-    /*
-    public void onButtonPressed(String trend) {
-        if (mListener != null) {
-            mListener.onAnalysisTrendInteraction(trend);
-        }
-    }*/
 
     @Override
     public void onAttach(Context context) {
@@ -298,22 +303,27 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         max = amount;
                     }
                     String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    String xPointDisplay = null;
                     if (xPoint.length() > 0) {
-                        xPoint = xPoint.length() > 3 ? xPoint.substring(0, 3) : xPoint;
+                        xPointDisplay = xPoint.length() > 3 ? xPoint.substring(0, 3) : xPoint;
                     } else if(xPoint.length() == 0){
-                        xPoint = "";
+                        xPointDisplay = "";
                     }
                     else {
-                        xPoint = "N.A.";
+                        xPointDisplay = "N.A.";
                     }
-                    Log.d(LOG_TAG,xPoint);
-
+                    Log.d(LOG_TAG,xPointDisplay);
+                    Log.d(LOG_TAG, xPoint);
                     //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
-                    GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+                    GraphDataPoint dataPoint = new GraphDataPoint(xPointDisplay, amount);
+                    dataPoint.setXpoint(xPoint);
                     graphDataPoints.add(dataPoint);
                 }
+                //Set the tap listener
+                series.setOnDataPointTapListener(this);
                 break;
             case ANALYSIS_ITEM_LOADER_ID:
+                series.setOnDataPointTapListener(null);
                 while (dataCursor.moveToNext()) {
                     // Create data list for the graph.
                     double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
@@ -321,22 +331,26 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         max = amount;
                     }
                     String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+                    String xPointDisplay = null;
                     if (xPoint.length() > 0) {
-                        xPoint = xPoint.length() > 3 ? xPoint.substring(0, 3) : xPoint;
+                        xPointDisplay = xPoint.length() > 3 ? xPoint.substring(0, 3) : xPoint;
                     } else if(xPoint.length() == 0){
-                        xPoint = "";
+                        xPointDisplay = "";
                     }
                     else {
-                        xPoint = "N.A.";
+                        xPointDisplay = "N.A.";
                     }
+                    Log.d(LOG_TAG,xPointDisplay);
                     Log.d(LOG_TAG,xPoint);
 
                     //Long createdOnMilliSeconds = dataCursor.getLong(dataCursor.getColumnIndex("D"));
-                    GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+                    GraphDataPoint dataPoint = new GraphDataPoint(xPointDisplay, amount);
+                    dataPoint.setXpoint(xPoint);
                     graphDataPoints.add(dataPoint);
                 }
                 break;
             case ANALYSIS_TIME_LOADER_ID:
+                series.setOnDataPointTapListener(null);
                 while (dataCursor.moveToNext()) {
                     // Create data list for the graph.
                     double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
@@ -346,6 +360,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                     String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
                     Log.d(LOG_TAG, " X coordinate : " + xPoint);
                     GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+                    dataPoint.setXpoint(xPoint);
                     graphDataPoints.add(dataPoint);
                 }
                 break;
@@ -380,7 +395,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 // set the value of getX after sorting so that static labels appear in order of sorting.
                 p.setCount(count);
                 count++;
-                horizontalLabels.add(p.getXpointName());
+                horizontalLabels.add(p.getXpointDisplayName());
             }
             series.resetData(graphDataPoints.toArray(new GraphDataPoint[graphDataPoints.size()]));
             StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
@@ -391,4 +406,62 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {}
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
+        Spinner spinner = (Spinner)parent;
+        if(spinner.getId() == R.id.analysis_spinner){
+            mAnalysisType = spinner.getItemAtPosition(pos).toString();
+            Bundle args = Utility.getDateRange(mTrend);
+            switch (mAnalysisType){
+                case CATEGORY:
+                    analysisTimeTrendSpinner.setVisibility(View.GONE);
+                    getLoaderManager().restartLoader(ANALYSIS_CATEGORY_LOADER_ID,args,this);
+                    break;
+                case TIME_TREND:
+                    analysisTimeTrendSpinner.setVisibility(View.VISIBLE);
+                    Utility.selectDefaultTrendInSpinner(analysisTimeTrendSpinner, mTrend);
+                    break;
+            }
+        }
+        if(spinner.getId() == R.id.analysis_time_trend_spinner){
+            mTrend = spinner.getItemAtPosition(pos).toString();
+
+            if(null != mListener){
+                mListener.onAnalysisTrendInteraction(mTrend);
+            }
+            Bundle args;
+            switch (mTrend){
+                case YEARLY:
+                    args = Utility.getDateRange(YEARLY);
+                    getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
+                    break;
+                case MONTHLY:
+                    args = Utility.getDateRange(MONTHLY);
+                    getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
+                    break;
+                case WEEKLY:
+                    args = Utility.getDateRange(WEEKLY);
+                    getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
+                    break;
+                case DAILY:
+                    args = Utility.getDateRange(DAILY);
+                    getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent){}
+
+    @Override
+    public void onTap(Series series, DataPointInterface dataPoint) {
+        GraphDataPoint graphDataPoint = (GraphDataPoint)dataPoint;
+        String category = graphDataPoint.getXpoint();
+        Bundle args = Utility.getDateRange(mTrend);
+        args.putString(CATEGORY_NAME,category);
+        getLoaderManager().restartLoader(ANALYSIS_ITEM_LOADER_ID,args,this);
+    }
+
 }

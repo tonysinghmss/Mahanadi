@@ -14,6 +14,10 @@ public final class Constants {
     public static final String WEEKLY = "WEEKLY";
     public static final String DAILY = "DAILY";
 
+    public static final String ITEM = "ITEM";
+    public static final String CATEGORY = "CATEGORY";
+    public static final String TIME_TREND = "TIME_TREND";
+
     public static final String START_TIME = "starttime";
     public static final String END_TIME = "endtime";
     public static final String CATEGORY_NAME = "category";

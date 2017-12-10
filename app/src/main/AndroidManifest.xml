@@ -37,20 +37,15 @@
                 <action android:pointName="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>-->
+        <activity android:name="com.google.android.gms.ads.AdActivity"
+            android:noHistory="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 
         <provider
             android:name=".provider.MahanadiDataProvider"
             android:authorities="@string/authority"
             android:exported="false" />
 
-        <activity android:name=".activity.ExpenseDetailActivity"
-            android:label="@string/title_activity_expense_detail"
-            android:parentActivityName=".activity.ManagerActivity">
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.tony.odiya.mahanadi.activity.ManagerActivity" />
-        </activity>
     </application>
 
 </manifest>

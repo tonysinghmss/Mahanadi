@@ -20,6 +20,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.tony.odiya.mahanadi.R;
 import com.tony.odiya.mahanadi.contract.MahanadiContract;
 import com.tony.odiya.mahanadi.utils.Utility;
@@ -55,6 +59,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private String mItem;
     private String mRemark;
     private Double mAmount;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +73,38 @@ public class AddExpenseActivity extends AppCompatActivity {
         setSupportActionBar(addExpenseToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Initialize the Mobile Ads SDK.
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        // Create the InterstitialAd and set the adUnitId.
+        mInterstitialAd = new InterstitialAd(this);
+        // Defined in res/values/strings.xml
+        mInterstitialAd.setAdUnitId(getString(R.string.my_ad_unit_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                finish();
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+                finish();
+            }
+        });
+
     }
+
+    private void showInterstitial() {
+        // Show the ad if it's ready. Otherwise toast and restart the game.
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d(LOG_TAG, "Ad didn't load properly.");
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.add_expense_menu,menu);
@@ -119,7 +155,8 @@ public class AddExpenseActivity extends AppCompatActivity {
                     int rowsUpdatedCount = updateCurrentMonthBudgetRow();
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
-                    finish();
+                    // finish();
+                    showInterstitial();
                 }
                 return true;
             default:

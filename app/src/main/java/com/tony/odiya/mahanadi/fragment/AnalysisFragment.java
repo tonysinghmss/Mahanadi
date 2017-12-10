@@ -67,7 +67,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
 
     private GraphView graph;
     private BarGraphSeries<GraphDataPoint> series;
-    private StaticLabelsFormatter mLabelsFormatter;
+    //private StaticLabelsFormatter mLabelsFormatter;
     private GridLabelRenderer mGridLabelRenderer;
     private static final int MAX_DATA_POINT = 100;
     private Toolbar analysisToolbar;
@@ -125,7 +125,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         mGridLabelRenderer = graph.getGridLabelRenderer();
         mGridLabelRenderer.setHorizontalLabelsAngle(115);
         mGridLabelRenderer.setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
-        mLabelsFormatter = new StaticLabelsFormatter(graph);
+        //mLabelsFormatter = new StaticLabelsFormatter(graph);
 
         //Set spinners
         analysisTimeTrendSpinner = (Spinner)view.findViewById(R.id.analysis_time_trend_spinner);
@@ -402,18 +402,21 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 horizontalLabels.add(p.getXpointDisplayName());
             }
             series.resetData(graphDataPoints.toArray(new GraphDataPoint[graphDataPoints.size()]));
-            graph.getViewport().setXAxisBoundsManual(true);
+            /*graph.getViewport().setXAxisBoundsManual(true);
             graph.getViewport().setMinX(series.getLowestValueX() -0.5);
-            graph.getViewport().setMaxX(series.getHighestValueX() +0.5);
-            mGridLabelRenderer.setLabelFormatter(mLabelsFormatter);
+            graph.getViewport().setMaxX(series.getHighestValueX() +0.5);*/
+            StaticLabelsFormatter mLabelsFormatter = new StaticLabelsFormatter(graph);
             mLabelsFormatter.setHorizontalLabels(horizontalLabels.toArray(new String[horizontalLabels.size()]));
-            graph.onDataChanged(true,true);
+            mGridLabelRenderer.setLabelFormatter(mLabelsFormatter);
+            //graph.onDataChanged(true,true);
 
         }
         else{
             series.resetData(graphDataPoints.toArray(new GraphDataPoint[graphDataPoints.size()]));
+            StaticLabelsFormatter mLabelsFormatter = new StaticLabelsFormatter(graph);
             mLabelsFormatter.setHorizontalLabels(new String[]{"",""});
-            graph.onDataChanged(true,true);
+            mGridLabelRenderer.setLabelFormatter(mLabelsFormatter);
+            //graph.onDataChanged(true,true);
         }
     }
 

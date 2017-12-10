@@ -28,7 +28,7 @@
             android:text="@string/analysis_trend"
             />
         <Spinner
-            android:id="@+id/analysis_spinner"
+            android:id="@+id/analysis_time_trend_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/expense_detail_horiz_margin"
@@ -47,26 +47,13 @@
             android:layout_height="wrap_content"
             android:text="@string/analysis"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/analysis_spinner"
+            app:layout_constraintTop_toBottomOf="@id/analysis_time_trend_spinner"
             />
         <com.jjoe64.graphview.GraphView
             android:id="@+id/analysis_graph"
             android:layout_width="match_parent"
             android:layout_height="350dip"
             app:layout_constraintTop_toBottomOf="@id/graph_header"/>
-        <Spinner
-            android:id="@+id/analysis_time_trend_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/expense_detail_horiz_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/expense_detail_horiz_margin"
-            android:gravity="center"
-            android:elevation="3dp"
-            app:layout_constraintTop_toBottomOf="@id/analysis_graph"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
-            />
+
     </android.support.constraint.ConstraintLayout>
 </LinearLayout>

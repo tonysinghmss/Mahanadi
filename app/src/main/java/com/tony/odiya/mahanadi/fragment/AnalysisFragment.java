@@ -54,8 +54,7 @@ import static com.tony.odiya.mahanadi.common.Constants.YEARLY;
  * Use the {@link AnalysisFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener,
-        OnDataPointTapListener{
+public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = AnalysisFragment.class.getSimpleName();
     private static final String ARG_TREND = "trend";
 
@@ -68,9 +67,10 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
 
     private GraphView graph;
     private BarGraphSeries<GraphDataPoint> series;
+    private StaticLabelsFormatter mLabelsFormatter;
+    private GridLabelRenderer mGridLabelRenderer;
     private static final int MAX_DATA_POINT = 100;
     private Toolbar analysisToolbar;
-    private Spinner analysisSpinner;
     private Spinner analysisTimeTrendSpinner;
     private OnAnalysisFragmentInteractionListener mListener;
 
@@ -113,7 +113,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         series = new BarGraphSeries<>();
         series.setDrawValuesOnTop(true);
         series.setValuesOnTopColor(Color.RED);
-        series.setSpacing(50);
+        series.setSpacing(30);
         series.setValueDependentColor(new ValueDependentColor<GraphDataPoint>() {
             @Override
             public int get(GraphDataPoint d) {
@@ -122,18 +122,16 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
         graph.addSeries(series);
-        graph.getGridLabelRenderer().setHorizontalLabelsAngle(115);
-        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
-        //Set spinners
-        analysisSpinner = (Spinner)view.findViewById(R.id.analysis_spinner);
-        analysisSpinner.setOnItemSelectedListener(this);
-        Utility.setValuesInAnalysisSpinner(analysisSpinner,getActivity().getApplicationContext());
-        //TODO: Set selection on spinner
-        Utility.selectDefaultTrendInSpinner(analysisSpinner,TIME_TREND);
+        mGridLabelRenderer = graph.getGridLabelRenderer();
+        mGridLabelRenderer.setHorizontalLabelsAngle(115);
+        mGridLabelRenderer.setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
+        mLabelsFormatter = new StaticLabelsFormatter(graph);
 
+        //Set spinners
         analysisTimeTrendSpinner = (Spinner)view.findViewById(R.id.analysis_time_trend_spinner);
         analysisTimeTrendSpinner.setOnItemSelectedListener(this);
         Utility.setTrendValuesInSpinner(analysisTimeTrendSpinner ,getActivity().getApplicationContext());
+        Utility.selectDefaultTrendInSpinner(analysisTimeTrendSpinner,mTrend);
         /*Bundle args =  Utility.getDateRange(mTrend);
         getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);*/
         return view;
@@ -229,7 +227,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         String[] projection =null;
         String filterClause = MahanadiContract.Expense.COL_CREATED_ON + " BETWEEN ? AND ?";
         String [] filterArgs = {args.getString(START_TIME), args.getString(END_TIME)};
-        switch (loaderId) {
+        /*switch (loaderId) {
             case ANALYSIS_CATEGORY_LOADER_ID:
                 graph.setTitle(getString(R.string.by_category));
                 return new CursorLoader(getActivity(),
@@ -251,7 +249,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         itemFilterClause,
                         itemFilterArgs,
                         null);
-            case ANALYSIS_TIME_LOADER_ID:
+            case ANALYSIS_TIME_LOADER_ID:*/
 
                 Uri trendUri = null;
                 switch (mTrend){
@@ -282,19 +280,21 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                         filterClause,                       // Filter clauses
                         filterArgs,                         // Filter args
                         null); // Sort order
-            default:
+            /*default:
                 return null;
-        }
+        }*/
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor dataCursor) {
         Log.d(LOG_TAG, "Inside onLoadFinished");
         List<GraphDataPoint> graphDataPoints = new ArrayList<>(0);
+        List<String> horizontalLabels = new ArrayList<>(0);
         int count = 0;
         Log.d(LOG_TAG, "Cursor count : "+dataCursor.getCount());
         double max =0;
-        switch (loader.getId()){
+        //graph.addSeries(series);
+        /*switch (loader.getId()){
             case ANALYSIS_CATEGORY_LOADER_ID:
                 while (dataCursor.moveToNext()) {
                     // Create data list for the graph.
@@ -364,8 +364,19 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                     graphDataPoints.add(dataPoint);
                 }
                 break;
+        }*/
+        while (dataCursor.moveToNext()) {
+            // Create data list for the graph.
+            double amount = dataCursor.getDouble(dataCursor.getColumnIndex("Y"));
+            if (amount > max) {
+                max = amount;
+            }
+            String xPoint = dataCursor.getString(dataCursor.getColumnIndex("X"));
+            Log.d(LOG_TAG, " X coordinate : " + xPoint);
+            GraphDataPoint dataPoint = new GraphDataPoint(xPoint, amount);
+            dataPoint.setXpoint(xPoint);
+            graphDataPoints.add(dataPoint);
         }
-
 
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(0);
@@ -376,21 +387,14 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
         // populate the graph with data obtained above.
         if(!graphDataPoints.isEmpty()) {
             if(graphDataPoints.size()==1){
-                /*
-                 * Blank datapoint added to avoid labels format exception incase of single datapoint.
-                 */
+
+                 // Blank datapoint added to avoid labels format exception in case of single datapoint.
+
                 GraphDataPoint blank = new GraphDataPoint("", 0.0);
                 graphDataPoints.add(blank);
             }
-            // Sorting of graph points
-            switch (loader.getId()) {
-                case ANALYSIS_CATEGORY_LOADER_ID:
-                case ANALYSIS_ITEM_LOADER_ID:
-                    Collections.sort(graphDataPoints, GraphDataPoint.ALPHABETIC_COMPARATOR);
-                    break;
-            }
             // Set the x axis labels.
-            List<String> horizontalLabels = new ArrayList<>(0);
+
             for (GraphDataPoint p : graphDataPoints) {
                 // set the value of getX after sorting so that static labels appear in order of sorting.
                 p.setCount(count);
@@ -398,9 +402,18 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 horizontalLabels.add(p.getXpointDisplayName());
             }
             series.resetData(graphDataPoints.toArray(new GraphDataPoint[graphDataPoints.size()]));
-            StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-            staticLabelsFormatter.setHorizontalLabels(horizontalLabels.toArray(new String[horizontalLabels.size()]));
-            graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+            graph.getViewport().setXAxisBoundsManual(true);
+            graph.getViewport().setMinX(series.getLowestValueX() -0.5);
+            graph.getViewport().setMaxX(series.getHighestValueX() +0.5);
+            mGridLabelRenderer.setLabelFormatter(mLabelsFormatter);
+            mLabelsFormatter.setHorizontalLabels(horizontalLabels.toArray(new String[horizontalLabels.size()]));
+            graph.onDataChanged(true,true);
+
+        }
+        else{
+            series.resetData(graphDataPoints.toArray(new GraphDataPoint[graphDataPoints.size()]));
+            mLabelsFormatter.setHorizontalLabels(new String[]{"",""});
+            graph.onDataChanged(true,true);
         }
     }
 
@@ -409,7 +422,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
-        Spinner spinner = (Spinner)parent;
+        /*Spinner spinner = (Spinner)parent;
         if(spinner.getId() == R.id.analysis_spinner){
             mAnalysisType = spinner.getItemAtPosition(pos).toString();
             Bundle args = Utility.getDateRange(mTrend);
@@ -421,11 +434,12 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                 case TIME_TREND:
                     analysisTimeTrendSpinner.setVisibility(View.VISIBLE);
                     Utility.selectDefaultTrendInSpinner(analysisTimeTrendSpinner, mTrend);
+                    //getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
                     break;
             }
         }
-        if(spinner.getId() == R.id.analysis_time_trend_spinner){
-            mTrend = spinner.getItemAtPosition(pos).toString();
+        if(spinner.getId() == R.id.analysis_time_trend_spinner){*/
+            mTrend = parent.getItemAtPosition(pos).toString();
 
             if(null != mListener){
                 mListener.onAnalysisTrendInteraction(mTrend);
@@ -449,19 +463,10 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                     getLoaderManager().restartLoader(ANALYSIS_TIME_LOADER_ID,args,this);
                     break;
             }
-        }
+        //}
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent){}
-
-    @Override
-    public void onTap(Series series, DataPointInterface dataPoint) {
-        GraphDataPoint graphDataPoint = (GraphDataPoint)dataPoint;
-        String category = graphDataPoint.getXpoint();
-        Bundle args = Utility.getDateRange(mTrend);
-        args.putString(CATEGORY_NAME,category);
-        getLoaderManager().restartLoader(ANALYSIS_ITEM_LOADER_ID,args,this);
-    }
 
 }

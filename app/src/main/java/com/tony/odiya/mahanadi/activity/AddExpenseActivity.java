@@ -102,6 +102,7 @@ public class AddExpenseActivity extends AppCompatActivity {
             mInterstitialAd.show();
         } else {
             Log.d(LOG_TAG, "Ad didn't load properly.");
+            finish();
         }
     }
 
@@ -155,7 +156,7 @@ public class AddExpenseActivity extends AppCompatActivity {
                     int rowsUpdatedCount = updateCurrentMonthBudgetRow();
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
-                    // finish();
+                    //finish();
                     showInterstitial();
                 }
                 return true;

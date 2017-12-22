@@ -1,6 +1,23 @@
 <resources>
     <string name="app_name">Mahanadi</string>
 
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="got_it">GOT IT</string>
+
+    <string name="slide_1_title">Total Budget!</string>
+    <string name="slide_1_desc">The easiest way to keep track of your budget and expenses!</string>
+
+    <string name="slide_2_title">Easy expense listing</string>
+    <string name="slide_2_desc">List down your expenses on daily, weekly, monthly and yearly basis!</string>
+
+    <string name="slide_3_title">Great Visuals</string>
+    <string name="slide_3_desc">Charts to help you make better inference!</string>
+
+    <string name="play_again_desc">To see the welcome slider again, goto Settings -> apps -> welcome slider -> clear data</string>
+    <string name="play_again">Play Again</string>
+
+
     <string name="title_home">Home</string>
     <string name="title_expense_details">Your expense details</string>
     <string name="title_expense">Expense</string>

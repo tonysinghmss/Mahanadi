@@ -39,4 +39,12 @@
     <dimen name="hm_expense_text_size">40sp</dimen>
     <dimen name="hm_budget_left_text_size">35sp</dimen>
     <dimen name="hm_grand_total_text_size">20sp</dimen>
+
+    <!-- Dimension for welcome screen -->
+    <dimen name="dots_height">30dp</dimen>
+    <dimen name="dots_margin_bottom">20dp</dimen>
+    <dimen name="img_width_height">120dp</dimen>
+    <dimen name="slide_title">30dp</dimen>
+    <dimen name="slide_desc">16dp</dimen>
+    <dimen name="desc_padding">40dp</dimen>
 </resources>

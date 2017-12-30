@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.tony.odiya.mahanadi.fragment.AnalysisFragment">
+    tools:context="com.tony.odiya.moneyshankar.fragment.AnalysisFragment">
     <android.support.v7.widget.Toolbar
         android:id="@+id/analysis_toolbar"
         android:layout_width="match_parent"

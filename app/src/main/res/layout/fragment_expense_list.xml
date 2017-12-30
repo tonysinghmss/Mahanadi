@@ -53,7 +53,7 @@
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        tools:context="com.tony.odiya.mahanadi.fragment.ExpenseFragment"
+        tools:context="com.tony.odiya.moneyshankar.fragment.ExpenseFragment"
         tools:listitem="@layout/expense_card" />
 </LinearLayout>
 

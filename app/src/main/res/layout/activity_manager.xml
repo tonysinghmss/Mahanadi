@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.tony.odiya.mahanadi.activity.ManagerActivity">
+    tools:context="com.tony.odiya.moneyshankar.activity.ManagerActivity">
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"

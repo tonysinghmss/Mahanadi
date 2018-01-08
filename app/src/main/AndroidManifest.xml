@@ -36,18 +36,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tony.odiya.moneyshankar.activity.ManagerActivity" />
         </activity>
-        <!--
-        <activity android:pointName=".activity.SearchResultsActivity">
-            <intent-filter>
-                <action android:pointName="android.intent.action.SEARCH" />
-            </intent-filter>
-        </activity>
-        -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:noHistory="true" />
-
+        <activity
+            android:name="com.tony.odiya.moneyshankar.prefs.SettingsActivity"
+            android:label="Preferences">
+        </activity>
         <provider
             android:name="com.tony.odiya.moneyshankar.provider.MahanadiDataProvider"
             android:authorities="@string/authority"

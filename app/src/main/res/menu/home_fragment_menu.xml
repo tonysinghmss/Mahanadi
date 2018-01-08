@@ -37,4 +37,13 @@
         app:showAsAction="ifRoom|withText"
         />
 
+    <item
+        android:id="@+id/action_prefs"
+        android:checkable="false"
+        android:enabled="true"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/action_settings"
+        app:showAsAction="ifRoom|withText"
+        />
+
 </menu>

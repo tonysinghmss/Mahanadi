@@ -17,6 +17,8 @@
         <item name="android:spinnerStyle">@style/AppTheme.spinnerStyle</item>
         <!-- Spinner dropdown style-->
         <item name="android:spinnerDropDownItemStyle">@style/AppTheme.spinnerDropDownItemStyle</item>
+        <!-- Preference theme -->
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
 
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

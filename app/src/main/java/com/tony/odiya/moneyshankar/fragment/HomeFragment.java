@@ -34,6 +34,7 @@ import com.tony.odiya.moneyshankar.activity.WelcomeActivity;
 import com.tony.odiya.moneyshankar.contract.MahanadiContract;
 import com.tony.odiya.moneyshankar.dialog.BudgetSetupDialogFragment;
 import com.tony.odiya.moneyshankar.dialoglistener.DialogListener;
+import com.tony.odiya.moneyshankar.prefs.SettingsActivity;
 import com.tony.odiya.moneyshankar.utils.PrefManager;
 import com.tony.odiya.moneyshankar.utils.Utility;
 
@@ -199,9 +200,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         MenuItem editBudgetItem = menu.findItem(R.id.action_edit_budget);
         MenuItem resetBudgetItem = menu.findItem(R.id.action_reset);
         MenuItem appIntroSliderItem = menu.findItem(R.id.action_intro);
+        MenuItem appPreferences = menu.findItem(R.id.action_prefs);
         Utility.colorMenuItem(editBudgetItem,Color.WHITE);
         Utility.colorMenuItem(resetBudgetItem, Color.WHITE);
         Utility.colorMenuItem(appIntroSliderItem,Color.WHITE);
+        Utility.colorMenuItem(appPreferences,Color.WHITE);
         if(!budgetIsSet) {
             //int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
             Utility.colorMenuItem(alertMenuItem, Color.WHITE);
@@ -242,6 +245,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 resetFirstTimeLaunchPref();
                 Intent welcomeIntent = new Intent(getActivity(), WelcomeActivity.class);
                 startActivity(welcomeIntent);
+                break;
+            case R.id.action_prefs:
+                Intent prefsActivity = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(prefsActivity);
                 break;
         }
         return super.onOptionsItemSelected(item);

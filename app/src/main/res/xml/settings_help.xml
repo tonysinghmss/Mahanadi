@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/prefs_help">
+        <Preference android:title="@string/prefs_help_FAQ" >
+            <intent android:action="android.intent.action.VIEW"
+                android:data="http://faq.moneyshankar.com" />
+        </Preference>
+        <Preference android:title="@string/prefs_help_License" >
+            <intent android:action="android.intent.action.VIEW"
+                android:data="http://license.moneyshankar.com" />
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

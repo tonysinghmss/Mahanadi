@@ -28,4 +28,13 @@
         app:showAsAction="ifRoom|withText"
         />
 
+    <item
+        android:id="@+id/action_intro"
+        android:checkable="false"
+        android:enabled="true"
+        android:icon="@drawable/ic_cake_black_24dp"
+        android:title="@string/action_intro"
+        app:showAsAction="ifRoom|withText"
+        />
+
 </menu>

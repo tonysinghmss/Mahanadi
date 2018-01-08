@@ -51,6 +51,7 @@
     <string name="action_edit_expense">Edit Expense</string>
     <string name="action_reset">Reset</string>
     <string name="action_search">Search</string>
+    <string name="action_intro">Introduction</string>
 
     <string name="search_hint">Item or Category</string>
 

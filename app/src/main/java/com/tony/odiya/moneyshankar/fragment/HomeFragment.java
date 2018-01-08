@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -29,9 +30,11 @@ import android.widget.TextView;
 
 import com.tony.odiya.moneyshankar.activity.AddExpenseActivity;
 import com.tony.odiya.moneyshankar.R;
+import com.tony.odiya.moneyshankar.activity.WelcomeActivity;
 import com.tony.odiya.moneyshankar.contract.MahanadiContract;
 import com.tony.odiya.moneyshankar.dialog.BudgetSetupDialogFragment;
 import com.tony.odiya.moneyshankar.dialoglistener.DialogListener;
+import com.tony.odiya.moneyshankar.utils.PrefManager;
 import com.tony.odiya.moneyshankar.utils.Utility;
 
 import static com.tony.odiya.moneyshankar.common.Constants.BUDGET_LEFT;
@@ -195,8 +198,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
         MenuItem editBudgetItem = menu.findItem(R.id.action_edit_budget);
         MenuItem resetBudgetItem = menu.findItem(R.id.action_reset);
+        MenuItem appIntroSliderItem = menu.findItem(R.id.action_intro);
         Utility.colorMenuItem(editBudgetItem,Color.WHITE);
         Utility.colorMenuItem(resetBudgetItem, Color.WHITE);
+        Utility.colorMenuItem(appIntroSliderItem,Color.WHITE);
         if(!budgetIsSet) {
             //int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
             Utility.colorMenuItem(alertMenuItem, Color.WHITE);
@@ -232,6 +237,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 BudgetSetupDialogFragment resetBudgetDailog = new BudgetSetupDialogFragment();
                 resetBudgetDailog.show(getChildFragmentManager(),"BudgetResetDialog");
                 resetBudgetDailog.setTargetFragment(this, REQUEST_BUDGET_RESET_CODE);
+                break;
+            case R.id.action_intro:
+                resetFirstTimeLaunchPref();
+                Intent welcomeIntent = new Intent(getActivity(), WelcomeActivity.class);
+                startActivity(welcomeIntent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -441,5 +451,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         /*if( args.containsKey(DELETE_BUDGET_COUNT)){
 
         }*/
+    }
+
+    private void resetFirstTimeLaunchPref(){
+        PrefManager prefManager = new PrefManager(getActivity());
+        prefManager.setFirstTimeLaunch(true);
     }
 }

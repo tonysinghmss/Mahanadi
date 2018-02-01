@@ -87,6 +87,7 @@
 
     <string name="my_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 
+    <string name="prefs_holder">settingXYZ</string>
     <string name="prefs_help">Help</string>
     <string name="prefs_help_summ">Help</string>
     <string name="prefs_help_FAQ">FAQ</string>

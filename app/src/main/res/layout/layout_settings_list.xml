@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/setting_element"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/settings_detail_horiz_margin"
+        android:layout_marginLeft="@dimen/settings_detail_vert_margin"
+        android:layout_marginRight="@dimen/settings_detail_vert_margin"
+        android:layout_marginTop="@dimen/settings_detail_horiz_margin"
+        android:visibility="visible"
+        android:text="@string/prefs_holder"
+        android:gravity="center"
+        />
+</LinearLayout>

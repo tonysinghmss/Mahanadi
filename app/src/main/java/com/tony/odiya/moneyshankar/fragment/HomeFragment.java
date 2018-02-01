@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +33,7 @@ import com.tony.odiya.moneyshankar.activity.WelcomeActivity;
 import com.tony.odiya.moneyshankar.contract.MahanadiContract;
 import com.tony.odiya.moneyshankar.dialog.BudgetSetupDialogFragment;
 import com.tony.odiya.moneyshankar.dialoglistener.DialogListener;
-import com.tony.odiya.moneyshankar.prefs.SettingsActivity;
+import com.tony.odiya.moneyshankar.activity.SettingsActivity;
 import com.tony.odiya.moneyshankar.utils.PrefManager;
 import com.tony.odiya.moneyshankar.utils.Utility;
 

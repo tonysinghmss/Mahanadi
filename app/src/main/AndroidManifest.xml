@@ -41,7 +41,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:noHistory="true" />
         <activity
-            android:name="com.tony.odiya.moneyshankar.prefs.SettingsActivity"
+            android:name="com.tony.odiya.moneyshankar.activity.SettingsActivity"
             android:label="Preferences">
         </activity>
         <provider

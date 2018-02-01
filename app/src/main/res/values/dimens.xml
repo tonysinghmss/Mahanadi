@@ -47,4 +47,8 @@
     <dimen name="slide_title">30dp</dimen>
     <dimen name="slide_desc">16dp</dimen>
     <dimen name="desc_padding">40dp</dimen>
+
+    <!-- Dimension for settings element in settings fragment -->
+    <dimen name="settings_detail_horiz_margin">8dp</dimen>
+    <dimen name="settings_detail_vert_margin">8dp</dimen>
 </resources>

@@ -29,11 +29,11 @@ import android.widget.TextView;
 
 import com.tony.odiya.moneyshankar.activity.AddExpenseActivity;
 import com.tony.odiya.moneyshankar.R;
+import com.tony.odiya.moneyshankar.activity.SettingsActivity;
 import com.tony.odiya.moneyshankar.activity.WelcomeActivity;
 import com.tony.odiya.moneyshankar.contract.MahanadiContract;
 import com.tony.odiya.moneyshankar.dialog.BudgetSetupDialogFragment;
 import com.tony.odiya.moneyshankar.dialoglistener.DialogListener;
-import com.tony.odiya.moneyshankar.activity.SettingsActivity;
 import com.tony.odiya.moneyshankar.utils.PrefManager;
 import com.tony.odiya.moneyshankar.utils.Utility;
 
@@ -246,6 +246,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 startActivity(welcomeIntent);
                 break;
             case R.id.action_prefs:
+                // Intent prefsActivity = new Intent(getActivity(), SettingsActivity.class);
                 Intent prefsActivity = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(prefsActivity);
                 break;

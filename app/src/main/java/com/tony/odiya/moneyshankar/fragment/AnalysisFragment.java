@@ -62,7 +62,7 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
     //private StaticLabelsFormatter mLabelsFormatter;
     private GridLabelRenderer mGridLabelRenderer;
     private static final int MAX_DATA_POINT = 100;
-    private Toolbar analysisToolbar;
+//    private Toolbar analysisToolbar;
     private Spinner analysisTimeTrendSpinner;
     private OnAnalysisFragmentInteractionListener mListener;
 
@@ -98,8 +98,8 @@ public class AnalysisFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_analysis, container, false);
-        analysisToolbar = (Toolbar)view.findViewById(R.id.analysis_toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(analysisToolbar);
+//        analysisToolbar = (Toolbar)view.findViewById(R.id.analysis_toolbar);
+//        ((AppCompatActivity)getActivity()).setSupportActionBar(analysisToolbar);
         //TODO: Set the width and height of graph programmatically to match phone.
         graph = (GraphView) view.findViewById(R.id.analysis_graph);
         series = new BarGraphSeries<>();

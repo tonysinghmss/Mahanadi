@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     //private String mParam2;
     private OnHomeTrendInteractionListener mListener;
     private Spinner homeLayoutTrendSpinner;
-    private Toolbar homeToolbar;
+//    private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
     private View mHomeView;
     private Double totalExpenseAmount = 0.0;
@@ -127,8 +127,8 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mHomeView = inflater.inflate(R.layout.layout_home, container, false);
-        homeToolbar = (Toolbar)mHomeView.findViewById(R.id.home_toolbar);
+        mHomeView = inflater.inflate(R.layout.fragment_home, container, false);
+//        homeToolbar = (Toolbar)mHomeView.findViewById(R.id.home_toolbar);
         budgetLeftForMonth = (TextView)mHomeView.findViewById(R.id.budget_left_amount);
         if(!budgetIsSet){
             budgetLeftForMonth.setText("Not Set");
@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 startActivityForResult(intent, REQUEST_EXPENSE_ADD_CODE);
             }
         });
-        ((AppCompatActivity)getActivity()).setSupportActionBar(homeToolbar);
+//        ((AppCompatActivity)getActivity()).setSupportActionBar(homeToolbar);
         setHasOptionsMenu(true);
         return mHomeView;
     }

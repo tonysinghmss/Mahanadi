@@ -85,7 +85,7 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
     // private MyExpenseRecyclerViewAdapter.OnRecyclerItemClickedListener  expenseItemLongClickListener;
     private RecyclerView mRecyclerView;
     private Spinner expenseTrendSpinner;
-    private Toolbar expenseToolbar;
+//    private Toolbar expenseToolbar;
 
 
     private static final int EXPENSE_LOADER_ID = 21;
@@ -138,13 +138,13 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense_list, container, false);
         View recycler = view.findViewById(R.id.expense_recycler_list);
-        expenseToolbar = (Toolbar)view.findViewById(R.id.expense_toolbar);
+//        expenseToolbar = (Toolbar)view.findViewById(R.id.expense_toolbar);
         expenseTrendSpinner = (Spinner) view.findViewById(R.id.expense_trend_spinner);
         expenseTrendSpinner.setOnItemSelectedListener(this);
         Utility.setTrendValuesInSpinner(expenseTrendSpinner, getActivity().getApplicationContext());
         Utility.selectDefaultTrendInSpinner(expenseTrendSpinner, mTrend);
         //Set the toolbar
-        ((AppCompatActivity)getActivity()).setSupportActionBar(expenseToolbar);
+//        ((AppCompatActivity)getActivity()).setSupportActionBar(expenseToolbar);
         // Set Options menu as true
         setHasOptionsMenu(true);
         // Set the adapter

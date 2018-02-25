@@ -35,7 +35,7 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
-
+    private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -161,6 +161,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
                 || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+    }
+
+    @Override
+    public void onBackPressed() {   //SAVES DATA BUT DOESN'T RELOAD MAINACTIVITY
+        finish();
+        //startActivity(new Intent(this, MainActivity.class));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**

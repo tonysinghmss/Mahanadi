@@ -3,19 +3,22 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
+        android:id="@+id/general_pref"
         android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general">
     </header>
 
-    <!--<header
+   <header
+        android:id="@+id/hdr_ntf_pref"
         android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$DataSyncPreferenceFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
-        android:title="@string/pref_header_data_sync" />-->
+       android:id="@+id/sync_data_pref"
+       android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$DataSyncPreferenceFragment"
+       android:icon="@drawable/ic_sync_black_24dp"
+       android:title="@string/pref_header_data_sync" />
 
 </preference-headers>

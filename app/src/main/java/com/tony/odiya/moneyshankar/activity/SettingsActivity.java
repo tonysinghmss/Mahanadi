@@ -16,10 +16,8 @@ import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 
 import com.tony.odiya.moneyshankar.R;
 
@@ -37,8 +35,6 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
-
-    private Toolbar mToolbar;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -137,25 +133,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        else{
-            mToolbar = (Toolbar) findViewById(R.id.settings_toolbar);
-            setSupportActionBar(mToolbar);
-            actionBar = getSupportActionBar();
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-    }
-
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                NavUtils.navigateUpFromSameTask(this);
-            }
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
     }
 
     /**

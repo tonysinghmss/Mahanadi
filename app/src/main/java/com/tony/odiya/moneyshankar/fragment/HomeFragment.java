@@ -246,8 +246,8 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 startActivity(welcomeIntent);
                 break;
             case R.id.action_prefs:
-                // Intent prefsActivity = new Intent(getActivity(), SettingsActivity.class);
                 Intent prefsActivity = new Intent(getActivity(), SettingsActivity.class);
+                // Intent prefsActivity = new Intent(getActivity(), SettingsTestActivity.class);
                 startActivity(prefsActivity);
                 break;
         }

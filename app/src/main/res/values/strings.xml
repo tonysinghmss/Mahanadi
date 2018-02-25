@@ -93,8 +93,10 @@
     <string name="prefs_help_FAQ">FAQ</string>
     <string name="prefs_help_License">License</string>
     <string name="title_activity_my_settings">Settings</string>
+    <string name="title_activity_License">License</string>
 
     <!-- Strings related to Settings -->
+
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

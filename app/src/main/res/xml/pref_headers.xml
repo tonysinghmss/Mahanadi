@@ -2,7 +2,7 @@
 
     <!-- These settings headers are only used on tablets. -->
 
-    <header
+    <!--<header
         android:id="@+id/general_pref"
         android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
@@ -19,6 +19,11 @@
        android:id="@+id/sync_data_pref"
        android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$DataSyncPreferenceFragment"
        android:icon="@drawable/ic_sync_black_24dp"
-       android:title="@string/pref_header_data_sync" />
-
+       android:title="@string/pref_header_data_sync" />-->
+    <header
+        android:id="@+id/help_pref"
+        android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$HelpPreferenceFragment"
+        android:icon="@drawable/ic_info_black_24dp"
+        android:title="@string/pref_header_general">
+    </header>
 </preference-headers>

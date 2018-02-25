@@ -30,8 +30,8 @@
         <activity
             android:name=".activity.AddExpenseActivity"
             android:label="@string/title_activity_add_expense"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activity.ManagerActivity">
+            android:parentActivityName=".activity.ManagerActivity"
+            android:theme="@style/AppTheme.NoActionBar">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -55,6 +55,10 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.tony.odiya.moneyshankar.activity.ManagerActivity" />
+        </activity>
+        <activity
+            android:name=".activity.LicenseActivity"
+            android:label="@string/title_activity_License">
         </activity>
     </application>
 

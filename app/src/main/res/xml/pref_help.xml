@@ -1,0 +1,12 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<Preference android:title="@string/prefs_help_FAQ" >
+        <intent android:action="android.intent.action.VIEW"
+        android:data="http://faq.moneyshankar.com" />
+    </Preference>-->
+    <Preference
+        android:title="@string/prefs_help_License" >
+        <intent
+            android:targetPackage="com.tony.odiya.moneyshankar.activity"
+            android:targetClass="com.tony.odiya.moneyshankar.activity.LicenseActivity"/>
+    </Preference>
+</PreferenceScreen>

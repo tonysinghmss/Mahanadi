@@ -58,8 +58,8 @@
         </activity>
         <activity
             android:name=".activity.LicenseActivity"
-            android:label="@string/title_activity_License">
-        </activity>
+            android:label="@string/title_activity_License"
+            android:parentActivityName=".activity.SettingsActivity" />
     </application>
 
 </manifest>

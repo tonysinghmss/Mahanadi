@@ -22,8 +22,8 @@ import java.util.Arrays;
  * Created by tony on 19/10/17.
  */
 
-public class MahanadiDataProvider extends ContentProvider{
-    public static final String LOG_TAG = MahanadiDataProvider.class.getSimpleName();
+public class MoneyShankarDataProvider extends ContentProvider{
+    public static final String LOG_TAG = MoneyShankarDataProvider.class.getSimpleName();
     // Indicates that type of incoming query
     public static final int EXPENSE_LIST = 1;
     public static final int EXPENSE_ROW = 2;

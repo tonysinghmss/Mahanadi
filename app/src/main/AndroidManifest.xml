@@ -44,7 +44,7 @@
             android:noHistory="true" />
 
         <provider
-            android:name=".provider.MahanadiDataProvider"
+            android:name=".provider.MoneyShankarDataProvider"
             android:authorities="@string/authority"
             android:exported="false" />
 

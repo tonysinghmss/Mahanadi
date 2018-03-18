@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="agreement">
+        My app will store data entered by you in your phone only.
+        Also my app doesn\'t store your personal data anywhere else
+        other than your phone.\n\n
+        Read the above line again.\n\n
+        Actually I don\'t have capacity or resources or capital 
+        to do so.\n\n
+        
+        To make a living, I need some money.
+        So my app will irritate you with some advertisements.\n\n
+        
+        Advertisements are provided by Google which works 
+        in mysterious ways.\n\n
+        You can always remove advertisements by paying a\n
+        miniscule amount.\n\n
+        
+        If you trust this app with advertisements provided by \n
+        Google, then click on Agree button.\n\n
+        You can always reset the agreement from settings in home page and my app will
+        delete everything about you stored in your phone and move on.
+        
+    </string>
+</resources>

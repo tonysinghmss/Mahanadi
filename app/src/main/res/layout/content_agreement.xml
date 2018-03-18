@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.tony.odiya.moneyshankar.activity.AgreementActivity"
+    tools:showIn="@layout/activity_agreement">
+    <ScrollView
+        android:id="@+id/agreement_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/agreement"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintLeft_toLeftOf="parent"
+            card_view:layout_constraintRight_toRightOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent" />
+    </ScrollView>
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <Button android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"/>
+        <Button android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"/>
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
+

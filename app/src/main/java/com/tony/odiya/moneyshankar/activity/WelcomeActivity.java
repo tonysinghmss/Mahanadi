@@ -117,6 +117,10 @@ public class WelcomeActivity extends AppCompatActivity {
         return viewPager.getCurrentItem() + i;
     }
 
+    private void launchAgreementScreen(){
+        //TODO: Start a dialog or activity showing user to agree with our agreement.
+    }
+
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
         startActivity(new Intent(WelcomeActivity.this, ManagerActivity.class));

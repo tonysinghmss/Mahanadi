@@ -60,6 +60,7 @@
             android:name=".activity.LicenseActivity"
             android:label="@string/title_activity_License"
             android:parentActivityName=".activity.SettingsActivity" />
+        <activity android:name=".activity.AgreementActivity"></activity>
     </application>
 
 </manifest>

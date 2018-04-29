@@ -91,9 +91,14 @@
     <string name="prefs_help">Help</string>
     <string name="prefs_help_summ">Help</string>
     <string name="prefs_help_FAQ">FAQ</string>
-    <string name="prefs_help_License">License</string>
+    <string name="prefs_help_terms_condtions">Terms and Conditions</string>
+    <string name="prefs_help_contact_us">Contact Us</string>
+    <string name="prefs_help_contact_details">If you have any questions or doubts, please contact us at </string>
+    <string name="prefs_help_contact_mail">tonysingh.mss@gmail.com</string>
+    <string name="prefs_help_Ok">Ok</string>
+
     <string name="title_activity_my_settings">Settings</string>
-    <string name="title_activity_License">License</string>
+    <string name="title_activity_terms">Terms and Conditions</string>
 
     <string name="agreement_accept">ACCEPT</string>
     <string name="agreement_deny">DENY</string>
@@ -103,6 +108,7 @@
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
+    <string name="pref_header_help">Help</string>
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
     <string name="pref_description_social_recommendations">Recommendations for people to contact

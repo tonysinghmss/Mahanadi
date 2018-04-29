@@ -24,6 +24,6 @@
         android:id="@+id/help_pref"
         android:fragment="com.tony.odiya.moneyshankar.activity.SettingsActivity$HelpPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general">
+        android:title="@string/pref_header_help">
     </header>
 </preference-headers>

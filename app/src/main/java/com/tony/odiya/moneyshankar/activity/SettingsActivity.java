@@ -1,7 +1,9 @@
 package com.tony.odiya.moneyshankar.activity;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -9,6 +11,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.DialogPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -191,6 +194,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_help);
+
+            // Dialogue for contacting the developer
+            Preference contactPreference = (Preference)getPreferenceScreen()
+                    .findPreference(getString(R.string.prefs_help_contact_us));
+            contactPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    String contactString = getString(R.string.prefs_help_contact_details)
+                            +" "+getString(R.string.prefs_help_contact_mail)+".";
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.prefs_help_contact_us)
+                            .setMessage(contactString)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.prefs_help_Ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                            .show();
+                    return true;
+                }
+            });
         }
 
 

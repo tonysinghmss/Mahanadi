@@ -4,9 +4,12 @@
         android:data="http://faq.moneyshankar.com" />
     </Preference>-->
     <Preference
-        android:title="@string/prefs_help_License" >
+        android:title="@string/prefs_help_terms_condtions" >
         <intent
             android:targetPackage="com.tony.odiya.moneyshankar"
-            android:targetClass="com.tony.odiya.moneyshankar.activity.LicenseActivity"/>
+            android:targetClass="com.tony.odiya.moneyshankar.activity.TermsActivity"/>
     </Preference>
+    <Preference
+        android:title="@string/prefs_help_contact_us"
+        android:key="@string/prefs_help_contact_us"/>
 </PreferenceScreen>

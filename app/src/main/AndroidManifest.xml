@@ -57,8 +57,8 @@
                 android:value="com.tony.odiya.moneyshankar.activity.ManagerActivity" />
         </activity>
         <activity
-            android:name=".activity.LicenseActivity"
-            android:label="@string/title_activity_License"
+            android:name=".activity.TermsActivity"
+            android:label="@string/title_activity_terms"
             android:parentActivityName=".activity.SettingsActivity" />
     </application>
 

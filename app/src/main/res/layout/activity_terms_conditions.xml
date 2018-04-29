@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.tony.odiya.moneyshankar.activity.LicenseActivity">
+    tools:context="com.tony.odiya.moneyshankar.activity.TermsActivity">
 
-    <include layout="@layout/content_license" />
+    <include layout="@layout/content_terms_conditions" />
 
 </android.support.constraint.ConstraintLayout>

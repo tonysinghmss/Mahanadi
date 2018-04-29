@@ -1,5 +1,5 @@
 <resources>
-    <string name="license">
+    <string name="termsAndConditons">
 \t\t\t\tTerms and Conditions ("Terms")\n
 ==============================\n\n
 
@@ -106,6 +106,12 @@ By continuing to access or use our Service after those revisions become
 effective, you agree to be bound by the revised terms. If you do not agree to
 the new terms, please stop using the Service.\n\n
 
+\t\t\t\tContact Us\n
+==============================\n\n
+
+If you have any questions about these Terms, please contact us
+at tonysingh.mss@gmail.com.\n\n
+
 \t\t\t\tDISCLAIMER OF WARRANTIES\n
 ==============================\n\n
 We do not guarantee, represent, or warrant that your use of MoneyShankar Service
@@ -120,12 +126,6 @@ YOUR USE, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING A
 IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
 NONINFRINGEMENT. BECAUSE SOME JURISDICTIONS DO NOT ALLOW FOR THE EXCLUSION OF IMPLIED
 WARRANTIES, THE ABOVE EXCLUSION OF IMPLIED WARRANTIES MAY NOT APPLY TO YOU.\n\n
-
-\t\t\t\tContact Us\n
-==============================\n\n
-
-If you have any questions about these Terms, please contact us
-at tonysingh.mss@gmail.com.\n\n
-
+        
     </string>
 </resources>

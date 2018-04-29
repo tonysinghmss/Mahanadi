@@ -5,11 +5,11 @@ import android.os.Bundle;
 
 import com.tony.odiya.moneyshankar.R;
 
-public class LicenseActivity extends AppCompatActivity {
+public class TermsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_license);
+        setContentView(R.layout.activity_terms_conditions);
     }
 }

@@ -136,7 +136,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private void launchAgreementDialog(){
         // Start a dialog or activity showing user to agree with our agreement.
         new AlertDialog.Builder(this)
-                .setMessage(R.string.license)
+                .setMessage(R.string.termsAndConditons)
                 .setPositiveButton(R.string.agreement_accept, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     >
-    <item
+    <!--<item
         android:id="@+id/action_alert"
         android:checkable="false"
         android:enabled="true"
         android:icon="@drawable/ic_error_black_24dp"
         android:title="@string/action_setup"
-        app:showAsAction="always|withText"/>
+        app:showAsAction="always|withText"/>-->
     <item
         android:id="@+id/action_edit_budget"
         android:checkable="false"

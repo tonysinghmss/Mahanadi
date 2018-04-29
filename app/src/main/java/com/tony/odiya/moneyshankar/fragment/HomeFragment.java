@@ -71,10 +71,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private String mTrend;
     //private String mParam2;
-    private OnHomeTrendInteractionListener mListener;
+    private OnHomeFragmentInteractionListener mListener;
     private Spinner homeLayoutTrendSpinner;
 //    private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
+    private TextView noBudgetWarning;
     private View mHomeView;
     private Double totalExpenseAmount = 0.0;
     private Double totalBudgetAmount = 0.0;
@@ -102,11 +103,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnHomeTrendInteractionListener) {
-            mListener = (OnHomeTrendInteractionListener) context;
+        if (context instanceof OnHomeFragmentInteractionListener) {
+            mListener = (OnHomeFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnHomeTrendInteractionListener");
+                    + " must implement OnHomeFragmentInteractionListener");
         }
     }
 
@@ -128,8 +129,16 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         mHomeView = inflater.inflate(R.layout.fragment_home, container, false);
 //        homeToolbar = (Toolbar)mHomeView.findViewById(R.id.home_toolbar);
         budgetLeftForMonth = (TextView)mHomeView.findViewById(R.id.budget_left_amount);
+        noBudgetWarning = (TextView)mHomeView.findViewById(R.id.no_budget_warning);
+        noBudgetWarning.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                budgetWarningClick(view);
+            }
+        });
         if(!budgetIsSet){
             budgetLeftForMonth.setText("Not Set");
+            noBudgetWarning.setVisibility(View.VISIBLE);
         }
         homeLayoutTrendSpinner = (Spinner)mHomeView.findViewById(R.id.home_trend_spinner);
         homeLayoutTrendSpinner.setOnItemSelectedListener(this);
@@ -179,8 +188,10 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         if(budgetIsSet) {
             Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
             getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
+            noBudgetWarning.setVisibility(View.INVISIBLE);
         }
     }
+
 
     @Override
     public void onDetach() {
@@ -193,7 +204,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         Log.d(LOG_TAG," Drawing Options Menu");
         super.onCreateOptionsMenu(menu,inflater);
         inflater.inflate(R.menu.home_fragment_menu,menu);
-        MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
+        //MenuItem alertMenuItem = menu.findItem(R.id.action_alert);
         MenuItem editBudgetItem = menu.findItem(R.id.action_edit_budget);
         MenuItem resetBudgetItem = menu.findItem(R.id.action_reset);
         MenuItem appIntroSliderItem = menu.findItem(R.id.action_intro);
@@ -202,14 +213,14 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         Utility.colorMenuItem(resetBudgetItem, Color.WHITE);
         Utility.colorMenuItem(appIntroSliderItem,Color.WHITE);
         Utility.colorMenuItem(appPreferences,Color.WHITE);
-        if(!budgetIsSet) {
+       /* if(!budgetIsSet) {
             //int color = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
             Utility.colorMenuItem(alertMenuItem, Color.WHITE);
         }
         else if(budgetIsSet && alertMenuItem!=null){
             Log.d(LOG_TAG,"Remove budget alert icon from Toolbar");
             menu.removeItem(R.id.action_alert);
-        }
+        }*/
     }
 
    /* @Override
@@ -220,11 +231,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_alert:
+            /*case R.id.action_alert:
                 BudgetSetupDialogFragment budgetSetupDailog = new BudgetSetupDialogFragment();
                 budgetSetupDailog.show(getChildFragmentManager(),"BudgetSetupDialog");
                 budgetSetupDailog.setTargetFragment(this, REQUEST_BUDGET_SETUP_CODE);
-                break;
+                break;*/
             case R.id.action_edit_budget:
                 BudgetSetupDialogFragment budgetEditDailog = new BudgetSetupDialogFragment();
                 Bundle args = new Bundle();
@@ -266,9 +277,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
 
-    public interface OnHomeTrendInteractionListener {
+    public interface OnHomeFragmentInteractionListener {
         void onHomeTrendInteraction(String trend);
+        void onHomeFragmentReload();
     }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id){
@@ -397,7 +410,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 //Log.d(LOG_TAG, "Budget row count is "+cnt);
                 if(cnt>0 && !budgetIsSet){
                     budgetIsSet = Boolean.TRUE;
-                    getActivity().invalidateOptionsMenu();
+                    //getActivity().invalidateOptionsMenu();
                 }
                 else if(cnt == 0 ){
                     totalBudgetAmount = 0.0;
@@ -461,5 +474,11 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private void resetFirstTimeLaunchPref(){
         PrefManager prefManager = new PrefManager(getActivity());
         prefManager.setFirstTimeLaunch(true);
+    }
+
+    private void budgetWarningClick(View noBudgetView){
+        BudgetSetupDialogFragment budgetSetupDailog = new BudgetSetupDialogFragment();
+        budgetSetupDailog.show(getChildFragmentManager(),"BudgetSetupDialog");
+        budgetSetupDailog.setTargetFragment(this, REQUEST_BUDGET_SETUP_CODE);
     }
 }

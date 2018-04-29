@@ -18,7 +18,7 @@ import com.tony.odiya.moneyshankar.model.ExpenseData;
 
 import static com.tony.odiya.moneyshankar.common.Constants.MONTHLY;
 
-public class ManagerActivity extends AppCompatActivity implements HomeFragment.OnHomeTrendInteractionListener, ExpenseFragment.OnListFragmentInteractionListener,
+public class ManagerActivity extends AppCompatActivity implements HomeFragment.OnHomeFragmentInteractionListener, ExpenseFragment.OnListFragmentInteractionListener,
         AnalysisFragment.OnAnalysisFragmentInteractionListener{
 
     private static final String LOG_TAG = ManagerActivity.class.getSimpleName();
@@ -26,7 +26,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
     private FragmentManager fragmentManager;
     private String selectedTrend;
     private static final String BACK_STACK_ROOT_TAG = "root_home_fragment";
-    private static final String HOME_FRAGMENT = "home_fragment";
+    public static final String HOME_FRAGMENT = "home_fragment";
     private BottomNavigationView mNavigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -100,6 +100,9 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         this.selectedTrend = trend;
     }
 
+    public void onHomeFragmentReload(){
+
+    }
     /**
      *  This method communicates trend selection on Expense fragment to Manager activity
      *  which eventually can be used by other fragments.

@@ -62,4 +62,6 @@ public final class Constants {
         MahanadiContract.Budget.COL_AMOUNT +" AS BUDGET "
     };
 
+    public static final int REQUEST_AGREEMENT_CODE = 7;
+
 }

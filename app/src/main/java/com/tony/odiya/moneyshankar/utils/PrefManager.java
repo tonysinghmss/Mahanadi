@@ -19,6 +19,7 @@ public class PrefManager {
     private static final String PREF_NAME = "moneyshankar-welcome";
 
     private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
+    private static final String IS_AGREEMENT_ACCEPTED = "IsAgreementAccepted";
 
     public PrefManager(Context context) {
         this._context = context;
@@ -34,4 +35,11 @@ public class PrefManager {
     public boolean isFirstTimeLaunch() {
         return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
     }
+
+    public void setIsAgreementAccepted(boolean agreementState){
+        editor.putBoolean(IS_AGREEMENT_ACCEPTED, agreementState);
+        editor.commit();
+    }
+
+    public boolean isAgreementAccepted(){ return pref.getBoolean(IS_AGREEMENT_ACCEPTED,false);}
 }

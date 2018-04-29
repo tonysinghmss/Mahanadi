@@ -1,11 +1,13 @@
 package com.tony.odiya.moneyshankar.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -74,7 +76,14 @@ public class WelcomeActivity extends AppCompatActivity {
         btnSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchHomeScreen();
+                if(prefManager.isAgreementAccepted()) {
+                    launchHomeScreen();
+                    finish();
+                }
+                else{
+                    launchAgreementDialog();
+                    //finish();
+                }
             }
         });
 
@@ -88,7 +97,14 @@ public class WelcomeActivity extends AppCompatActivity {
                     // move to next screen
                     viewPager.setCurrentItem(current);
                 } else {
-                    launchHomeScreen();
+                    if(prefManager.isAgreementAccepted()) {
+                        launchHomeScreen();
+                        finish();
+                    }
+                    else{
+                        launchAgreementDialog();
+                        //finish();
+                    }
                 }
             }
         });
@@ -117,14 +133,31 @@ public class WelcomeActivity extends AppCompatActivity {
         return viewPager.getCurrentItem() + i;
     }
 
-    private void launchAgreementScreen(){
-        //TODO: Start a dialog or activity showing user to agree with our agreement.
+    private void launchAgreementDialog(){
+        // Start a dialog or activity showing user to agree with our agreement.
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.license)
+                .setPositiveButton(R.string.agreement_accept, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        prefManager.setIsAgreementAccepted(true);
+                        launchHomeScreen();
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.agreement_deny, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                })
+                .show();
     }
 
     private void launchHomeScreen() {
         prefManager.setFirstTimeLaunch(false);
         startActivity(new Intent(WelcomeActivity.this, ManagerActivity.class));
-        finish();
+        //finish();
     }
 
     //  viewpager change listener

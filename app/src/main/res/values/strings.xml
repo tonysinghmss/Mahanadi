@@ -25,8 +25,11 @@
     <string name="title_activity_add_expense">Add Expense</string>
     <string name="title_activity_expense_detail">Expense Detail</string>
     <string name="title_delete_expense">Delete Expense</string>
-    <string name="grand_total_message">Grand total</string>
+    <string name="grand_total_message">Overall Expense</string>
     <string name="grand_total_amount">10000</string>
+    <string name="expense_message">Total Expense</string>
+    <string name="home_trend_message">Trend</string>
+    <string name="budget_left_message">Budget left</string>
     <string name="expense_amount">1000</string>
 
     <string name="authority">com.tony.odiya.moneyshankar.provider</string>

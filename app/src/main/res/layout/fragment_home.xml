@@ -22,7 +22,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
+            <!--<TextView
                 android:id="@+id/welcome_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,21 +36,21 @@
                 app:layout_constraintLeft_toRightOf="parent"
                 app:layout_constraintRight_toLeftOf="parent"
 
-                />
+                />-->
             <TextView
-                android:id="@+id/expense_amount"
+                android:id="@+id/home_trend_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/hm_expense_text_size"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:textColor="@color/colorExpenseDone"
-                tools:text="@string/expense_amount"
-                app:layout_constraintTop_toBottomOf="@id/welcome_message"
+                android:text="@string/home_trend_message"
+                android:textSize="@dimen/hm_trend_text_size"
+                android:textColor="@color/colorPrimary"
+                app:layout_constraintTop_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"/>
+                app:layout_constraintRight_toLeftOf="@+id/home_trend_spinner"/>
             <Spinner
                 android:id="@+id/home_trend_spinner"
                 android:layout_width="wrap_content"
@@ -59,10 +59,57 @@
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                app:layout_constraintTop_toBottomOf="@id/expense_amount"
-                app:layout_constraintLeft_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/home_trend_message"
                 app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/home_trend_message"
                 android:elevation="3dp"
+                />
+            <TextView
+                android:id="@+id/expense_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="@string/expense_message"
+                android:textSize="@dimen/hm_expense_text_size"
+                android:textColor="@color/colorExpenseDone"
+                app:layout_constraintTop_toBottomOf="@id/home_trend_message"
+                app:layout_constraintLeft_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/expense_amount"
+                />
+            <TextView
+                android:id="@+id/expense_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textSize="@dimen/hm_expense_text_size"
+                android:textColor="@color/colorExpenseDone"
+                tools:text="@string/expense_amount"
+                app:layout_constraintTop_toBottomOf="@id/home_trend_spinner"
+                app:layout_constraintLeft_toRightOf="@id/expense_message"
+                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/expense_message"/>
+
+            <TextView
+                android:id="@+id/budget_left_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textSize="@dimen/hm_budget_left_text_size"
+                android:textColor="@color/colorBudgetLeft"
+                android:text="@string/budget_left_message"
+                app:layout_constraintTop_toBottomOf="@id/expense_message"
+                app:layout_constraintLeft_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/budget_left_amount"
                 />
             <TextView
                 android:id="@+id/budget_left_amount"
@@ -75,9 +122,10 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:textColor="@color/colorBudgetLeft"
                 tools:text="@string/grand_total_amount"
-                app:layout_constraintTop_toBottomOf="@id/home_trend_spinner"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/expense_amount"
+                app:layout_constraintLeft_toRightOf="@id/budget_left_message"
+                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/budget_left_message"/>
 
             <TextView
                 android:id="@+id/grand_total_message"
@@ -89,7 +137,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/grand_total_message"
                 android:textSize="@dimen/hm_grand_total_text_size"
-                app:layout_constraintTop_toBottomOf="@id/budget_left_amount"
+                app:layout_constraintTop_toBottomOf="@id/budget_left_message"
                 app:layout_constraintLeft_toRightOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/grand_total_amount"/>
 

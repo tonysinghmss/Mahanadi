@@ -29,8 +29,6 @@
     <string name="grand_total_amount">10000</string>
     <string name="expense_amount">1000</string>
 
-    <string name="warning_no_budget">No budget set for current month.\nClick to setup</string>
-
     <string name="authority">com.tony.odiya.moneyshankar.provider</string>
 
     <string name="item_hint">Item</string>

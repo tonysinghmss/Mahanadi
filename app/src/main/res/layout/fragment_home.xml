@@ -23,24 +23,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
-                android:id="@+id/no_budget_warning"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="@string/warning_no_budget"
-                android:background="@color/colorAccent"
-                android:textColor="@android:color/white"
-                android:textSize="@dimen/hm_greeting_text_size"
-                android:visibility="invisible"
-                android:onClick="budgetWarningClick"
-                app:layout_constraintTop_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"
-                />
-            <TextView
                 android:id="@+id/welcome_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -50,7 +32,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/title_expense_details"
                 android:textSize="@dimen/hm_greeting_text_size"
-                app:layout_constraintTop_toBottomOf="@id/no_budget_warning"
+                app:layout_constraintTop_toBottomOf="parent"
                 app:layout_constraintLeft_toRightOf="parent"
                 app:layout_constraintRight_toLeftOf="parent"
 

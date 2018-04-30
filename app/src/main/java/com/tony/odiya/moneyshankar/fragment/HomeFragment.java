@@ -75,7 +75,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     private Spinner homeLayoutTrendSpinner;
 //    private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
-    private TextView noBudgetWarning;
     private View mHomeView;
     private Double totalExpenseAmount = 0.0;
     private Double totalBudgetAmount = 0.0;
@@ -129,16 +128,8 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         mHomeView = inflater.inflate(R.layout.fragment_home, container, false);
 //        homeToolbar = (Toolbar)mHomeView.findViewById(R.id.home_toolbar);
         budgetLeftForMonth = (TextView)mHomeView.findViewById(R.id.budget_left_amount);
-        noBudgetWarning = (TextView)mHomeView.findViewById(R.id.no_budget_warning);
-        noBudgetWarning.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                budgetWarningClick(view);
-            }
-        });
         if(!budgetIsSet){
             budgetLeftForMonth.setText("Not Set");
-            noBudgetWarning.setVisibility(View.VISIBLE);
         }
         homeLayoutTrendSpinner = (Spinner)mHomeView.findViewById(R.id.home_trend_spinner);
         homeLayoutTrendSpinner.setOnItemSelectedListener(this);
@@ -188,7 +179,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         if(budgetIsSet) {
             Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
             getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
-            noBudgetWarning.setVisibility(View.INVISIBLE);
+        }
+        else{
+            showNoBudgetAlert();
         }
     }
 
@@ -279,7 +272,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 
     public interface OnHomeFragmentInteractionListener {
         void onHomeTrendInteraction(String trend);
-        void onHomeFragmentReload();
     }
 
 
@@ -476,7 +468,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         prefManager.setFirstTimeLaunch(true);
     }
 
-    private void budgetWarningClick(View noBudgetView){
+    private void showNoBudgetAlert(){
         BudgetSetupDialogFragment budgetSetupDailog = new BudgetSetupDialogFragment();
         budgetSetupDailog.show(getChildFragmentManager(),"BudgetSetupDialog");
         budgetSetupDailog.setTargetFragment(this, REQUEST_BUDGET_SETUP_CODE);

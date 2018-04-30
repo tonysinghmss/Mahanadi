@@ -100,9 +100,6 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         this.selectedTrend = trend;
     }
 
-    public void onHomeFragmentReload(){
-
-    }
     /**
      *  This method communicates trend selection on Expense fragment to Manager activity
      *  which eventually can be used by other fragments.

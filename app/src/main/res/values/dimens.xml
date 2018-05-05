@@ -37,8 +37,8 @@
 
     <dimen name="hm_greeting_text_size">20sp</dimen>
     <dimen name="hm_trend_text_size">30sp</dimen>
-    <dimen name="hm_expense_text_size">35sp</dimen>
-    <dimen name="hm_budget_left_text_size">35sp</dimen>
+    <dimen name="hm_expense_text_size">20sp</dimen>
+    <dimen name="hm_budget_left_text_size">20sp</dimen>
     <dimen name="hm_grand_total_text_size">20sp</dimen>
 
     <!-- Dimension for welcome screen -->

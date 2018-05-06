@@ -44,7 +44,7 @@ public class AddExpenseActivity extends AppCompatActivity {
     private String mItem;
     private String mRemark;
     private Double mAmount;
-    private InterstitialAd mInterstitialAd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,38 +57,6 @@ public class AddExpenseActivity extends AppCompatActivity {
         Utility.selectDefaultCategoryInSpinner(mCategorySpinner, HOME);*/
         setSupportActionBar(addExpenseToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Initialize the Mobile Ads SDK.
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
-        // Create the InterstitialAd and set the adUnitId.
-        mInterstitialAd = new InterstitialAd(this);
-        // Defined in res/values/strings.xml
-        mInterstitialAd.setAdUnitId(getString(R.string.my_ad_unit_id));
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-        mInterstitialAd.setAdListener(new AdListener(){
-            @Override
-            public void onAdClosed() {
-                super.onAdClosed();
-                finish();
-            }
-
-            @Override
-            public void onAdLeftApplication() {
-                super.onAdLeftApplication();
-                finish();
-            }
-        });
-
-    }
-
-    private void showInterstitial() {
-        // Show the ad if it's ready. Otherwise toast and restart the game.
-        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
-        } else {
-            Log.d(LOG_TAG, "Ad didn't load properly.");
-            finish();
-        }
     }
 
     @Override
@@ -142,7 +110,6 @@ public class AddExpenseActivity extends AppCompatActivity {
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
                     //finish();
-                    showInterstitial();
                 }
                 return true;
             default:

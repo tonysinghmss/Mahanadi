@@ -10,6 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.tony.odiya.moneyshankar.R;
 import com.tony.odiya.moneyshankar.fragment.AnalysisFragment;
 import com.tony.odiya.moneyshankar.fragment.ExpenseFragment;
@@ -28,6 +32,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
     private static final String BACK_STACK_ROOT_TAG = "root_home_fragment";
     public static final String HOME_FRAGMENT = "home_fragment";
     private BottomNavigationView mNavigation;
+    private InterstitialAd mInterstitialAd;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -42,6 +47,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
                     break;
                 case R.id.navigation_expense:
                     //fragment = ExpenseFragment.newInstance(5, selectedTrend);
+                    showInterstitial();
                     fragment = ExpenseFragment.newInstance(selectedTrend);
                     selected =  true;
                     break;
@@ -88,6 +94,31 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         mNavigation.setSelectedItemId(R.id.navigation_home);
 
+        // Initialize the Mobile Ads SDK.
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        // Create the InterstitialAd and set the adUnitId.
+        mInterstitialAd = new InterstitialAd(this);
+        // Defined in res/values/strings.xml
+        mInterstitialAd.setAdUnitId(getString(R.string.my_ad_unit_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                Log.e(LOG_TAG, "Ad failed to load with error code "+Integer.toString(i)+".");
+            }
+        });
+
     }
 
     /**
@@ -132,6 +163,15 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         else{
             // Close the application when we are on home fragment.
             supportFinishAfterTransition();
+        }
+    }
+
+    private void showInterstitial() {
+        // Show the ad if it's ready. Otherwise toast and restart the game.
+        if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Log.d(LOG_TAG, "Ad didn't load properly.");
         }
     }
 }

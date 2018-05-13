@@ -97,7 +97,7 @@
     <string name="prefs_help_terms_condtions">Terms and Conditions</string>
     <string name="prefs_help_contact_us">Contact Us</string>
     <string name="prefs_help_contact_details">If you have any questions or doubts, please contact us at </string>
-    <string name="prefs_help_contact_mail">tonysingh.mss@gmail.com</string>
+    <string name="prefs_help_contact_mail">moneyshankarcom@gmail.com</string>
     <string name="prefs_help_Ok">Ok</string>
 
     <string name="title_activity_my_settings">Settings</string>
@@ -180,7 +180,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="admobs_app_id">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="banner_ads_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ads_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
 
 </resources>

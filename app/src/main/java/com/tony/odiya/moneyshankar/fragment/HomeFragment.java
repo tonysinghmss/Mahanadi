@@ -13,7 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.CoordinatorLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,8 +28,6 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.tony.odiya.moneyshankar.activity.AddExpenseActivity;
 import com.tony.odiya.moneyshankar.R;
 import com.tony.odiya.moneyshankar.activity.SettingsActivity;
 import com.tony.odiya.moneyshankar.activity.WelcomeActivity;
@@ -80,7 +78,8 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 //    private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
     private View mHomeView;
-    private AdView mAdview;
+    private CoordinatorLayout mCoordinatorLayout;
+    private AdView mAdView;
     private Double totalExpenseAmount = 0.0;
     private Double totalBudgetAmount = 0.0;
     private Double trendAmount = 0.0;
@@ -130,6 +129,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mHomeView = inflater.inflate(R.layout.fragment_home, container, false);
+        //mCoordinatorLayout = (CoordinatorLayout)mHomeView.findViewById(R.id.homeCoordinator);
 //        homeToolbar = (Toolbar)mHomeView.findViewById(R.id.home_toolbar);
         budgetLeftForMonth = (TextView)mHomeView.findViewById(R.id.budget_left_amount);
         if(!budgetIsSet){
@@ -152,9 +152,9 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 //        ((AppCompatActivity)getActivity()).setSupportActionBar(homeToolbar);
         setHasOptionsMenu(true);
 
-        mAdview = (AdView)mHomeView.findViewById(R.id.adView);
-        mAdview.loadAd(new AdRequest.Builder().build());
-        mAdview.setAdListener(new AdListener(){
+        mAdView = (AdView)mHomeView.findViewById(R.id.adView);
+        mAdView.loadAd(new AdRequest.Builder().build());
+        mAdView.setAdListener(new AdListener(){
             @Override
             public void onAdClosed() {
                 super.onAdClosed();
@@ -208,8 +208,26 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         else{
             showNoBudgetAlert();
         }
+        if(mAdView !=null){
+            mAdView.resume();
+        }
     }
 
+    @Override
+    public void onDestroy() {
+        if(mAdView !=null){
+            mAdView.destroy();
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onPause() {
+        if(mAdView !=null){
+            mAdView.pause();
+        }
+        super.onPause();
+    }
 
     @Override
     public void onDetach() {

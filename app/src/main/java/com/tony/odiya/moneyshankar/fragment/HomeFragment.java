@@ -51,7 +51,7 @@ import static com.tony.odiya.moneyshankar.common.Constants.TREND_EXPENSE_CODE;
 import static com.tony.odiya.moneyshankar.common.Constants.UPDATE_BUDGET_AMOUNT_COUNT;
 import static com.tony.odiya.moneyshankar.common.Constants.WEEKLY;
 import static com.tony.odiya.moneyshankar.common.Constants.YEARLY;
-import static com.tony.odiya.moneyshankar.common.Constants.REQUEST_EXPENSE_ADD_CODE;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,7 +78,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 //    private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
     private View mHomeView;
-    private CoordinatorLayout mCoordinatorLayout;
     private AdView mAdView;
     private Double totalExpenseAmount = 0.0;
     private Double totalBudgetAmount = 0.0;
@@ -299,7 +298,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
         if(requestCode == REQUEST_EXPENSE_ADD_CODE && resultCode == Activity.RESULT_OK){
@@ -311,7 +310,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             Bundle monthlyArgs = Utility.getDateRange(MONTHLY);
             getLoaderManager().restartLoader(HOME_BUDGET_LOADER_ID, monthlyArgs, this);
         }
-    }
+    }*/
 
     public interface OnHomeFragmentInteractionListener {
         void onHomeTrendInteraction(String trend);

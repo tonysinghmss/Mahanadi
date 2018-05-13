@@ -15,6 +15,7 @@ import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
@@ -158,6 +159,16 @@ public class ExpenseFragment extends Fragment implements LoaderManager.LoaderCal
             //myExpenseRecyclerViewAdapter = new MyExpenseRecyclerViewAdapter(mExpenseSet, mListener);
             mRecyclerView.setAdapter(myExpenseRecyclerViewAdapter);
         }
+
+        FloatingActionButton insertFab = (FloatingActionButton)view.findViewById(R.id.insert_fab);
+        //insertFab.setImageResource(R.drawable.ic_add_circle_outline_black_24dp);
+        insertFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
+                startActivityForResult(intent, REQUEST_EXPENSE_ADD_CODE);
+            }
+        });
         return view;
     }
 

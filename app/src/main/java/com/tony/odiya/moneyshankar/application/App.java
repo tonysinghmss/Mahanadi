@@ -3,7 +3,9 @@ package com.tony.odiya.moneyshankar.application;
 import android.app.Application;
 import android.content.res.Configuration;
 
+import com.google.android.gms.ads.MobileAds;
 import com.jakewharton.threetenabp.AndroidThreeTen;
+import com.tony.odiya.moneyshankar.R;
 
 import java.util.Locale;
 
@@ -19,6 +21,9 @@ public class App extends Application {
         // Initialize time-zone information.
         AndroidThreeTen.init(this);
         sDefLocale = Locale.getDefault();
+        //Initialize Mobie ads SDK
+        MobileAds.initialize(this,
+                getString(R.string.admobs_app_id));
     }
 
     @Override

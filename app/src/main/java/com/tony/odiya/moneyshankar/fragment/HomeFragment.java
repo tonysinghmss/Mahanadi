@@ -25,6 +25,10 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.tony.odiya.moneyshankar.activity.AddExpenseActivity;
 import com.tony.odiya.moneyshankar.R;
 import com.tony.odiya.moneyshankar.activity.SettingsActivity;
@@ -76,6 +80,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
 //    private Toolbar homeToolbar;
     private TextView budgetLeftForMonth;
     private View mHomeView;
+    private AdView mAdview;
     private Double totalExpenseAmount = 0.0;
     private Double totalBudgetAmount = 0.0;
     private Double trendAmount = 0.0;
@@ -119,7 +124,6 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
             mTrend = getArguments().getString(ARG_TREND);
             // mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
     }
 
     @Override
@@ -136,7 +140,7 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
         Utility.setTrendValuesInSpinner(homeLayoutTrendSpinner, getActivity().getApplicationContext());
         // Select default trend in spinner.
         Utility.selectDefaultTrendInSpinner(homeLayoutTrendSpinner, mTrend);
-        FloatingActionButton insertFab = (FloatingActionButton)mHomeView.findViewById(R.id.insert_fab);
+        /*FloatingActionButton insertFab = (FloatingActionButton)mHomeView.findViewById(R.id.insert_fab);
         //insertFab.setImageResource(R.drawable.ic_add_circle_outline_black_24dp);
         insertFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,9 +148,30 @@ public class HomeFragment extends Fragment implements LoaderManager.LoaderCallba
                 Intent intent = new Intent(getActivity(), AddExpenseActivity.class);
                 startActivityForResult(intent, REQUEST_EXPENSE_ADD_CODE);
             }
-        });
+        });*/
 //        ((AppCompatActivity)getActivity()).setSupportActionBar(homeToolbar);
         setHasOptionsMenu(true);
+
+        mAdview = (AdView)mHomeView.findViewById(R.id.adView);
+        mAdview.loadAd(new AdRequest.Builder().build());
+        mAdview.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                super.onAdLeftApplication();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                Log.e(LOG_TAG, "Ad failed to load with error code "+Integer.toString(i)+".");
+            }
+        });
+
         return mHomeView;
     }
 

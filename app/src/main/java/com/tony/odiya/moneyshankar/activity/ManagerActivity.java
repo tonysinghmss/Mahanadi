@@ -32,7 +32,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
     private static final String BACK_STACK_ROOT_TAG = "root_home_fragment";
     public static final String HOME_FRAGMENT = "home_fragment";
     private BottomNavigationView mNavigation;
-    private InterstitialAd mInterstitialAd;
+    //private InterstitialAd mInterstitialAd;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -47,7 +47,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
                     break;
                 case R.id.navigation_expense:
                     //fragment = ExpenseFragment.newInstance(5, selectedTrend);
-                    showInterstitial();
+                    //showInterstitial();
                     fragment = ExpenseFragment.newInstance(selectedTrend);
                     selected =  true;
                     break;
@@ -95,7 +95,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         mNavigation.setSelectedItemId(R.id.navigation_home);
 
         // Initialize the Mobile Ads SDK.
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        /*MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
         // Create the InterstitialAd and set the adUnitId.
         mInterstitialAd = new InterstitialAd(this);
         // Defined in res/values/strings.xml
@@ -117,7 +117,7 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
                 super.onAdFailedToLoad(i);
                 Log.e(LOG_TAG, "Ad failed to load with error code "+Integer.toString(i)+".");
             }
-        });
+        });*/
 
     }
 
@@ -166,12 +166,12 @@ public class ManagerActivity extends AppCompatActivity implements HomeFragment.O
         }
     }
 
-    private void showInterstitial() {
+    /*private void showInterstitial() {
         // Show the ad if it's ready. Otherwise toast and restart the game.
         if (mInterstitialAd != null && mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
             Log.d(LOG_TAG, "Ad didn't load properly.");
         }
-    }
+    }*/
 }

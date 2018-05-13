@@ -109,7 +109,7 @@ public class AddExpenseActivity extends AppCompatActivity {
                     int rowsUpdatedCount = updateCurrentMonthBudgetRow();
                     // Return back to parent fragment after data has been saved into database.
                     setResult(Activity.RESULT_OK);
-                    //finish();
+                    finish();
                 }
                 return true;
             default:
